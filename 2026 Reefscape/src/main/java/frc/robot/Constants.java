@@ -19,71 +19,29 @@ public final class Constants {
         public static final double kDriveEncoderRPM2MeterPerSec = kDriveEncoderRot2Meter / 60;
         public static final double kTurningEncoderRPM2RadPerSec = kTurningEncoderRot2Rad / 60;
         public static final double kPTurning = 0.5;
-        public static final double kDriveMotorFeedforwardVoltsPerRotationsPerMinute = 1/473;
-        
-        public static final double kDriveMotorFeedforwardVoltsPerRotationsPerSecond = 1/(473 / 60);
-        
+        public static final double kDriveMotorFeedforwardVoltsPerRotationsPerMinute = 1/473;        
+        public static final double kDriveMotorFeedforwardVoltsPerRotationsPerSecond = 1/(473 / 60);        
         public static final double kDriveMotorFeedforwardVoltsPerMetersPerSecond = 1/(473 / 60 * kDistancePerWheelRotation * kDriveMotorGearRatio);
-
-       
-        //Volt/rpm  = 1/473
-        //volt/mps
-
-    
     }
 
-    public static final int LaserCanPort = 21;
-
-
-    public static final class OutfeedConstants {
-        public static final int OutfeedPWMPort = 0;// SET THIS
-        public static final int CloseAngle = 80;
-        public static final int OpenAngle = 148;
-        public static final int OutfeedBeamBreakPort =0;
+    public static final class LEDConstants 
+    {       
+        public static final int PWMPort = 0;
+        public static final int Length = 0;
     }
-
 
     public static final class ClimbingConstants {
+        public static final int LaserCANPort = 21;
+        public static final int LimitSwitchPort = 0; 
+
+    public static final class Motor {
         public static final int MotorPort = 12;
-        public static final int LimitSwitchPort = 0;
-        public static final double Power = 0.7;
         public static final int CurrentFreeLimit = 60;
         public static final int CurrentStalledLimit = 40;
+        public static final int Power = 10;
+    }
     }
 
-    public static final class AlgaeArmConstants {
-        public static final int MotorPort = 13;
-        public static final double ChangeInPosition = 1;
-        public static final int CurrentFreeLimit = 20;
-        public static final int CurrentStalledLimit = 20;
-    }
-
-    public static final class AlgaeSpinnerConstants {
-        public static final int MotorPort = 14;
-        public static final double Power = 0.1;
-        public static final int CurrentFreeLimit = 20;
-        public static final int CurrentStalledLimit = 20;
-    }
-
-    
-
-    public static final class ElevatorConstants {
-        public static final int PrimaryMotorPort = 11;
-        public static final int SecondaryMotorPort = 10;
-        public static final int TopLimitSwitchPort = 0;
-        public static final int MiddleLimitSwitchPort = 0;
-        public static final int BottomLimitSwitchPort = 0;
-        public static final int TopDistance = 0;        
-        public static final double Power = 0.1;
-        public static final int CurrentFreeLimit = 60;
-        public static final int CurrentStalledLimit = 40;
-    }
-
-    public static final class IntakeRampConstants {
-        public static final int HubPort = 20;
-        public static final int OpenSolenoidChannel = 9;
-        public static final int CloseSolenoidChannel = 8;
-    }
 
     public static final class DriveConstants {
 
@@ -109,12 +67,10 @@ public final class Constants {
                         public static final int Port = 8;
                         public static final boolean Reversed = false;
                     }
-
                     public static final class Steer {
                         public static final int Port = 4;
                         public static final boolean Reversed = true;
                     }
-
                     public static final class AbsoluteEncoder {
                         //Angle, not value.
                         public static final double Offset = 4.362; // NEED
@@ -128,13 +84,10 @@ public final class Constants {
                         public static final int Port = 3;
                         public static final boolean Reversed = false;
                     }
-
                     public static final class Steer {
-
                         public static final int Port = 7;
                         public static final boolean Reversed = true;
                     }
-
                     public static final class AbsoluteEncoder {
                         //Angle, not value.
                         public static final double Offset = 4.166; // NEED
@@ -150,13 +103,11 @@ public final class Constants {
                         public static final int Port = 5;
                         public static final boolean Reversed = false;
                     }
-
                     public static final class Steer {
 
                         public static final int Port = 1;
                         public static final boolean Reversed = true;
                     }
-
                     public static final class AbsoluteEncoder { 
                         //Angle, not value.
                         public static final double Offset = 1.838; // NEED
@@ -170,13 +121,11 @@ public final class Constants {
                         public static final int Port = 6;
                         public static final boolean Reversed = false;
                     }
-
                     public static final class Steer {
 
                         public static final int Port = 2;
                         public static final boolean Reversed = true;
                     }
-
                     public static final class AbsoluteEncoder {
                         //Angle, not value.
                         public static final double Offset = 6.158; // NEED
@@ -184,7 +133,6 @@ public final class Constants {
                         public static final int Port = 3;
                     }
                 }
-
             }
         }
 
@@ -214,7 +162,7 @@ public final class Constants {
                         kMaxAngularAccelerationRadiansPerSecondSquared);
     }
 
-    public static final class OIConstants {
+    public static final class JoystickConstants {
         public static final int kDriverControllerPort = 0;
 
         public static final int kDriverYAxis = 1;

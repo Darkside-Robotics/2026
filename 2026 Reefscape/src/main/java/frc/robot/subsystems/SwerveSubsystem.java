@@ -1,19 +1,19 @@
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj.ADXRS450_Gyro;
-//import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriveConstants;
-//import frc.robot.commands.SwerveGyroRun;
+import frc.robot.library.swerve.SwerveModule;
 
 public class SwerveSubsystem extends SubsystemBase {
+
     private final SwerveModule frontLeft = new SwerveModule(
             DriveConstants.Motors.Front.Left.Drive.Port,
             DriveConstants.Motors.Front.Left.Steer.Port,
@@ -25,45 +25,45 @@ public class SwerveSubsystem extends SubsystemBase {
             "Front Left", false);
 
     private final SwerveModule frontRight = new SwerveModule(
-        DriveConstants.Motors.Front.Right.Drive.Port,
-        DriveConstants.Motors.Front.Right.Steer.Port,
-        DriveConstants.Motors.Front.Right.Drive.Reversed,
-        DriveConstants.Motors.Front.Right.Steer.Reversed,
-        DriveConstants.Motors.Front.Right.AbsoluteEncoder.Port,
-        DriveConstants.Motors.Front.Right.AbsoluteEncoder.Offset,
-        DriveConstants.Motors.Front.Right.AbsoluteEncoder.Reversed,
+            DriveConstants.Motors.Front.Right.Drive.Port,
+            DriveConstants.Motors.Front.Right.Steer.Port,
+            DriveConstants.Motors.Front.Right.Drive.Reversed,
+            DriveConstants.Motors.Front.Right.Steer.Reversed,
+            DriveConstants.Motors.Front.Right.AbsoluteEncoder.Port,
+            DriveConstants.Motors.Front.Right.AbsoluteEncoder.Offset,
+            DriveConstants.Motors.Front.Right.AbsoluteEncoder.Reversed,
             "Front Right", false);
 
     private final SwerveModule backLeft = new SwerveModule(
-        DriveConstants.Motors.Back.Left.Drive.Port,
-        DriveConstants.Motors.Back.Left.Steer.Port,
-        DriveConstants.Motors.Back.Left.Drive.Reversed,
-        DriveConstants.Motors.Back.Left.Steer.Reversed,
-        DriveConstants.Motors.Back.Left.AbsoluteEncoder.Port,
-        DriveConstants.Motors.Back.Left.AbsoluteEncoder.Offset,
-        DriveConstants.Motors.Back.Left.AbsoluteEncoder.Reversed,
-            "Back Left", false);            
-            
+            DriveConstants.Motors.Back.Left.Drive.Port,
+            DriveConstants.Motors.Back.Left.Steer.Port,
+            DriveConstants.Motors.Back.Left.Drive.Reversed,
+            DriveConstants.Motors.Back.Left.Steer.Reversed,
+            DriveConstants.Motors.Back.Left.AbsoluteEncoder.Port,
+            DriveConstants.Motors.Back.Left.AbsoluteEncoder.Offset,
+            DriveConstants.Motors.Back.Left.AbsoluteEncoder.Reversed,
+            "Back Left", false);
+
     private final SwerveModule backRight = new SwerveModule(
-        DriveConstants.Motors.Back.Right.Drive.Port,
-        DriveConstants.Motors.Back.Right.Steer.Port,
-        DriveConstants.Motors.Back.Right.Drive.Reversed,
-        DriveConstants.Motors.Back.Right.Steer.Reversed,
-        DriveConstants.Motors.Back.Right.AbsoluteEncoder.Port,
-        DriveConstants.Motors.Back.Right.AbsoluteEncoder.Offset,
-        DriveConstants.Motors.Back.Right.AbsoluteEncoder.Reversed,
+            DriveConstants.Motors.Back.Right.Drive.Port,
+            DriveConstants.Motors.Back.Right.Steer.Port,
+            DriveConstants.Motors.Back.Right.Drive.Reversed,
+            DriveConstants.Motors.Back.Right.Steer.Reversed,
+            DriveConstants.Motors.Back.Right.AbsoluteEncoder.Port,
+            DriveConstants.Motors.Back.Right.AbsoluteEncoder.Offset,
+            DriveConstants.Motors.Back.Right.AbsoluteEncoder.Reversed,
             "Back Right", false);
 
-            public static ADXRS450_Gyro gyro = new ADXRS450_Gyro();
-            SwerveModulePosition[] modulePositions = {
-                new SwerveModulePosition(frontLeft.getDrivePosition(), new Rotation2d(frontLeft.getTurningPosition())),
-                new SwerveModulePosition(frontRight.getDrivePosition(), new Rotation2d(frontRight.getTurningPosition())),
-                new SwerveModulePosition(backLeft.getDrivePosition(), new Rotation2d(backLeft.getTurningPosition())),
-                new SwerveModulePosition(backRight.getDrivePosition(), new Rotation2d(backRight.getTurningPosition()))};
+    public static ADXRS450_Gyro gyro = new ADXRS450_Gyro();
+    SwerveModulePosition[] modulePositions = {
+        new SwerveModulePosition(frontLeft.getDrivePosition(), new Rotation2d(frontLeft.getTurningPosition())),
+        new SwerveModulePosition(frontRight.getDrivePosition(), new Rotation2d(frontRight.getTurningPosition())),
+        new SwerveModulePosition(backLeft.getDrivePosition(), new Rotation2d(backLeft.getTurningPosition())),
+        new SwerveModulePosition(backRight.getDrivePosition(), new Rotation2d(backRight.getTurningPosition()))};
     private final SwerveDriveOdometry odometer = new SwerveDriveOdometry(DriveConstants.kDriveKinematics,
             new Rotation2d(0), modulePositions);
 
-            private Pose2d currentPose2d = null;
+    private Pose2d currentPose2d = null;
 
     public SwerveSubsystem() {
         new Thread(() -> {
@@ -114,8 +114,8 @@ public class SwerveSubsystem extends SubsystemBase {
 
         //odometer.update(getRotation2d(), modulePositions);
         SmartDashboard.putNumber("Robot Heading", getHeading());
-        
-        SmartDashboard.putString("Robot Pose", currentPose2d.toString());        
+
+        SmartDashboard.putString("Robot Pose", currentPose2d.toString());
         SmartDashboard.putString("Robot Pose2", getPose().toString());
 
         SmartDashboard.putString("Robot Location", getPose().getTranslation().toString());
@@ -123,7 +123,7 @@ public class SwerveSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("Encoder Back Left", backLeft.getAbsoluteEncoderRad());
         SmartDashboard.putNumber("Encoder Front Right", frontRight.getAbsoluteEncoderRad());
         SmartDashboard.putNumber("Encoder Back Right", backRight.getAbsoluteEncoderRad());
-        SmartDashboard.putNumber("Front Left Rel",frontLeft.getTurningPosition());
+        SmartDashboard.putNumber("Front Left Rel", frontLeft.getTurningPosition());
         frontLeft.reportToDashboard();
         backLeft.reportToDashboard();
         frontRight.reportToDashboard();
