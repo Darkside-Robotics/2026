@@ -1,4 +1,4 @@
-package frc.robot.library;
+package frc.robot.library.field;
 
 public final class FieldLocationConstants{
 public static class RED{
