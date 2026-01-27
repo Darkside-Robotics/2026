@@ -1,3 +1,4 @@
+/* 
 package frc.robot.commands;
 
 import java.util.function.Supplier;
@@ -8,11 +9,13 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.JoystickConstants;
-import frc.robot.subsystems.SwerveSubsystem;
+//import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.subsystems.DriveSubsystem;
 
 public class SwerveJoystickCmd extends Command {
 
-    private final SwerveSubsystem swerveSubsystem;
+    //private final SwerveSubsystem swerveSubsystem;
+    private final DriveSubsystem swerveSubsystem;
     private final Supplier<Double> xSpdFunction, ySpdFunction, turningSpdFunction;
     private final Supplier<Boolean> fieldOrientedFunction;
     private final SlewRateLimiter xLimiter, yLimiter, turningLimiter;
@@ -20,11 +23,11 @@ public class SwerveJoystickCmd extends Command {
     private double speed;
     //private final ElevatorSubsystem elevatorSubsystem;
 
-    public SwerveJoystickCmd(SwerveSubsystem swerveSubsystem,
+    public SwerveJoystickCmd(DriveSubsystem driveSubsystem,
             Supplier<Double> xSpdFunction, Supplier<Double> ySpdFunction, Supplier<Double> turningSpdFunction,
-            Supplier<Boolean> fieldOrientedFunction, Supplier<Boolean> boost /*, ElevatorSubsystem elevatorSubsystem*/) {
+            Supplier<Boolean> fieldOrientedFunction, Supplier<Boolean> boost ) {
         //this.elevatorSubsystem = elevatorSubsystem;
-        this.swerveSubsystem = swerveSubsystem;
+        this.swerveSubsystem = driveSubsystem;
         this.xSpdFunction = xSpdFunction;
         this.ySpdFunction = ySpdFunction;
         this.turningSpdFunction = turningSpdFunction;
@@ -33,7 +36,7 @@ public class SwerveJoystickCmd extends Command {
         this.xLimiter = new SlewRateLimiter(DriveConstants.kTeleDriveMaxAccelerationUnitsPerSecond);
         this.yLimiter = new SlewRateLimiter(DriveConstants.kTeleDriveMaxAccelerationUnitsPerSecond);
         this.turningLimiter = new SlewRateLimiter(DriveConstants.kTeleDriveMaxAngularAccelerationUnitsPerSecond);
-        addRequirements(swerveSubsystem);
+        this.addRequirements(driveSubsystem);
     }
 
     @Override
@@ -93,3 +96,4 @@ public class SwerveJoystickCmd extends Command {
         return false;
     }
 }
+*/
