@@ -24,7 +24,7 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   //private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
 
-    private final LEDSubsystem2 LEDSubsystem = new LEDSubsystem2();
+    private final LEDSubsystem2 ledSubsystem = new LEDSubsystem2();
   
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
@@ -47,9 +47,13 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-//m_driverController.y().onTrue(LEDSubsystem.ElevatorUpCmd());
-//m_driverController.a().onTrue(LEDSubsystem.ElevatorDownCmd());
-  }
+m_driverController.y().onTrue(ledSubsystem.TargetSearchCommand());
+m_driverController.a().onTrue(ledSubsystem.TargetFoundCommand());
+m_driverController.b().onTrue(ledSubsystem.TargetLockedCommand());
+m_driverController.x().onTrue(ledSubsystem.FiringTurretCommand());
+//m_driverController.y().onTrue(ledSubsystem.ElevatorUpCmd());
+ //m_driverController.a().onTrue(ledSubsystem.ElevatorDownCmd());
+}
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
