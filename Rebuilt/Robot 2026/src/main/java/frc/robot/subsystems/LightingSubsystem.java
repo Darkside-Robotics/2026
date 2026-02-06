@@ -9,12 +9,6 @@ import java.util.List;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.library.FieldHelper;
-import frc.robot.library.FieldLocationConstants;
-import frc.robot.library.FieldHelper.FieldColor;
-import frc.robot.library.FieldHelper.FieldLocation;
-import frc.robot.library.FieldHelper.FrontBack;
-import frc.robot.library.FieldHelper.LeftRight;
 
 public class LightingSubsystem extends SubsystemBase {
   /** Creates a new ExampleSubsystem. */
@@ -41,17 +35,6 @@ public class LightingSubsystem extends SubsystemBase {
    */
   public boolean exampleCondition() {
     //int lookinhFor = FieldLocationConstants.RED.OUTPOST.LEFT;
-    int lookingFor = FieldHelper.lookup(FieldColor.RED, FieldLocation.BUMP, FrontBack.BACK, LeftRight.LEFT);
-
-    List<FieldLocation> locations = new ArrayList<FieldLocation>();
-    locations.add(new frc.robot.library.FieldLocation(null, null, null, lookingFor));
-    
-    locations.add(new frc.robot.library.FieldLocation(null, null, null, lookingFor));
-    
-    locations.add(new frc.robot.library.FieldLocation(null, null, null, lookingFor));
-
-
-    locations.stream().filter((l)->l.leftRight == ))
 
     
 
