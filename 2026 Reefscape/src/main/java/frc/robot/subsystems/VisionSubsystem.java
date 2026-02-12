@@ -73,6 +73,7 @@ public class VisionSubsystem extends SubsystemBase {
 
     }
 
+    
     public FiducialAndPose foundTargetDetailed(int targetId) {
 
         LimelightHelpers.setPriorityTagID("limelight-dark", targetId);
@@ -95,6 +96,7 @@ public class VisionSubsystem extends SubsystemBase {
         }
         return targetDetected != null ? new FiducialAndPose(targetDetected, targetPose): null;
     }
+    
 
     public RawFiducial foundTarget(int targetId) {
 

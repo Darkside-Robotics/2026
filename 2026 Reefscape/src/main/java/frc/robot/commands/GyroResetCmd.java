@@ -1,5 +1,8 @@
 package frc.robot.commands;
 
+import java.util.logging.LogRecord;
+
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.SwerveSubsystem;
 
@@ -18,6 +21,7 @@ public class GyroResetCmd extends Command {
     @Override
     public void execute() {
         swerveSubsystem.zeroHeading();
+        SmartDashboard.putString("Gyro Reset: ", "touched");
         end(true);
     }
     

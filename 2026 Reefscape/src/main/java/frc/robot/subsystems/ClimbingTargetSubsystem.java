@@ -1,22 +1,30 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.library.field.FieldColor;
+import frc.robot.library.field.FieldHelper;
+import frc.robot.library.field.FieldLocation;
 
-public class IntakeSubsystem extends SubsystemBase {
+public class ClimbingTargetSubsystem extends SubsystemBase {
+  public final int[] fieldLocation;
+  public final VisionSubsystem visionSubsystem;
+
   /** Creates a new ExampleSubsystem. */
-  public IntakeSubsystem() {}
+  public ClimbingTargetSubsystem(FieldColor fieldColor, VisionSubsystem visionSubsystem) {
+    this.visionSubsystem = visionSubsystem;
+    this.fieldLocation = new int[] {
+        FieldHelper.lookup(fieldColor, FieldLocation.TOWER_LEFT),
+        FieldHelper.lookup(fieldColor, FieldLocation.TOWER_RIGHT)
+    };
+  }
 
   /**
    * Example command factory method.
    *
    * @return a command
    */
-  public Command IntakeMethodCommand() {
+  public Command exampleMethodCommand() {
     // Inline construction of command goes here.
     // Subsystem::RunOnce implicitly requires `this` subsystem.
     return runOnce(
@@ -26,11 +34,12 @@ public class IntakeSubsystem extends SubsystemBase {
   }
 
   /**
-   * An example method querying a boolean state of the subsystem (for example, a digital sensor).
+   * An example method querying a boolean state of the subsystem (for example, a
+   * digital sensor).
    *
    * @return value of some boolean subsystem state, such as a digital sensor.
    */
-  public boolean IntakeCondition() {
+  public boolean exampleCondition() {
     // Query some boolean state, such as a digital sensor.
     return false;
   }

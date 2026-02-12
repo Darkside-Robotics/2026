@@ -1,4 +1,4 @@
-package frc.robot.library;
+package frc.robot.library.field;
 
 // public enum FrontBack {
 //     FRONT, BACK
@@ -16,21 +16,26 @@ package frc.robot.library;
 //     OUTPOST, TOWER, HUB, TRENCH, BUMP, CORRAL
 // }
 
-public class FieldLocation {
-    public FieldHelper.LeftRight leftRight;
-    public FieldHelper.FieldColor fieldColor;
-    public FieldHelper.FrontBack frontBack;
-    public int fieldNumber;
-
-    public FieldLocation(FieldHelper.LeftRight leftRight,
-            FieldHelper.FieldColor fieldColor,
-            FieldHelper.FrontBack frontBack,
-            int fieldNumber) {
-        this.leftRight = leftRight;
-        this.fieldColor = fieldColor;
-        this.frontBack = frontBack;
-        this.fieldNumber = fieldNumber;
+ public enum FieldLocation {
+        OUTPOST_LEFT,
+        OUTPOST_RIGHT,
+        TOWER_LEFT,
+        TOWER_RIGHT,
+        HUB_LEFT_FRONT,
+        HUB_LEFT_BACK,
+        HUB_RIGHT_FRONT,
+        HUB_RIGHT_BACK,
+        TRENCH_LEFT_FRONT,
+        TRENCH_LEFT_BACK,
+        TRENCH_RIGHT_FRONT,
+        TRENCH_RIGHT_BACK,
+        BUMP_LEFT_FRONT,
+        BUMP_LEFT_BACK,
+        BUMP_RIGHT_FRONT,
+        BUMP_RIGHT_BACK,
+        CORRAL
     }
 
+
     
-}
+

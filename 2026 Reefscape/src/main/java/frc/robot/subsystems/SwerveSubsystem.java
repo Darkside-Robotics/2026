@@ -1,5 +1,8 @@
 package frc.robot.subsystems;
 
+import com.studica.frc.AHRS;
+import com.studica.frc.AHRS.NavXComType;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -54,7 +57,8 @@ public class SwerveSubsystem extends SubsystemBase {
             DriveConstants.Motors.Back.Right.AbsoluteEncoder.Reversed,
             "Back Right", false);
 
-    public static ADXRS450_Gyro gyro = new ADXRS450_Gyro();
+ public static AHRS gyro = new AHRS(NavXComType.kMXP_SPI);
+
     SwerveModulePosition[] modulePositions = {
         new SwerveModulePosition(frontLeft.getDrivePosition(), new Rotation2d(frontLeft.getTurningPosition())),
         new SwerveModulePosition(frontRight.getDrivePosition(), new Rotation2d(frontRight.getTurningPosition())),
@@ -66,6 +70,8 @@ public class SwerveSubsystem extends SubsystemBase {
     private Pose2d currentPose2d = null;
 
     public SwerveSubsystem() {
+        
+        SmartDashboard.putString("Gyro Reset: ", "not touched");
         new Thread(() -> {
             try {
                 Thread.sleep(1000);
@@ -80,6 +86,8 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 
     public double getHeading() {
+        
+        SmartDashboard.putNumber("Gyro: ", Math.IEEEremainder(gyro.getAngle(), 360));
         return Math.IEEEremainder(gyro.getAngle(), 360);
     }
 

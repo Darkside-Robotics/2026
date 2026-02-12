@@ -1,14 +1,14 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.subsystems.DriveSubsystem;
 
 public class GyroResetCmd extends Command {
 
-    static SwerveSubsystem swerveSubsystem;
+    static DriveSubsystem driveSubsystem;
     
-    public GyroResetCmd(SwerveSubsystem swerveSubsystem_in){
-        swerveSubsystem = swerveSubsystem_in;
+    public GyroResetCmd(DriveSubsystem swerveSubsystem_in){
+        driveSubsystem = swerveSubsystem_in;
     }
 
     @Override
@@ -17,7 +17,7 @@ public class GyroResetCmd extends Command {
 
     @Override
     public void execute() {
-        swerveSubsystem.zeroHeading();
+        driveSubsystem.zeroHeading();
         end(true);
     }
     
