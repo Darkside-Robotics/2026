@@ -26,7 +26,7 @@ public class LEDSubsystem extends SubsystemBase {
   private static final int NUMBER_OF_LEDS = 65;
 
   private static int elevatorHeight = 0;
-  private static Color elevatorColor = Color.kGreen;
+  private static Color ledColor = Color.kGreen;
   private final AddressableLEDBufferView[] elevatorBrackets;
   private final AddressableLEDBufferView utilitysection;
   
@@ -72,7 +72,7 @@ public class LEDSubsystem extends SubsystemBase {
     // written by
     // the last command to run will continue to be displayed.
     // Note: Other default patterns could be used instead!
-    setDefaultCommand(runPattern(LEDPattern.solid(elevatorColor)));
+    setDefaultCommand(runPattern(LEDPattern.solid(ledColor)));
 
     startTime = new Date();
   }
@@ -80,19 +80,19 @@ public class LEDSubsystem extends SubsystemBase {
 
 
   public void targetSearch() {
-    elevatorColor = (Color.kYellow);
+    ledColor = (Color.kYellow);
     elevatorBlink=false;
   }
   public void targetFound() {
-    elevatorColor = (Color.kYellow);
+    ledColor = (Color.kYellow);
     elevatorBlink=true;    
   }
   public void targetLocked() {
-    elevatorColor = (Color.kRed);
+    ledColor = (Color.kRed);
     elevatorBlink=false;
   }
   public void targetOff() {
-    elevatorColor = (Color.kGreen);
+    ledColor = (Color.kGreen);
     elevatorBlink = false;
   }
 
@@ -125,18 +125,18 @@ public class LEDSubsystem extends SubsystemBase {
     return run(() -> {
       for (var i = 0; i < 4; i++) {
         
-        LEDPattern elevatorBase = LEDPattern.solid(elevatorColor);
+        LEDPattern ledBase = LEDPattern.solid(ledColor);
         if(elevatorBlink ){
-        elevatorBase = elevatorBase.blink(Seconds.of(0.3), Seconds.of(0.3));
+        ledBase = ledBase.blink(Seconds.of(0.3), Seconds.of(0.3));
         }
         
         if (i < elevatorHeight + 1) {
         
 
-          elevatorBase.applyTo(elevatorBrackets[i]);
+          ledBase.applyTo(elevatorBrackets[i]);
         } else {
           LEDPattern b = LEDPattern.solid(Color.kBlack);
-
+          
           b.applyTo(elevatorBrackets[i]);
         }
 
