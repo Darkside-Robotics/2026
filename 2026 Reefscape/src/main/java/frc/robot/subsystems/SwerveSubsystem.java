@@ -57,20 +57,22 @@ public class SwerveSubsystem extends SubsystemBase {
             DriveConstants.Motors.Back.Right.AbsoluteEncoder.Reversed,
             "Back Right", false);
 
- public static AHRS gyro = new AHRS(NavXComType.kMXP_SPI);
+    public static AHRS gyro = new AHRS(NavXComType.kMXP_SPI);
 
     SwerveModulePosition[] modulePositions = {
-        new SwerveModulePosition(frontLeft.getDrivePosition(), new Rotation2d(frontLeft.getTurningPosition())),
-        new SwerveModulePosition(frontRight.getDrivePosition(), new Rotation2d(frontRight.getTurningPosition())),
-        new SwerveModulePosition(backLeft.getDrivePosition(), new Rotation2d(backLeft.getTurningPosition())),
-        new SwerveModulePosition(backRight.getDrivePosition(), new Rotation2d(backRight.getTurningPosition()))};
+            frontLeft.getPosition(),
+            frontRight.getPosition(),
+            backLeft.getPosition(),
+            backRight.getPosition() 
+        };
+
     private final SwerveDriveOdometry odometer = new SwerveDriveOdometry(DriveConstants.kDriveKinematics,
             new Rotation2d(0), modulePositions);
 
     private Pose2d currentPose2d = null;
 
     public SwerveSubsystem() {
-        
+
         SmartDashboard.putString("Gyro Reset: ", "not touched");
         new Thread(() -> {
             try {
@@ -86,7 +88,7 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 
     public double getHeading() {
-        
+
         SmartDashboard.putNumber("Gyro: ", Math.IEEEremainder(gyro.getAngle(), 360));
         return Math.IEEEremainder(gyro.getAngle(), 360);
     }
@@ -101,10 +103,11 @@ public class SwerveSubsystem extends SubsystemBase {
 
     public void resetOdometry(Pose2d pose) {
         SwerveModulePosition[] newModulePositions = {
-            new SwerveModulePosition(frontLeft.getDrivePosition(), new Rotation2d(frontLeft.getTurningPosition())),
-            new SwerveModulePosition(frontRight.getDrivePosition(), new Rotation2d(frontRight.getTurningPosition())),
-            new SwerveModulePosition(backLeft.getDrivePosition(), new Rotation2d(backLeft.getTurningPosition())),
-            new SwerveModulePosition(backRight.getDrivePosition(), new Rotation2d(backRight.getTurningPosition()))};
+
+                frontLeft.getPosition(),
+                frontRight.getPosition(),
+                backLeft.getPosition(),
+                backRight.getPosition() };
 
         odometer.resetPosition(getRotation2d(), newModulePositions, pose);
     }
@@ -113,25 +116,21 @@ public class SwerveSubsystem extends SubsystemBase {
     public void periodic() {
 
         SwerveModulePosition[] newModulePositions = {
-            new SwerveModulePosition(frontLeft.getDrivePosition(), new Rotation2d(frontLeft.getTurningPosition())),
-            new SwerveModulePosition(frontRight.getDrivePosition(), new Rotation2d(frontRight.getTurningPosition())),
-            new SwerveModulePosition(backLeft.getDrivePosition(), new Rotation2d(backLeft.getTurningPosition())),
-            new SwerveModulePosition(backRight.getDrivePosition(), new Rotation2d(backRight.getTurningPosition()))};
+                frontLeft.getPosition(),
+                frontRight.getPosition(),
+                backLeft.getPosition(),
+                backRight.getPosition() };
 
         currentPose2d = odometer.update(getRotation2d(), newModulePositions);
 
-        //odometer.update(getRotation2d(), modulePositions);
+        // odometer.update(getRotation2d(), modulePositions);
         SmartDashboard.putNumber("Robot Heading", getHeading());
 
         SmartDashboard.putString("Robot Pose", currentPose2d.toString());
         SmartDashboard.putString("Robot Pose2", getPose().toString());
 
         SmartDashboard.putString("Robot Location", getPose().getTranslation().toString());
-        SmartDashboard.putNumber("Encoder Front Left", frontLeft.getAbsoluteEncoderRad());
-        SmartDashboard.putNumber("Encoder Back Left", backLeft.getAbsoluteEncoderRad());
-        SmartDashboard.putNumber("Encoder Front Right", frontRight.getAbsoluteEncoderRad());
-        SmartDashboard.putNumber("Encoder Back Right", backRight.getAbsoluteEncoderRad());
-        SmartDashboard.putNumber("Front Left Rel", frontLeft.getTurningPosition());
+
         frontLeft.reportToDashboard();
         backLeft.reportToDashboard();
         frontRight.reportToDashboard();
