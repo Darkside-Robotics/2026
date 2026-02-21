@@ -5,6 +5,7 @@ import java.util.function.Supplier;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.JoystickConstants;
@@ -18,12 +19,13 @@ public class SwerveJoystickCmd extends Command {
     private final SlewRateLimiter xLimiter, yLimiter, turningLimiter;
     private final Supplier<Boolean> boost;
     private double speed;
-    //private final ElevatorSubsystem elevatorSubsystem;
+    private final TimedRobot robot;
 
     public SwerveJoystickCmd(SwerveSubsystem swerveSubsystem,
             Supplier<Double> xSpdFunction, Supplier<Double> ySpdFunction, Supplier<Double> turningSpdFunction,
-            Supplier<Boolean> fieldOrientedFunction, Supplier<Boolean> boost /*, ElevatorSubsystem elevatorSubsystem*/) {
-        //this.elevatorSubsystem = elevatorSubsystem;
+            Supplier<Boolean> fieldOrientedFunction,
+            Supplier<Boolean> boost, TimedRobot robot) {
+        this.robot = robot;
         this.swerveSubsystem = swerveSubsystem;
         this.xSpdFunction = xSpdFunction;
         this.ySpdFunction = ySpdFunction;
@@ -52,9 +54,8 @@ public class SwerveJoystickCmd extends Command {
         ySpeed = Math.abs(ySpeed) > JoystickConstants.kDeadband ? ySpeed : 0.0;
         turningSpeed = Math.abs(turningSpeed) > JoystickConstants.kDeadband ? turningSpeed : 0.0;
 
-
-        if (boost.get()){
-            speed = DriveConstants.kTeleDriveMaxSpeedMetersPerSecond/2.3;
+        if (boost.get()) {
+            speed = DriveConstants.kTeleDriveMaxSpeedMetersPerSecond / 2.3;
         } else {
             speed = DriveConstants.kTeleDriveMaxSpeedMetersPerSecond;
         }
@@ -65,22 +66,26 @@ public class SwerveJoystickCmd extends Command {
         turningSpeed = turningLimiter.calculate(turningSpeed)
                 * DriveConstants.kTeleDriveMaxAngularSpeedRadiansPerSecond;
 
-        // 4. Construct desired chassis speeds
-        ChassisSpeeds chassisSpeeds;
-        if (fieldOrientedFunction.get()) {
-            // Relative to field
-            chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
-                    xSpeed, ySpeed, turningSpeed, swerveSubsystem.getRotation2d());
-        } else {
-            // Relative to robot
-            chassisSpeeds = new ChassisSpeeds(xSpeed, ySpeed, turningSpeed);
-        }
-
-        // 5. Convert chassis speeds to individual module states
-        SwerveModuleState[] moduleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(chassisSpeeds);
-
-        // 6. Output each module states to wheels
-        swerveSubsystem.setModuleStates(moduleStates, false);
+        swerveSubsystem.drive(xSpeed, ySpeed, turningSpeed, true, robot.getPeriod());
+        /*
+         * // 4. Construct desired chassis speeds
+         * ChassisSpeeds chassisSpeeds;
+         * if (fieldOrientedFunction.get()) {
+         * // Relative to field
+         * chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
+         * xSpeed, ySpeed, turningSpeed, swerveSubsystem.getRotation2d());
+         * } else {
+         * // Relative to robot
+         * chassisSpeeds = new ChassisSpeeds(xSpeed, ySpeed, turningSpeed);
+         * }
+         * 
+         * // 5. Convert chassis speeds to individual module states
+         * SwerveModuleState[] moduleStates =
+         * DriveConstants.kDriveKinematics.toSwerveModuleStates(chassisSpeeds);
+         * 
+         * // 6. Output each module states to wheels
+         * swerveSubsystem.setModuleStates(moduleStates, false);
+         */
     }
 
     @Override

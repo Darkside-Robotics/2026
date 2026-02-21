@@ -1,5 +1,6 @@
 package frc.robot;
 
+import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.GyroResetCmd;
 import frc.robot.commands.SwerveJoystickCmd;
@@ -20,14 +21,14 @@ public class RobotContainer {
 
         private final CommandXboxController controller = new CommandXboxController(0);
 
-        public RobotContainer() {                
+        public RobotContainer(TimedRobot robot) {                
                 swerveSubsystem.setDefaultCommand(new SwerveJoystickCmd(
                                 swerveSubsystem,
                                 () -> -controller.getLeftY(),
                                 () -> controller.getLeftX(),
                                 () -> controller.getRightX(),
                                 () -> !controller.leftTrigger(0.2).getAsBoolean(),
-                                () -> !controller.leftStick().getAsBoolean() /*, elevatorSubsystem*/));
+                                () -> !controller.leftStick().getAsBoolean(), robot));
 
                 configureButtonBindings();
         }
