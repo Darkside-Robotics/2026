@@ -7,6 +7,7 @@ import frc.robot.commands.SwerveJoystickCmd;
 //import frc.robot.subsystems.ClimbingSubsystem;
 import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.subsystems.TurretSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 
 public class RobotContainer {
@@ -14,6 +15,7 @@ public class RobotContainer {
        // private final LEDSubsystem ledSubsystem = new LEDSubsystem();
         private final SwerveSubsystem swerveSubsystem = new SwerveSubsystem();
         private final VisionSubsystem visionSubsystem = new VisionSubsystem();
+       // private final TurretSubsystem turretSubsystem = new TurretSubsystem();
 
        // private final ClimbingSubsystem climbingSubsystem = new ClimbingSubsystem();
        
@@ -36,6 +38,12 @@ public class RobotContainer {
         private void configureButtonBindings() {
 
 
+//controller.povUp().onTrue(turretSubsystem.SpinFlywheelUpCmd());
+//controller.povDown().onTrue(turretSubsystem.SpinFlywheelDownCmd());
+
+
+//controller.y().onTrue(turretSubsystem.HoodUpCmd());
+//controller.a().onTrue(turretSubsystem.HoodDownCmd());
 
                 controller.back().onTrue(new GyroResetCmd(swerveSubsystem));
 

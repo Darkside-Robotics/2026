@@ -68,10 +68,10 @@ public class SwerveSubsystem extends SubsystemBase {
 
         public static AHRS gyro = new AHRS(NavXComType.kMXP_SPI);
 
-        private final Translation2d frontLeftLocation = new Translation2d(0.355, -0.382);
-        private final Translation2d frontRightLocation = new Translation2d(0.355, 0.382);
-        private final Translation2d backLeftLocation = new Translation2d(-0.355, -0.382);
-        private final Translation2d backRightLocation = new Translation2d(-0.355, 0.382);
+        private final Translation2d frontLeftLocation = new Translation2d(0.355,  0.382);
+        private final Translation2d frontRightLocation = new Translation2d(0.355,-0.382);
+        private final Translation2d backLeftLocation = new Translation2d(-0.355, 0.382);
+        private final Translation2d backRightLocation = new Translation2d(-0.355, -0.382);
 
         private final SwerveDriveKinematics kinematics = new SwerveDriveKinematics(
                         frontLeftLocation, frontRightLocation, backLeftLocation, backRightLocation);
@@ -120,20 +120,21 @@ public class SwerveSubsystem extends SubsystemBase {
         public void drive(
                         double xSpeed, double ySpeed, double rot, boolean fieldRelative, double periodSeconds) {
 
-                ChassisSpeeds poseFieldRelative = ChassisSpeeds.fromFieldRelativeSpeeds(
-                                xSpeed, ySpeed, rot,
-                                poseEstimator.getEstimatedPosition()
-                                                .getRotation());
-                ChassisSpeeds poseRobotRelative = new ChassisSpeeds(xSpeed, ySpeed, rot);
+                // ChassisSpeeds poseFieldRelative = ChassisSpeeds.fromFieldRelativeSpeeds(
+                //                 xSpeed, ySpeed, rot,
+                //                 poseEstimator.getEstimatedPosition()
+                //                                 .getRotation());
+                // ChassisSpeeds poseRobotRelative = new ChassisSpeeds(xSpeed, ySpeed, rot);
 
-                ChassisSpeeds oldRobotRelative = ChassisSpeeds.fromFieldRelativeSpeeds(
-                                xSpeed, ySpeed, rot, Rotation2d.fromDegrees(Math.IEEEremainder(gyro.getAngle(), 360)));
+                // ChassisSpeeds oldRobotRelative = ChassisSpeeds.fromFieldRelativeSpeeds(
+                //                 xSpeed, ySpeed, rot, Rotation2d.fromDegrees(Math.IEEEremainder(gyro.getAngle(), 360)));
 
-                SmartDashboard.putString("Robot Field Relative Pose", poseFieldRelative.toString());
-                SmartDashboard.putString("Robot Relative Pose", poseRobotRelative.toString());
-                SmartDashboard.putString("Robot Old Pose", oldRobotRelative.toString());
+                // SmartDashboard.putString("Robot Field Relative Pose", poseFieldRelative.toString());
+                // SmartDashboard.putString("Robot Relative Pose", poseRobotRelative.toString());
+                // SmartDashboard.putString("Robot Old Pose", oldRobotRelative.toString());
 
                 SmartDashboard.putBoolean("Use Robot Relative Pose", fieldRelative);
+                SmartDashboard.putNumber("Period", periodSeconds);
 
                 var swerveModuleStates = kinematics.toSwerveModuleStates(
                                 ChassisSpeeds.discretize(
@@ -212,7 +213,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
                 updateOdometry();
 
-                if ((new Date()).getTime() - last.getTime() > 1000) {
+                if ((new Date()).getTime() - last.getTime() > 100) {
                         last = new Date();
 
                         f.setRobotPose(getPose());
@@ -223,6 +224,7 @@ public class SwerveSubsystem extends SubsystemBase {
                         SmartDashboard.putNumber("Last", last.getTime());
                         SmartDashboard.putNumber("Gyro Rot", gyro.getAngle());
                         SmartDashboard.putNumber("Robot Rotation", getRotation2d().getDegrees());
+           
                 }
 
                 // SmartDashboard.putString("Robot Location",
