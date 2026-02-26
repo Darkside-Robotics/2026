@@ -26,6 +26,8 @@ import frc.robot.library.swerve.SwerveModule;
 
 public class SwerveSubsystem extends SubsystemBase {
 
+        
+
         private final SwerveModule frontLeft = new SwerveModule(
                         DriveConstants.Motors.Front.Left.Drive.Port,
                         DriveConstants.Motors.Front.Left.Steer.Port,
@@ -188,7 +190,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
         public Rotation2d getRotation2d() {
                 // return Rotation2d.fromDegrees(getHeading());
-                return gyro.getRotation2d().unaryMinus();
+                return gyro.getRotation2d();
         }
 
         public Pose2d getPose() {

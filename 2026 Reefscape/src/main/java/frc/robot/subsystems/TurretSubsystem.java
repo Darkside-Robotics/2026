@@ -30,8 +30,8 @@ public class TurretSubsystem extends SubsystemBase {
 
   private SparkFlex leadflywheelMotor;
   private SparkFlexConfig leadflywheelMotorConfig;
-  // private SparkFlex followflywheelMotor;
-  // private SparkFlexConfig followflywheelMotorConfig;
+  private SparkFlex followflywheelMotor;
+  private SparkFlexConfig followflywheelMotorConfig;
   private SparkClosedLoopController flywheelController;
 
   private SparkMax hoodMotor;
@@ -91,7 +91,7 @@ public class TurretSubsystem extends SubsystemBase {
       }
 
       public static final class FollowMotor {
-        public static final int MotorPort = 13; //disabled
+        public static final int MotorPort = 14; //disabled
         public static final int CurrentFreeLimit = 60;
         public static final int CurrentStalledLimit = 40;
         public static final int Power = 10;
@@ -138,15 +138,15 @@ public class TurretSubsystem extends SubsystemBase {
     leadflywheelMotor.configure(leadflywheelMotorConfig, ResetMode.kResetSafeParameters,
         PersistMode.kPersistParameters);
 
-    // followflywheelMotor = new SparkFlex(TurretConstants.FlyWheel.FollowMotor.MotorPort,
-    //     com.revrobotics.spark.SparkLowLevel.MotorType.kBrushless);
-    // followflywheelMotorConfig = new SparkFlexConfig();
-    // followflywheelMotorConfig.idleMode(IdleMode.kCoast).follow(FlyWheel.LeadMotor.MotorPort, true);
-    // followflywheelMotorConfig.encoder.velocityConversionFactor(1);
-    // followflywheelMotorConfig.smartCurrentLimit(TurretConstants.FlyWheel.LeadMotor.CurrentStalledLimit,
-    //     TurretConstants.FlyWheel.LeadMotor.CurrentFreeLimit);
-    // followflywheelMotor.configure(leadflywheelMotorConfig, ResetMode.kResetSafeParameters,
-    //     PersistMode.kPersistParameters);
+    followflywheelMotor = new SparkFlex(TurretConstants.FlyWheel.FollowMotor.MotorPort,
+        com.revrobotics.spark.SparkLowLevel.MotorType.kBrushless);
+    followflywheelMotorConfig = new SparkFlexConfig();
+    followflywheelMotorConfig.idleMode(IdleMode.kCoast).follow(FlyWheel.LeadMotor.MotorPort, true);
+    followflywheelMotorConfig.encoder.velocityConversionFactor(1);
+    followflywheelMotorConfig.smartCurrentLimit(TurretConstants.FlyWheel.LeadMotor.CurrentStalledLimit,
+        TurretConstants.FlyWheel.LeadMotor.CurrentFreeLimit);
+    followflywheelMotor.configure(leadflywheelMotorConfig, ResetMode.kResetSafeParameters,
+        PersistMode.kPersistParameters);
 
     flywheelController = leadflywheelMotor.getClosedLoopController();
 

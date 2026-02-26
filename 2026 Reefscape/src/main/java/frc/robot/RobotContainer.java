@@ -12,42 +12,37 @@ import frc.robot.subsystems.VisionSubsystem;
 
 public class RobotContainer {
 
-       // private final LEDSubsystem ledSubsystem = new LEDSubsystem();
+        // private final LEDSubsystem ledSubsystem = new LEDSubsystem();
         private final SwerveSubsystem swerveSubsystem = new SwerveSubsystem();
         private final VisionSubsystem visionSubsystem = new VisionSubsystem();
-       // private final TurretSubsystem turretSubsystem = new TurretSubsystem();
+        //private final TurretSubsystem turretSubsystem = new TurretSubsystem();
 
-       // private final ClimbingSubsystem climbingSubsystem = new ClimbingSubsystem();
-       
+        // private final ClimbingSubsystem climbingSubsystem = new ClimbingSubsystem();
+
         private final LEDSubsystem ledSubsystem = new LEDSubsystem();
 
         private final CommandXboxController controller = new CommandXboxController(0);
 
-        public RobotContainer(TimedRobot robot) {                
+        public RobotContainer(TimedRobot robot) {
                 swerveSubsystem.setDefaultCommand(new SwerveJoystickCmd(
-                                swerveSubsystem,
-                                () -> -controller.getLeftY(),
-                                () -> controller.getLeftX(),
-                                () -> controller.getRightX(),
-                                () -> !controller.leftTrigger(0.2).getAsBoolean(),
-                                () -> !controller.leftStick().getAsBoolean(), robot));
+                swerveSubsystem,
+                () -> -controller.getLeftY(),
+                () -> -controller.getLeftX(),
+                () -> -controller.getRightX(),
+                () -> !controller.leftTrigger(0.2).getAsBoolean(),
+                () -> !controller.leftStick().getAsBoolean(), robot));
 
                 configureButtonBindings();
         }
 
         private void configureButtonBindings() {
 
+                //controller.povUp().onTrue(turretSubsystem.SpinFlywheelUpCmd());
+                // controller.povDown().onTrue(turretSubsystem.SpinFlywheelDownCmd());
 
-//controller.povUp().onTrue(turretSubsystem.SpinFlywheelUpCmd());
-//controller.povDown().onTrue(turretSubsystem.SpinFlywheelDownCmd());
-
-
-//controller.y().onTrue(turretSubsystem.HoodUpCmd());
-//controller.a().onTrue(turretSubsystem.HoodDownCmd());
+                // controller.y().onTrue(turretSubsystem.HoodUpCmd());
+                // controller.a().onTrue(turretSubsystem.HoodDownCmd());
 
                 controller.back().onTrue(new GyroResetCmd(swerveSubsystem));
-
-
         }
 }
-

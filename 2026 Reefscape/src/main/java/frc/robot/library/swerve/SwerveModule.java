@@ -65,7 +65,6 @@ public class SwerveModule {
      */
 
     private final AnalogEncoder absoluteEncoder;
-    private final boolean absoluteEncoderReversed;
     private final double absoluteEncoderOffsetRad;
 
     private SwerveModuleState targetState = null;
@@ -81,9 +80,9 @@ public class SwerveModule {
         this.name = name;
 
         this.absoluteEncoderOffsetRad = absoluteEncoderOffset;
-        this.absoluteEncoderReversed = absoluteEncoderReversed;
 
         absoluteEncoder = new AnalogEncoder(absoluteEncoderId);
+        absoluteEncoder.setInverted(absoluteEncoderReversed);
 
         driveMotor = new SparkMax(driveMotorId, com.revrobotics.spark.SparkLowLevel.MotorType.kBrushless);
         driveMaxConfig = new SparkMaxConfig();
@@ -239,7 +238,6 @@ public class SwerveModule {
         double angle = value * 2.0 * Math.PI;
         angle -= absoluteEncoderOffsetRad;
 
-        return angle * (absoluteEncoderReversed ? -1.0 : 1.0);
+        return angle; 
     }
 }
-// */
