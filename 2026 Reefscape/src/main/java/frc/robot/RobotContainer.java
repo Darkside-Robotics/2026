@@ -13,8 +13,8 @@ import frc.robot.subsystems.VisionSubsystem;
 public class RobotContainer {
 
         // private final LEDSubsystem ledSubsystem = new LEDSubsystem();
-        private final SwerveSubsystem swerveSubsystem = new SwerveSubsystem();
         private final VisionSubsystem visionSubsystem = new VisionSubsystem();
+        private final SwerveSubsystem swerveSubsystem = new SwerveSubsystem(visionSubsystem);
         //private final TurretSubsystem turretSubsystem = new TurretSubsystem();
 
         // private final ClimbingSubsystem climbingSubsystem = new ClimbingSubsystem();

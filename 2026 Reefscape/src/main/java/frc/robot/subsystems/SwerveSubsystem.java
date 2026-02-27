@@ -16,6 +16,8 @@ import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.AngleUnit;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -25,8 +27,6 @@ import frc.robot.Constants.DriveConstants;
 import frc.robot.library.swerve.SwerveModule;
 
 public class SwerveSubsystem extends SubsystemBase {
-
-        
 
         private final SwerveModule frontLeft = new SwerveModule(
                         DriveConstants.Motors.Front.Left.Drive.Port,
@@ -70,8 +70,8 @@ public class SwerveSubsystem extends SubsystemBase {
 
         public static AHRS gyro = new AHRS(NavXComType.kMXP_SPI);
 
-        private final Translation2d frontLeftLocation = new Translation2d(0.355,  0.382);
-        private final Translation2d frontRightLocation = new Translation2d(0.355,-0.382);
+        private final Translation2d frontLeftLocation = new Translation2d(0.355, 0.382);
+        private final Translation2d frontRightLocation = new Translation2d(0.355, -0.382);
         private final Translation2d backLeftLocation = new Translation2d(-0.355, 0.382);
         private final Translation2d backRightLocation = new Translation2d(-0.355, -0.382);
 
@@ -85,11 +85,14 @@ public class SwerveSubsystem extends SubsystemBase {
          */
         private final SwerveDrivePoseEstimator poseEstimator;
 
-        public SwerveSubsystem() {
+        private final VisionSubsystem visionSubsystem;
 
-                SmartDashboard.putString("Gyro Reset: ", "not touched");
+        public SwerveSubsystem(VisionSubsystem visionSubsystem) {
+                this.visionSubsystem = visionSubsystem;
 
                 zeroHeading();
+
+                Pose2d RedSideRightCornerPose2d = new Pose2d(16.063, 7.65, Rotation2d.kPi);
 
                 poseEstimator = new SwerveDrivePoseEstimator(
                                 kinematics,
@@ -100,9 +103,12 @@ public class SwerveSubsystem extends SubsystemBase {
                                                 backLeft.getPosition(),
                                                 backRight.getPosition()
                                 },
-                                Pose2d.kZero,
+                                RedSideRightCornerPose2d, 
+                                //Pose2d.kZero,
                                 VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(3)),
-                                VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30)));
+                                VecBuilder.fill(0.7, 0.7, Units.degreesToRadians(30)));
+
+                                  //addRequirements(visionSubsystem);
 
         }
 
@@ -123,16 +129,19 @@ public class SwerveSubsystem extends SubsystemBase {
                         double xSpeed, double ySpeed, double rot, boolean fieldRelative, double periodSeconds) {
 
                 // ChassisSpeeds poseFieldRelative = ChassisSpeeds.fromFieldRelativeSpeeds(
-                //                 xSpeed, ySpeed, rot,
-                //                 poseEstimator.getEstimatedPosition()
-                //                                 .getRotation());
+                // xSpeed, ySpeed, rot,
+                // poseEstimator.getEstimatedPosition()
+                // .getRotation());
                 // ChassisSpeeds poseRobotRelative = new ChassisSpeeds(xSpeed, ySpeed, rot);
 
                 // ChassisSpeeds oldRobotRelative = ChassisSpeeds.fromFieldRelativeSpeeds(
-                //                 xSpeed, ySpeed, rot, Rotation2d.fromDegrees(Math.IEEEremainder(gyro.getAngle(), 360)));
+                // xSpeed, ySpeed, rot,
+                // Rotation2d.fromDegrees(Math.IEEEremainder(gyro.getAngle(), 360)));
 
-                // SmartDashboard.putString("Robot Field Relative Pose", poseFieldRelative.toString());
-                // SmartDashboard.putString("Robot Relative Pose", poseRobotRelative.toString());
+                // SmartDashboard.putString("Robot Field Relative Pose",
+                // poseFieldRelative.toString());
+                // SmartDashboard.putString("Robot Relative Pose",
+                // poseRobotRelative.toString());
                 // SmartDashboard.putString("Robot Old Pose", oldRobotRelative.toString());
 
                 SmartDashboard.putBoolean("Use Robot Relative Pose", fieldRelative);
@@ -170,26 +179,11 @@ public class SwerveSubsystem extends SubsystemBase {
                                                 backLeft.getPosition(),
                                                 backRight.getPosition()
                                 });
-
-                // Also apply vision measurements. We use 0.3 seconds in the past as an example
-                // -- on
-                // a real robot, this must be calculated based either on latency or timestamps.
-                // poseEstimator.addVisionMeasurement(
-                // ExampleGlobalMeasurementSensor.getEstimatedGlobalPose(
-                // poseEstimator.getEstimatedPosition()),
-                // Timer.getTimestamp() - 0.3);
+                visionSubsystem.updateRobotPose(poseEstimator, gyro);
         }
 
         // ****************************************************************** */
-
-        public double getHeading() {
-
-                SmartDashboard.putNumber("Gyro: ", Math.IEEEremainder(gyro.getAngle(), 360));
-                return Math.IEEEremainder(gyro.getAngle(), 360);
-        }
-
         public Rotation2d getRotation2d() {
-                // return Rotation2d.fromDegrees(getHeading());
                 return gyro.getRotation2d();
         }
 
@@ -226,7 +220,7 @@ public class SwerveSubsystem extends SubsystemBase {
                         SmartDashboard.putNumber("Last", last.getTime());
                         SmartDashboard.putNumber("Gyro Rot", gyro.getAngle());
                         SmartDashboard.putNumber("Robot Rotation", getRotation2d().getDegrees());
-           
+
                 }
 
                 // SmartDashboard.putString("Robot Location",
