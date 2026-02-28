@@ -12,13 +12,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
-import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.units.AngleUnit;
-import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -92,7 +87,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
                 zeroHeading();
 
-                Pose2d RedSideRightCornerPose2d = new Pose2d(16.063, 7.65, Rotation2d.kPi);
+                Pose2d RedSideRightCornerPose2d = new Pose2d(16.063, 7.65, Rotation2d.k180deg);
 
                 poseEstimator = new SwerveDrivePoseEstimator(
                                 kinematics,
@@ -103,10 +98,10 @@ public class SwerveSubsystem extends SubsystemBase {
                                                 backLeft.getPosition(),
                                                 backRight.getPosition()
                                 },
-                                RedSideRightCornerPose2d, 
+                                RedSideRightCornerPose2d,
                                 //Pose2d.kZero,
                                 VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(3)),
-                                VecBuilder.fill(0.7, 0.7, Units.degreesToRadians(30)));
+                                VecBuilder.fill(0.7, 0.7, 9999999));
 
                                   //addRequirements(visionSubsystem);
 

@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.GyroResetCmd;
 import frc.robot.commands.SwerveJoystickCmd;
+import frc.robot.commands.TargetingSwerveJoystickCmd;
 //import frc.robot.subsystems.ClimbingSubsystem;
 import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
@@ -24,13 +25,14 @@ public class RobotContainer {
         private final CommandXboxController controller = new CommandXboxController(0);
 
         public RobotContainer(TimedRobot robot) {
-                swerveSubsystem.setDefaultCommand(new SwerveJoystickCmd(
+                swerveSubsystem.setDefaultCommand(new TargetingSwerveJoystickCmd(
                 swerveSubsystem,
-                () -> -controller.getLeftY(),
-                () -> -controller.getLeftX(),
+                () -> controller.getLeftY(),
+                () -> controller.getLeftX(),
                 () -> -controller.getRightX(),
                 () -> !controller.leftTrigger(0.2).getAsBoolean(),
-                () -> !controller.leftStick().getAsBoolean(), robot));
+                () -> !controller.leftStick().getAsBoolean(),
+                () -> controller.leftTrigger().getAsBoolean(), robot));
 
                 configureButtonBindings();
         }
@@ -44,5 +46,6 @@ public class RobotContainer {
                 // controller.a().onTrue(turretSubsystem.HoodDownCmd());
 
                 controller.back().onTrue(new GyroResetCmd(swerveSubsystem));
+                //controller.leftTrigger().whileTrue(null);
         }
 }
