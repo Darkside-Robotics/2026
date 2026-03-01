@@ -1,14 +1,17 @@
 package frc.robot.commands;
 
+import java.util.logging.LogRecord;
+
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.SwerveSubsystem;
 
 public class GyroResetCmd extends Command {
 
-    static DriveSubsystem driveSubsystem;
+    static SwerveSubsystem swerveSubsystem;
     
-    public GyroResetCmd(DriveSubsystem swerveSubsystem_in){
-        driveSubsystem = swerveSubsystem_in;
+    public GyroResetCmd(SwerveSubsystem swerveSubsystem_in){
+        swerveSubsystem = swerveSubsystem_in;
     }
 
     @Override
@@ -17,7 +20,8 @@ public class GyroResetCmd extends Command {
 
     @Override
     public void execute() {
-        driveSubsystem.zeroHeading();
+        swerveSubsystem.zeroHeading();
+        SmartDashboard.putString("Gyro Reset: ", "touched");
         end(true);
     }
     

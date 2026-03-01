@@ -1,46 +1,52 @@
 package frc.robot;
 
-import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.GyroResetCmd;
-//import frc.robot.commands.SwerveJoystickCmd;
-import frc.robot.subsystems.ClimbingSubsystem;
-import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.commands.SwerveJoystickCmd;
+import frc.robot.commands.TargetingSwerveJoystickCmd;
+//import frc.robot.subsystems.ClimbingSubsystem;
 import frc.robot.subsystems.LEDSubsystem;
-//import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.subsystems.TurretSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 
 public class RobotContainer {
 
         // private final LEDSubsystem ledSubsystem = new LEDSubsystem();
-        // private final SwerveSubsystem swerveSubsystem = new SwerveSubsystem();
-
-        private final DriveSubsystem driveSubsystem = new DriveSubsystem();
-
         private final VisionSubsystem visionSubsystem = new VisionSubsystem();
+        private final SwerveSubsystem swerveSubsystem = new SwerveSubsystem(visionSubsystem);
+        //private final TurretSubsystem turretSubsystem = new TurretSubsystem();
 
-        private final ClimbingSubsystem climbingSubsystem = new ClimbingSubsystem();
+        // private final ClimbingSubsystem climbingSubsystem = new ClimbingSubsystem();
 
         private final LEDSubsystem ledSubsystem = new LEDSubsystem();
 
-        private final XboxController primaryController = new XboxController(0);
+        private final CommandXboxController controller = new CommandXboxController(0);
         private final XboxController secondaryController = new XboxController(1);
 
-        public RobotContainer() {
-                driveSubsystem.setDefaultCommand(
-                                new RunCommand(() -> driveSubsystem.drive(
-                                                primaryController.getLeftY(),
-                                                primaryController.getLeftX(),
-                                                primaryController.getRightX(),
-                                                true)
-                                                ));
+        public RobotContainer(TimedRobot robot) {
+                swerveSubsystem.setDefaultCommand(new TargetingSwerveJoystickCmd(
+                swerveSubsystem,
+                () -> controller.getLeftY(),
+                () -> controller.getLeftX(),
+                () -> -controller.getRightX(),
+                () -> !controller.leftTrigger(0.2).getAsBoolean(),
+                () -> !controller.leftStick().getAsBoolean(),
+                () -> controller.leftTrigger().getAsBoolean(), robot));
+
                 configureButtonBindings();
         }
 
         private void configureButtonBindings() {
 
-                controller.back().onTrue(new GyroResetCmd(driveSubsystem));
+                //controller.povUp().onTrue(turretSubsystem.SpinFlywheelUpCmd());
+                // controller.povDown().onTrue(turretSubsystem.SpinFlywheelDownCmd());
 
+                // controller.y().onTrue(turretSubsystem.HoodUpCmd());
+                // controller.a().onTrue(turretSubsystem.HoodDownCmd());
+
+                controller.back().onTrue(new GyroResetCmd(swerveSubsystem));
+                //controller.leftTrigger().whileTrue(null);
         }
 }
