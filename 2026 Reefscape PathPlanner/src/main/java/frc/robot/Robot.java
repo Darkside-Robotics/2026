@@ -14,6 +14,8 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 import java.util.Optional;
 
+import com.pathplanner.lib.auto.AutoBuilder;
+
 //import au.grapplerobotics.CanBridge;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.UsbCamera;
@@ -48,9 +50,24 @@ public class Robot extends TimedRobot {
 
     private final SendableChooser<String> m_chooser = new SendableChooser<>();
     private final SendableChooser<String> m_ColorChooser = new SendableChooser<>();
+    private final SendableChooser<Command> autoChooser;
 
     public Robot() {
         // CanBridge.runTCP();
+
+        // ...
+
+        // Build an auto chooser. This will use Commands.none() as the default option.
+        autoChooser = AutoBuilder.buildAutoChooser();
+
+        // Another option that allows you to specify the default auto by its name
+        // autoChooser = AutoBuilder.buildAutoChooser("My Default Auto");
+
+        SmartDashboard.putData("Auto Chooser", autoChooser);
+    }
+
+    public Command getAutonomousCommand() {
+        return autoChooser.getSelected();
     }
 
     /**
@@ -58,32 +75,13 @@ public class Robot extends TimedRobot {
      * for any
      * initialization code.
      */
+
     @Override
     public void robotInit() {
         // Instantiate our RobotContainer. This will perform all our button bindings,
         // and put our
         // autonomous chooser on the dashboard.
         m_robotContainer = new RobotContainer(this);
-
-        m_chooser.addOption("Left Auto", kCustomAutoLeft);
-        m_chooser.addOption("Middle Auto", kCustomAutoMiddle);
-        m_chooser.setDefaultOption("Right Auto - (Default)", kCustomAutoRight);
-
-        SmartDashboard.putData("Auto choices", m_chooser);
-
-        m_ColorChooser.addOption("Testing", kCustomAutoTestColor);
-        m_ColorChooser.addOption("Blue", kCustomAutoBlue);
-        m_ColorChooser.setDefaultOption("Red (Default)", kCustomAutoRed);
-
-        SmartDashboard.putData("Color choices", m_ColorChooser);
-
-//         Optional<Alliance> ally = DriverStation.getAlliance();
-//         if (ally.isPresent()) {
-
-//         } else {
-// //fallback
-//         }
-
     }
 
     /**
@@ -126,51 +124,16 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void autonomousInit() {
-
-        // m_autoSelected = m_chooser.getSelected();
-        // m_colorSelected = m_ColorChooser.getSelected();
-
-        // SmartDashboard.putString("Routine Selection", m_autoSelected);
-        // switch (m_autoSelected) {
-        // case kCustomAutoRight:
-        // m_autonomousCommand =
-        // m_robotContainer.getAutonomousCommandRight(m_colorSelected);
-        // break;
-        // case kCustomAutoMiddle:
-        // m_autonomousCommand =
-        // m_robotContainer.getAutonomousCommandMiddle(m_colorSelected);
-        // break;
-        // case kCustomAutoLeft:
-        // m_autonomousCommand =
-        // m_robotContainer.getAutonomousCommandLeft(m_colorSelected);
-        // break;
-        // default:
-        // m_autonomousCommand =
-        // m_robotContainer.getAutonomousCommandRight(m_colorSelected);
-        // break;
-        // }
-
-        // // schedule the autonomous command (example)
-        // if (m_autonomousCommand != null) {
-        // m_autonomousCommand.schedule();
-        // }
+        Command autonomousCommand = getAutonomousCommand();
+        // schedule the autonomous command (example)
+        if (autonomousCommand != null) {
+            CommandScheduler.getInstance().schedule(autonomousCommand);
+        }
     }
 
     /** This function is called periodically during autonomous. */
     @Override
     public void autonomousPeriodic() {
-        switch (m_autoSelected) {
-            case kCustomAutoRight:
-
-                break;
-            case kCustomAutoMiddle:
-
-                break;
-            case kCustomAutoLeft:
-            default:
-
-                break;
-        }
     }
 
     @Override
