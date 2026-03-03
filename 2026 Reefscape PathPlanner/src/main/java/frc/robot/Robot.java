@@ -36,39 +36,15 @@ public class Robot extends TimedRobot {
 
     private RobotContainer m_robotContainer;
 
-    private static final String kCustomAutoLeft = "Left Auto";
-    private static final String kCustomAutoMiddle = "Middle Auto";
-    private static final String kCustomAutoRight = "Right Auto";
 
-    public static final String kCustomAutoRed = "Red";
-    public static final String kCustomAutoBlue = "Blue";
-    public static final String kCustomAutoTestColor = "Test";
-
-    private String m_autoSelected;
-
-    private String m_colorSelected;
-
-    private final SendableChooser<String> m_chooser = new SendableChooser<>();
-    private final SendableChooser<String> m_ColorChooser = new SendableChooser<>();
-    private final SendableChooser<Command> autoChooser;
 
     public Robot() {
         // CanBridge.runTCP();
 
-        // ...
 
-        // Build an auto chooser. This will use Commands.none() as the default option.
-        autoChooser = AutoBuilder.buildAutoChooser();
-
-        // Another option that allows you to specify the default auto by its name
-        // autoChooser = AutoBuilder.buildAutoChooser("My Default Auto");
-
-        SmartDashboard.putData("Auto Chooser", autoChooser);
     }
 
-    public Command getAutonomousCommand() {
-        return autoChooser.getSelected();
-    }
+
 
     /**
      * This function is run when the robot is first started up and should be used
@@ -124,7 +100,7 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void autonomousInit() {
-        Command autonomousCommand = getAutonomousCommand();
+        Command autonomousCommand = m_robotContainer.getAutonomousCommand();
         // schedule the autonomous command (example)
         if (autonomousCommand != null) {
             CommandScheduler.getInstance().schedule(autonomousCommand);
