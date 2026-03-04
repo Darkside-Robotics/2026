@@ -9,23 +9,6 @@ import edu.wpi.first.math.util.Units;
 
 public final class Constants {
 
-    public static final class ModuleConstants {
-        public static final double kWheelDiameterMeters = Units.inchesToMeters(4);
-        public static final double kDriveMotorGearRatio = 1 / 6.75;
-        public static final double kTurningMotorGearRatio = 1 / 12.8;
-        public static final double kDistancePerWheelRotation = Math.PI * kWheelDiameterMeters;
-        public static final double kDriveEncoderRot2Meter = kDriveMotorGearRatio * kDistancePerWheelRotation;
-        public static final double kTurningEncoderRot2Rad = kTurningMotorGearRatio * 2 * Math.PI;
-        public static final double kDriveEncoderRPM2MeterPerSec = kDriveEncoderRot2Meter / 60;
-        public static final double kTurningEncoderRPM2RadPerSec = kTurningEncoderRot2Rad / 60;
-        public static final double kPTurning = 0.5;
-        public static final double kDriveMotorFeedforwardVoltsPerRotationsPerMinute = 1 / 473;
-        public static final double kDriveMotorFeedforwardVoltsPerRotationsPerSecond = 1 / (473 / 60);
-        public static final double kDriveMotorFeedforwardVoltsPerMetersPerSecond = 1
-                / (473 / 60 * kDistancePerWheelRotation * kDriveMotorGearRatio);
-    }
-
-
     public static final class LEDConstants {
         public static final int PWMPort = 0;
         public static final int Length = 0;
@@ -48,7 +31,7 @@ public final class Constants {
         public static final int CurrentFreeLimit = 60;
         public static final int CurrentStalledLimit = 40;
 
-        // Distance between right and left wheels
+      // Distance between right and left wheels
         public static final double kTrackWidth = Units.inchesToMeters(21.55);
         // Distance between front and back wheels
         public static final double kWheelBase = Units.inchesToMeters(23.58);
@@ -66,16 +49,14 @@ public final class Constants {
                         public static final int Port = 8;
                         public static final boolean Reversed = false;
                     }
-
                     public static final class Steer {
                         public static final int Port = 4;
-                        public static final boolean Reversed = true;
+                        public static final boolean Reversed = false;
                     }
-
                     public static final class AbsoluteEncoder {
-                        // Angle, not value.
-                        public static final double Offset = 4.362 + 3.141; // NEED
-                        public static final boolean Reversed = true;
+                        //Angle, not value.
+                        public static final double Offset = 4.362+3.141; // NEED
+                        public static final boolean Reversed = false;
                         public static final int Port = 0;
                     }
                 }
@@ -85,16 +66,14 @@ public final class Constants {
                         public static final int Port = 3;
                         public static final boolean Reversed = false;
                     }
-
                     public static final class Steer {
                         public static final int Port = 7;
-                        public static final boolean Reversed = true;
+                        public static final boolean Reversed = false;
                     }
-
                     public static final class AbsoluteEncoder {
-                        // Angle, not value.
-                        public static final double Offset = 4.166 + 3.141; // NEED
-                        public static final boolean Reversed = true;
+                        //Angle, not value.
+                        public static final double Offset = 4.166+3.141; // NEED
+                        public static final boolean Reversed = false;
                         public static final int Port = 2;
                     }
                 }
@@ -106,17 +85,15 @@ public final class Constants {
                         public static final int Port = 5;
                         public static final boolean Reversed = false;
                     }
-
                     public static final class Steer {
 
                         public static final int Port = 1;
-                        public static final boolean Reversed = true;
+                        public static final boolean Reversed = false;
                     }
-
-                    public static final class AbsoluteEncoder {
-                        // Angle, not value.
-                        public static final double Offset = 1.838 + 3.141; // NEED
-                        public static final boolean Reversed = true;
+                    public static final class AbsoluteEncoder { 
+                        //Angle, not value.
+                        public static final double Offset = 1.838+3.141; // NEED
+                        public static final boolean Reversed = false;
                         public static final int Port = 1;
                     }
                 }
@@ -126,22 +103,21 @@ public final class Constants {
                         public static final int Port = 6;
                         public static final boolean Reversed = false;
                     }
-
                     public static final class Steer {
 
                         public static final int Port = 2;
-                        public static final boolean Reversed = true;
+                        public static final boolean Reversed = false;
                     }
-
                     public static final class AbsoluteEncoder {
-                        // Angle, not value.
-                        public static final double Offset = 6.158 + 3.141; // NEED
-                        public static final boolean Reversed = true;
+                        //Angle, not value.
+                        public static final double Offset = 6.158+3.141; // NEED
+                        public static final boolean Reversed = false;
                         public static final int Port = 3;
                     }
                 }
             }
         }
+
 
         public static final double kPhysicalMaxSpeedMetersPerSecond = 2.3;
         public static final double kPhysicalMaxAngularSpeedRadiansPerSecond = 2 * 2 * Math.PI;

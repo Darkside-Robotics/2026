@@ -1,58 +1,82 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot;
 
-import frc.robot.commands.Autos;
-import frc.robot.commands.ExampleCommand;
-import frc.robot.subsystems.ExampleSubsystem;
-import frc.robot.subsystems.TurretSubsystem;
-import frc.robot.subsystems.ConstantsSubsystem.OperatorConstants;
+import com.pathplanner.lib.auto.AutoBuilder;
+
+import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.commands.GyroResetCmd;
+import frc.robot.commands.SwerveJoystickCmd;
+import frc.robot.commands.TargetingSwerveJoystickCmd;
+//import frc.robot.subsystems.ClimbingSubsystem;
+import frc.robot.subsystems.LEDSubsystem;
+import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.subsystems.TurretSubsystem;
+import frc.robot.subsystems.VisionSubsystem;
 
-/**
- * This class is where the bulk of the robot should be declared. Since Command-based is a
- * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
- * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
- * subsystems, commands, and trigger mappings) should be declared here.
- */
 public class RobotContainer {
-  // The robot's subsystems and commands are defined here...
-  private final TurretSubsystem turretSubsystem = new TurretSubsystem();
 
-  // Replace with CommandPS4Controller or CommandJoystick if needed
-  private final CommandXboxController m_driverController =
-      new CommandXboxController(OperatorConstants.kDriverControllerPort);
+        // private final LEDSubsystem ledSubsystem = new LEDSubsystem();
+        private final VisionSubsystem visionSubsystem = new VisionSubsystem();
+        private final SwerveSubsystem swerveSubsystem = new SwerveSubsystem(visionSubsystem);
+        //private final TurretSubsystem turretSubsystem = new TurretSubsystem();
 
-  /** The container for the robot. Contains subsystems, OI devices, and commands. */
-  public RobotContainer() {
-    // Configure the trigger bindings
-    configureBindings();
-  }
+        // private final ClimbingSubsystem climbingSubsystem = new ClimbingSubsystem();
 
-  /**
-   * Use this method to define your trigger->command mappings. Triggers can be created via the
-   * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with an arbitrary
-   * predicate, or via the named factories in {@link
-   * edu.wpi.first.wpilibj2.command.button.CommandGenericHID}'s subclasses for {@link
-   * CommandXboxController Xbox}/{@link edu.wpi.first.wpilibj2.command.button.CommandPS4Controller
-   * PS4} controllers or {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
-   * joysticks}.
-   */
-  private void configureBindings() {
+        private final LEDSubsystem ledSubsystem = new LEDSubsystem();
 
-  }
+        private final CommandXboxController controller = new CommandXboxController(0);
+        private final XboxController secondaryController = new XboxController(1);
 
-  /**
-   * Use this to pass the autonomous command to the main {@link Robot} class.
-   *
-   * @return the command to run in autonomous
-   */
-//  public Command getAutonomousCommand() {
+        
+    private final SendableChooser<Command> autoChooser;
+
+        public RobotContainer(TimedRobot robot) {
 
 
-  //}
+
+                swerveSubsystem.setDefaultCommand(new TargetingSwerveJoystickCmd(
+                swerveSubsystem,
+                () -> controller.getLeftY(),
+                () -> controller.getLeftX(),
+                () -> -controller.getRightX(),
+                () -> !controller.leftTrigger(0.2).getAsBoolean(),
+                () -> !controller.leftStick().getAsBoolean(),
+                () -> controller.leftTrigger().getAsBoolean(), robot));
+
+                configureButtonBindings();
+
+                
+        // Build an auto chooser. This will use Commands.none() as the default option.
+        autoChooser = AutoBuilder.buildAutoChooser();
+
+        // Another option that allows you to specify the default auto by its name
+        // autoChooser = AutoBuilder.buildAutoChooser("My Default Auto");
+
+        SmartDashboard.putData("Auto Chooser", autoChooser);
+        }
+
+        private void configureButtonBindings() {
+
+                //controller.povUp().onTrue(turretSubsystem.SpinFlywheelUpCmd());
+                // controller.povDown().onTrue(turretSubsystem.SpinFlywheelDownCmd());
+
+                // controller.y().onTrue(turretSubsystem.HoodUpCmd());
+                // controller.a().onTrue(turretSubsystem.HoodDownCmd());
+
+                controller.back().onTrue(new GyroResetCmd(swerveSubsystem));
+                //controller.leftTrigger().whileTrue(null);
+        }
+
+
+            public Command getAutonomousCommand() {
+        return autoChooser.getSelected();
+    }
+
+
+            
+
 }
