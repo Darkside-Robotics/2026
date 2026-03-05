@@ -7,35 +7,63 @@ package frc.robot.subsystems;
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkClosedLoopController;
+import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.ClosedLoopSlot;
+import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.config.FeedForwardConfig;
+import com.revrobotics.spark.config.SparkFlexConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
+import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.subsystems.TurretSubsystem.TurretConstants.FlyWheel;
+import frc.robot.subsystems.TurretSubsystem.TurretConstants.Hood;
 
 public class IntakeSubsystem extends SubsystemBase {
+  // private final SparkMax turntableMotor;
+  // private final SparkMaxConfig turntableMotorConfig;
+  // private final SparkClosedLoopController turntableController;
 
-  private final SparkMax armMotor;
-  private final SparkMax wheelMotor;
-  private final SparkMaxConfig armMotorConfig;
-  private final SparkMaxConfig wheelMotorConfig;
 
-  private final SparkClosedLoopController armController;
 
-  private static class IntakePIDConstants {
-    public static double kP = 0;
-    public static double kI = 0;
-    public static double kD = 0;
-    public static double kFF = 0;
-  }
+  private SparkMax hoodMotor;
+  private SparkMaxConfig hoodMotorConfig;
+  private SparkClosedLoopController hoodController;
+ 
 
-  private double wheelSpeed = 0.0;
-  private double armAngle = 0.0;
-  private boolean intakeExtended = false;
+  private SparkMax hoodMotor;
+  private SparkMaxConfig hoodMotorConfig;
+  private SparkClosedLoopController hoodController;
+  
+  private double hoodAngle = 0.0;
 
-  public static final class IntakeConstants {
-    public static final class Arms {
+
+
+  public static final class ArmConstants {
+    public static final class Turntable {      
+      public static final class PID {
+        public static final int P = 1;
+        public static final int I = 0;
+        public static final int D = 0;
+      }
+      public static final class Motor {
+        public static final int MotorPort = 9;
+        public static final int CurrentFreeLimit = 60;
+        public static final int CurrentStalledLimit = 40;
+        public static final int Power = 10;
+      }
+    }
+
+    public static final class RollerConstants {
+      public static final class PID {
+        public static final int P = 1;
+        public static final int I = 0;
+        public static final int D = 0;
+      }
       public static final class Motor {
         public static final int MotorPort = 0;
         public static final int CurrentFreeLimit = 60;
@@ -44,9 +72,22 @@ public class IntakeSubsystem extends SubsystemBase {
       }
     }
 
-    public static final class Wheels {
-      public static final class Motor {
-        public static final int MotorPort = 0;
+    public static final class FlyWheel {
+      public static final class PID {
+        public static final double P = 0.0001;
+        public static final double I = 0;
+        public static final double D = 0;
+        public static final double FF = (1.0/565.0);
+      }
+      public static final class LeadMotor {
+        public static final int MotorPort = 13; //USED TO BE 14 BUT MOTOR WENT BAD
+        public static final int CurrentFreeLimit = 60;
+        public static final int CurrentStalledLimit = 40;
+        public static final int Power = 10;
+      }
+
+      public static final class FollowMotor {
+        public static final int MotorPort = 14; //disabled
         public static final int CurrentFreeLimit = 60;
         public static final int CurrentStalledLimit = 40;
         public static final int Power = 10;
@@ -54,93 +95,110 @@ public class IntakeSubsystem extends SubsystemBase {
     }
   }
 
-  private static class WheelConstant {
-    public static double FAST_SPEED = 0;
-    public static double SLOW_SPEED = 0;
-  }
+  private final double kClosedLoopRampRate = 5;
 
-  private static class ArmConstant {
-    public static double ARM_OUT_ANGLE = 0;
-    public static double ARM_IN_ANGLE = 0;
-  }
-
-  private final double kClosedLoopRampRate = 0;
-
+  /** Creates a new ExampleSubsystem. */
   public IntakeSubsystem() {
-    armMotor = new SparkMax(IntakeConstants.Arms.Motor.MotorPort,
+
+    /*
+     * turntableMotor = new SparkMax(TurretConstants.Turntable.Motor.MotorPort,
+     * com.revrobotics.spark.SparkLowLevel.MotorType.kBrushless);
+     * turntableMotorConfig = new SparkMaxConfig();
+     * turntableMotorConfig.idleMode(IdleMode.kBrake)
+     * .closedLoopRampRate(kClosedLoopRampRate);
+     * turntableMotorConfig.closedLoop.pid(TurntablePIDConstants.kP,
+     * TurntablePIDConstants.kI, TurntablePIDConstants.kD)
+     * .maxOutput(0.3);
+     * turntableMotorConfig.encoder.positionConversionFactor((2 * Math.PI) * 1.25);
+     * 
+     * turntableMotorConfig.smartCurrentLimit(TurretConstants.Turntable.Motor.
+     * CurrentStalledLimit,
+     * TurretConstants.Turntable.Motor.CurrentFreeLimit);
+     * turntableMotor.configure(turntableMotorConfig,
+     * ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+     * 
+     * turntableController = turntableMotor.getClosedLoopController();
+     * turntableMotor.getEncoder().setPosition(0);
+     */
+
+
+    leadflywheelMotor = new SparkFlex(TurretConstants.FlyWheel.LeadMotor.MotorPort,
         com.revrobotics.spark.SparkLowLevel.MotorType.kBrushless);
-    armMotorConfig = new SparkMaxConfig();
-    armMotorConfig.idleMode(IdleMode.kBrake)
+    leadflywheelMotorConfig = new SparkFlexConfig();
+    leadflywheelMotorConfig.closedLoop.pid(FlyWheel.PID.P, FlyWheel.PID.I, FlyWheel.PID.D).outputRange(-0.8, 0.8);
+    leadflywheelMotorConfig.closedLoop.feedForward.kV(FlyWheel.PID.FF);
+    leadflywheelMotorConfig.idleMode(IdleMode.kCoast).closedLoopRampRate(kClosedLoopRampRate);
+    leadflywheelMotorConfig.encoder.velocityConversionFactor(1);
+    leadflywheelMotorConfig.smartCurrentLimit(TurretConstants.FlyWheel.LeadMotor.CurrentStalledLimit,
+        TurretConstants.FlyWheel.LeadMotor.CurrentFreeLimit);
+    leadflywheelMotor.configure(leadflywheelMotorConfig, ResetMode.kResetSafeParameters,
+        PersistMode.kPersistParameters);
+
+    followflywheelMotor = new SparkFlex(TurretConstants.FlyWheel.FollowMotor.MotorPort,
+        com.revrobotics.spark.SparkLowLevel.MotorType.kBrushless);
+    followflywheelMotorConfig = new SparkFlexConfig();
+    followflywheelMotorConfig.idleMode(IdleMode.kCoast).follow(FlyWheel.LeadMotor.MotorPort, true);
+    followflywheelMotorConfig.encoder.velocityConversionFactor(1);
+    followflywheelMotorConfig.smartCurrentLimit(TurretConstants.FlyWheel.LeadMotor.CurrentStalledLimit,
+        TurretConstants.FlyWheel.LeadMotor.CurrentFreeLimit);
+    followflywheelMotor.configure(leadflywheelMotorConfig, ResetMode.kResetSafeParameters,
+        PersistMode.kPersistParameters);
+
+    flywheelController = leadflywheelMotor.getClosedLoopController();
+
+    /*****************************************************************************************/
+    hoodMotor = new SparkMax(TurretConstants.Hood.Motor.MotorPort,
+        com.revrobotics.spark.SparkLowLevel.MotorType.kBrushless);
+    hoodMotorConfig = new SparkMaxConfig();
+    hoodMotorConfig.idleMode(IdleMode.kBrake)
         .closedLoopRampRate(kClosedLoopRampRate);
-    armMotorConfig.closedLoop.pid(IntakePIDConstants.kP, IntakePIDConstants.kI, IntakePIDConstants.kD).maxOutput(0.3);
-    armMotorConfig.encoder.positionConversionFactor((2 * Math.PI) * 1.25);
+    hoodMotorConfig.closedLoop.pid(Hood.PID.P, Hood.PID.I, Hood.PID.D).maxOutput(0.3);
+    hoodMotorConfig.encoder.positionConversionFactor(.05);
 
-    armMotorConfig.smartCurrentLimit(IntakeConstants.Arms.Motor.CurrentStalledLimit,
-        IntakeConstants.Arms.Motor.CurrentFreeLimit);
-    armMotor.configure(armMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    hoodMotorConfig.smartCurrentLimit(TurretConstants.Hood.Motor.CurrentStalledLimit,
+        TurretConstants.Hood.Motor.CurrentFreeLimit);
+    hoodMotor.configure(hoodMotorConfig, ResetMode.kResetSafeParameters,
+        PersistMode.kPersistParameters);
 
-    armController = armMotor.getClosedLoopController();
+    hoodController = hoodMotor.getClosedLoopController();
 
-    armMotor.getEncoder().setPosition(0);
+    hoodMotor.getEncoder().setPosition(0);
 
-    wheelMotor = new SparkMax(IntakeConstants.Wheels.Motor.MotorPort,
-        com.revrobotics.spark.SparkLowLevel.MotorType.kBrushless);
-    wheelMotorConfig = new SparkMaxConfig();
-    wheelMotorConfig.idleMode(IdleMode.kBrake);
-    wheelMotorConfig.encoder.velocityConversionFactor(1);
-    wheelMotorConfig.smartCurrentLimit(IntakeConstants.Wheels.Motor.CurrentStalledLimit,
-        IntakeConstants.Wheels.Motor.CurrentFreeLimit);
-    wheelMotor.configure(wheelMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
   }
 
-  /**
-   * Example command factory method.
-   *
-   * @return a command
-   */
-  public Command IntakeMethodCommand() {
-    // Inline construction of command goes here.
-    // Subsystem::RunOnce implicitly requires `this` subsystem.
-    return runOnce(
-        () -> {
-          /* one-time action goes here */
-        });
+  /* ACTIONS */
+  /* TURN TABLE ACTIONS */
+  public void setHoodAngle(double angle) {
+    this.hoodAngle = angle;
   }
 
-  /* ARM ACTIONS */
-  public void setArmAngle(double angleInDegrees) {
-    this.armAngle = angleInDegrees;
+ 
+
+  /* TURN TABLE ACTIONS */
+  // public void rotateToAngle(double angle) {
+  //   turnTableAngle = angle;
+  // }
+
+  // public void setHome() {
+  //   turnTableHomeAngle = turntableMotor.getEncoder().getPosition();
+  // }
+
+  /* FLYWHEEL ACTIONS */
+  public void setFlywheelSpeed(double flywheelSpeed) {
+    this.flywheelSpeed = flywheelSpeed;
   }
 
-  public void extendArm() {
-    setArmAngle(ArmConstant.ARM_OUT_ANGLE);
-  }
-
-  public void retractArm() {
-    setArmAngle(ArmConstant.ARM_IN_ANGLE);
-  }
-
-  /* WHEEL ACTIONS */
-  public void setWheelSpeed(double wheelSpeed) {
-    this.wheelSpeed = wheelSpeed;
-  }
-
-  public void spinWheelFast() {
-    setWheelSpeed(WheelConstant.FAST_SPEED);
-  }
-
-  public void spinWheelSlow() {
-    setWheelSpeed(WheelConstant.SLOW_SPEED);
-  }
-
-  public void stopWheel() {
-    setWheelSpeed(0);
-
+  public double calculateFlywheelSpeed(double distance) {
+    return 0;
   }
 
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
+    
+                        SmartDashboard.putNumber("Flywheel Speed", flywheelSpeed);
+    flywheelController.setSetpoint(flywheelSpeed * -1, ControlType.kVelocity);
+ 
+    hoodMotor.set(hoodAngle);
   }
 
   @Override
@@ -148,49 +206,61 @@ public class IntakeSubsystem extends SubsystemBase {
     // This method will be called once per scheduler run during simulation
   }
 
-  /* COMMANDS */
-  public Command SpinFasterCommand() {
+  // /* WHEEL ACTIONS */
+  // public void setWheelSpeed(double wheelSpeed) {
+  // this.wheelSpeed=wheelSpeed;
+  // }
+
+  // public void shootSpeed() {
+  // setShooterSpeed(0);
+  // }
+
+  // public void stopShooting() {
+  // setWheelSpeed(0);
+
+  // }
+
+  // /* ROTATING ACTIONS */
+  // public void setRotateSpeed(double angleInDegrees) {
+  // this.armAngle=angleInDegrees;
+  // }
+
+  // public void rotateTurret() {
+  // setArmAngle(ArmConstant.ARM_OUT_ANGLE);
+  // }
+
+  // /* HOOD ACTIONS */
+  // public void setHoodAngle(double angleInDegrees) {
+  // this.armAngle=angleInDegrees;
+  // }
+
+    public Command HoodUpCmd() {
     return runOnce(
         () -> {
-          setWheelSpeed(wheelSpeed + 1);
+          setHoodAngle(hoodAngle+1);
         });
   }
 
-  public Command SpinSlowerCommand() {
+  public Command HoodDownCmd() {
     return runOnce(
-        () -> {
-          setWheelSpeed(wheelSpeed - 1);
+        () -> {          
+          setHoodAngle(hoodAngle-1);
         });
   }
 
-  public Command IncreaseArmAngleCommand() {
+  public Command SpinFlywheelUpCmd() {
     return runOnce(
         () -> {
-          setArmAngle(armAngle + 1);
+          setFlywheelSpeed(flywheelSpeed+flywheelSpeedFactor);
         });
   }
 
-  public Command DecreaseArmAngleCommand() {
+  public Command SpinFlywheelDownCmd() {
     return runOnce(
         () -> {
-          setArmAngle(armAngle - 1);
+          
+          setFlywheelSpeed(flywheelSpeed-flywheelSpeedFactor);
         });
   }
 
-  public Command ToggleIntakeCommand() {
-    return runOnce(
-        () -> {
-          // Extend arm if it is in, and spin wheels to slow, or pull arm in and stop
-          // wheels,
-          intakeExtended = !intakeExtended;
-          if (intakeExtended) {
-            extendArm();
-            spinWheelSlow();
-          } else {
-            retractArm();
-            stopWheel();
-          }
-
-        });
-  }
 }
