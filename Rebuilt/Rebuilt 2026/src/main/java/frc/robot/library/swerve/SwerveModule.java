@@ -4,7 +4,7 @@ import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.ClosedLoopSlot;
-import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.SparkFlex;
 
 import edu.wpi.first.wpilibj.AnalogEncoder;
 import edu.wpi.first.math.controller.PIDController;
@@ -18,7 +18,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
 
-import com.revrobotics.spark.config.SparkMaxConfig;
+import com.revrobotics.spark.config.SparkFlexConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 public class SwerveModule {
@@ -41,28 +41,13 @@ public class SwerveModule {
         public static final double kModuleMaxAngularAcceleration = 2 * Math.PI; // radians per second squared
     }
 
-    private final SparkMax driveMotor;
-    private final SparkMax turningMotor;
+    private final SparkFlex driveMotor;
+    private final SparkFlex turningMotor;
 
-    // private final SparkClosedLoopController
-
-    // private final RelativeEncoder driveEncoder;
-    // private final RelativeEncoder turningEncoder;
-
-    private final SparkMaxConfig turningMaxConfig;
-    private final SparkMaxConfig driveMaxConfig;
+    private final SparkFlexConfig turningMaxConfig;
+    private final SparkFlexConfig driveMaxConfig;
 
     private final PIDController turningPidController = new PIDController(SwerveModuleConstants.kPTurning, 0, 0);
-    /*
-     * private final ProfiledPIDController turningPidController = new
-     * ProfiledPIDController(
-     * SwerveModuleConstants.kPTurning,
-     * 0,
-     * 0,
-     * new TrapezoidProfile.Constraints(
-     * SwerveModuleConstants.kModuleMaxAngularVelocity,
-     * SwerveModuleConstants.kModuleMaxAngularAcceleration));
-     */
 
     private final AnalogEncoder absoluteEncoder;
     private final double absoluteEncoderOffsetRad;
@@ -84,8 +69,8 @@ public class SwerveModule {
         absoluteEncoder = new AnalogEncoder(absoluteEncoderId);
         absoluteEncoder.setInverted(absoluteEncoderReversed);
 
-        driveMotor = new SparkMax(driveMotorId, com.revrobotics.spark.SparkLowLevel.MotorType.kBrushless);
-        driveMaxConfig = new SparkMaxConfig();
+        driveMotor = new SparkFlex(driveMotorId, com.revrobotics.spark.SparkLowLevel.MotorType.kBrushless);
+        driveMaxConfig = new SparkFlexConfig();
 
         driveMaxConfig.idleMode(IdleMode.kBrake);
         driveMaxConfig
@@ -99,8 +84,8 @@ public class SwerveModule {
                 .velocityConversionFactor(SwerveModuleConstants.kDriveEncoderRPM2MeterPerSec);
         driveMotor.configure(driveMaxConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-        turningMotor = new SparkMax(turningMotorId, com.revrobotics.spark.SparkLowLevel.MotorType.kBrushless);
-        turningMaxConfig = new SparkMaxConfig();
+        turningMotor = new SparkFlex(turningMotorId, com.revrobotics.spark.SparkLowLevel.MotorType.kBrushless);
+        turningMaxConfig = new SparkFlexConfig();
 
         turningMaxConfig.idleMode(IdleMode.kBrake);
         turningMaxConfig
@@ -122,7 +107,6 @@ public class SwerveModule {
         return new SwerveModuleState(getDriveVelocity(), new Rotation2d(getTurningPosition()));
     }
 
-    // TODO : VERIFY getDrivePosition() IS SIMILAR TO getDistance() in EXAMPLE CODE
     /**
      * Returns the current position of the module.
      *
