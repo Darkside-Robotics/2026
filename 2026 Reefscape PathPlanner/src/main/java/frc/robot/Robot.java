@@ -4,11 +4,18 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+
+import java.util.Optional;
+
+import com.pathplanner.lib.auto.AutoBuilder;
+
 //import au.grapplerobotics.CanBridge;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.UsbCamera;
@@ -24,65 +31,33 @@ import edu.wpi.first.cscore.UsbCamera;
  */
 public class Robot extends TimedRobot {
 
-
     private Command m_autonomousCommand;
-   // private Command m_colorCheckerCommand;
+    // private Command m_colorCheckerCommand;
 
     private RobotContainer m_robotContainer;
 
 
-    private static final String kCustomAutoLeft = "Left Auto";    
-    private static final String kCustomAutoMiddle = "Middle Auto";    
-    private static final String kCustomAutoRight = "Right Auto";
 
-      
-    public static final String kCustomAutoRed = "Red";    
-    public static final String kCustomAutoBlue = "Blue";
-    public static final String kCustomAutoTestColor = "Test";
+    public Robot() {
+        // CanBridge.runTCP();
 
-    private String m_autoSelected;
-    
-    private String m_colorSelected;
 
-    private final SendableChooser<String> m_chooser = new SendableChooser<>();
-    private final SendableChooser<String> m_ColorChooser = new SendableChooser<>();
-
-        public Robot() {
-   //   CanBridge.runTCP();
     }
-    
+
+
 
     /**
      * This function is run when the robot is first started up and should be used
      * for any
      * initialization code.
      */
+
     @Override
     public void robotInit() {
         // Instantiate our RobotContainer. This will perform all our button bindings,
         // and put our
         // autonomous chooser on the dashboard.
-        m_robotContainer = new RobotContainer();
-       
-
-        m_chooser.addOption("Left Auto", kCustomAutoLeft);
-        m_chooser.addOption("Middle Auto", kCustomAutoMiddle);
-        m_chooser.setDefaultOption("Right Auto - (Default)", kCustomAutoRight);
-
-        SmartDashboard.putData("Auto choices", m_chooser);
-
-        
-        m_ColorChooser.addOption("Testing", kCustomAutoTestColor);
-        m_ColorChooser.addOption("Blue", kCustomAutoBlue);
-        m_ColorChooser.setDefaultOption("Red (Default)", kCustomAutoRed);
-
-        SmartDashboard.putData("Color choices", m_ColorChooser);
-
-
-
-        
-
-
+        m_robotContainer = new RobotContainer(this);
     }
 
     /**
@@ -106,8 +81,8 @@ public class Robot extends TimedRobot {
         // robot's periodic
         // block in order for anything in the Command-based framework to work.
         CommandScheduler.getInstance().run();
-       // m_colorCheckerCommand = m_robotContainer.startColorSensor();
-       // m_colorCheckerCommand.schedule();
+        // m_colorCheckerCommand = m_robotContainer.startColorSensor();
+        // m_colorCheckerCommand.schedule();
     }
 
     /** This function is called once each time the robot enters Disabled mode. */
@@ -125,48 +100,16 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void autonomousInit() {
-        
-    // m_autoSelected = m_chooser.getSelected();     
-    // m_colorSelected = m_ColorChooser.getSelected(); 
-
-    // SmartDashboard.putString("Routine Selection", m_autoSelected);
-    //     switch (m_autoSelected) {
-    //         case kCustomAutoRight:
-    //           m_autonomousCommand = m_robotContainer.getAutonomousCommandRight(m_colorSelected);
-    //           break;
-    //         case kCustomAutoMiddle:
-    //           m_autonomousCommand = m_robotContainer.getAutonomousCommandMiddle(m_colorSelected);
-    //           break;
-    //         case kCustomAutoLeft:            
-    //           m_autonomousCommand = m_robotContainer.getAutonomousCommandLeft(m_colorSelected);
-    //           break;
-    //         default:
-    //           m_autonomousCommand = m_robotContainer.getAutonomousCommandRight(m_colorSelected);
-    //           break;
-    //       }
-        
-
-    //     // schedule the autonomous command (example)
-    //     if (m_autonomousCommand != null) {
-    //         m_autonomousCommand.schedule();
-    //     }
+        Command autonomousCommand = m_robotContainer.getAutonomousCommand();
+        // schedule the autonomous command (example)
+        if (autonomousCommand != null) {
+            CommandScheduler.getInstance().schedule(autonomousCommand);
+        }
     }
 
     /** This function is called periodically during autonomous. */
     @Override
     public void autonomousPeriodic() {
-        switch (m_autoSelected) {
-            case kCustomAutoRight:
-               
-              break;
-            case kCustomAutoMiddle:
-         
-              break;
-            case kCustomAutoLeft:
-            default:
-           
-              break;
-          }      
     }
 
     @Override
@@ -196,4 +139,3 @@ public class Robot extends TimedRobot {
     public void testPeriodic() {
     }
 }
-

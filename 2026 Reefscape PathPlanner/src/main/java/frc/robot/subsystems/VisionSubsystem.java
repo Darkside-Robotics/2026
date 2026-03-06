@@ -1,5 +1,11 @@
 package frc.robot.subsystems;
 
+import java.util.Date;
+
+import com.studica.frc.AHRS;
+
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -19,11 +25,11 @@ public class VisionSubsystem extends SubsystemBase {
         // Change the camera pose relative to robot center (x forward, y left, z up,
         // degrees)
         LimelightHelpers.setCameraPose_RobotSpace("limelight-dark",
-                Units.inchesToMeters(14), // Forward offset (meters)
+                Units.inchesToMeters(10), // Forward offset (meters)
                 Units.inchesToMeters(0), // Side offset (meters)
-                Units.inchesToMeters(5), // Height offset (meters)
+                Units.inchesToMeters(15), // Height offset (meters)
                 0.0, // Roll (degrees)
-                45.0, // Pitch (degrees)
+                15.0, // Pitch (degrees)
                 0.0 // Yaw (degrees)
         );
 
@@ -43,6 +49,33 @@ public class VisionSubsystem extends SubsystemBase {
 
         LimelightHelpers.setPipelineIndex("limelight-dark", 0);
     }
+
+    public void updateRobotPose(SwerveDrivePoseEstimator poseEstimator, AHRS gyro) {
+        LimelightHelpers.SetRobotOrientation("limelight-dark",
+                poseEstimator.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0, 0);
+        LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-dark");
+
+        boolean doRejectUpdate = false;
+
+        // if our angular velocity is greater than 360 degrees per second, ignore vision
+        // updates
+        if (Math.abs(gyro.getRate()) > 360) {
+            doRejectUpdate = true;
+        }
+        if (mt2 != null) {
+            if (mt2.tagCount == 0) {
+                doRejectUpdate = true;
+            }
+            if (!doRejectUpdate) {
+
+                SmartDashboard.putNumber("Updating with Vision ", (new Date()).getTime());
+                poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.7, .7, 9999999));
+                poseEstimator.addVisionMeasurement(
+                        mt2.pose,
+                        mt2.timestampSeconds);
+            }
+        }
+    };
 
     public class FiducialAndPose {
 
@@ -93,7 +126,7 @@ public class VisionSubsystem extends SubsystemBase {
 
             }
         }
-        return targetDetected != null ? new FiducialAndPose(targetDetected, targetPose): null;
+        return targetDetected != null ? new FiducialAndPose(targetDetected, targetPose) : null;
     }
 
     public RawFiducial foundTarget(int targetId) {

@@ -35,7 +35,8 @@ public class SwerveModule {
         public static final double kPTurning = 0.5;
         public static final double kDriveMotorFeedforwardVoltsPerRotationsPerMinute = 1 / 473;
         public static final double kDriveMotorFeedforwardVoltsPerRotationsPerSecond = 1 / (473 / 60);
-        public static final double kDriveMotorFeedforwardVoltsPerMetersPerSecond = 1 / (473 / 60 * kDistancePerWheelRotation * kDriveMotorGearRatio);
+        public static final double kDriveMotorFeedforwardVoltsPerMetersPerSecond = 1
+                / (473 / 60 * kDistancePerWheelRotation * kDriveMotorGearRatio);
         public static final double kModuleMaxAngularVelocity = Math.PI;
         public static final double kModuleMaxAngularAcceleration = 2 * Math.PI; // radians per second squared
     }
@@ -64,7 +65,6 @@ public class SwerveModule {
      */
 
     private final AnalogEncoder absoluteEncoder;
-    private final boolean absoluteEncoderReversed;
     private final double absoluteEncoderOffsetRad;
 
     private SwerveModuleState targetState = null;
@@ -80,9 +80,9 @@ public class SwerveModule {
         this.name = name;
 
         this.absoluteEncoderOffsetRad = absoluteEncoderOffset;
-        this.absoluteEncoderReversed = absoluteEncoderReversed;
 
         absoluteEncoder = new AnalogEncoder(absoluteEncoderId);
+        absoluteEncoder.setInverted(absoluteEncoderReversed);
 
         driveMotor = new SparkMax(driveMotorId, com.revrobotics.spark.SparkLowLevel.MotorType.kBrushless);
         driveMaxConfig = new SparkMaxConfig();
@@ -104,7 +104,7 @@ public class SwerveModule {
 
         turningMaxConfig.idleMode(IdleMode.kBrake);
         turningMaxConfig
-                .inverted(true);
+                .inverted(turningMotorReversed);
         turningMaxConfig.closedLoop.pid(0.05, 0, 0.025);
 
         // turningMaxConfig.signals.primaryEncoderPositionPeriodMs(5);
@@ -176,6 +176,14 @@ public class SwerveModule {
         SmartDashboard.putString("Swerve[" + absoluteEncoder.getChannel() + "] state", getState().toString());
         SmartDashboard.putNumber("Calculation", SwerveModuleConstants.kDriveMotorFeedforwardVoltsPerMetersPerSecond);
         SmartDashboard.putNumber("Current (" + this.name + ")", driveMotor.getOutputCurrent());
+
+
+        double value = absoluteEncoder.get();
+        double angle = value * 2.0 * Math.PI;
+        double correctedangle = angle-absoluteEncoderOffsetRad;
+        SmartDashboard.putNumber("Absolute Encoder Value(" + name + ") " + absoluteEncoder.getChannel(), value);
+        SmartDashboard.putNumber("Absolute Encoder Angle(" + name + ")" + absoluteEncoder.getChannel(), angle);
+        SmartDashboard.putNumber("Absolute Encoder Corrected Angle(" + name + ")" + absoluteEncoder.getChannel(), correctedangle);
     }
 
     public void stop() {
@@ -218,7 +226,6 @@ public class SwerveModule {
         } catch (Exception e) {
             SmartDashboard.putString("Exception Resetting Swerve Module Encoder (" + this.name + ")", e.getMessage());
         }
-
     }
 
     /*
@@ -231,10 +238,6 @@ public class SwerveModule {
         double angle = value * 2.0 * Math.PI;
         angle -= absoluteEncoderOffsetRad;
 
-        SmartDashboard.putNumber("Absolute Encoder Value(" + name + ") " + absoluteEncoder.getChannel(), value);
-        SmartDashboard.putNumber("Absolute Encoder Angle(" + name + ")" + absoluteEncoder.getChannel(), angle);
-
-        return angle * (absoluteEncoderReversed ? -1.0 : 1.0);
+        return angle; 
     }
 }
-// */

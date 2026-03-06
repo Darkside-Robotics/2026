@@ -1,47 +1,167 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj2.command.Command;
+import java.util.Date;
+
+import com.studica.frc.AHRS;
+
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.library.vision.LimelightHelpers;
+import frc.robot.library.vision.LimelightHelpers.RawFiducial;
 
 public class VisionSubsystem extends SubsystemBase {
-  /** Creates a new ExampleSubsystem. */
-  public VisionSubsystem() {}
 
-  /**
-   * Example command factory method.
-   *
-   * @return a command
-   */
-  public Command exampleMethodCommand() {
-    // Inline construction of command goes here.
-    // Subsystem::RunOnce implicitly requires `this` subsystem.
-    return runOnce(
-        () -> {
-          /* one-time action goes here */
-        });
-  }
+    public VisionSubsystem() {
 
-  /**
-   * An example method querying a boolean state of the subsystem (for example, a digital sensor).
-   *
-   * @return value of some boolean subsystem state, such as a digital sensor.
-   */
-  public boolean exampleCondition() {
-    // Query some boolean state, such as a digital sensor.
-    return false;
-  }
+        LimelightHelpers.setLEDMode_ForceOff("limelight-dark");
 
-  @Override
-  public void periodic() {
-    // This method will be called once per scheduler run
-  }
+        // Set a custom crop window for improved performance (-1 to 1 for each value)
+        // LimelightHelpers.setCropWindow("", -0.5, 0.5, -0.5, 0.5);
 
-  @Override
-  public void simulationPeriodic() {
-    // This method will be called once per scheduler run during simulation
-  }
+        // Change the camera pose relative to robot center (x forward, y left, z up,
+        // degrees)
+        LimelightHelpers.setCameraPose_RobotSpace("limelight-dark",
+                Units.inchesToMeters(10), // Forward offset (meters)
+                Units.inchesToMeters(0), // Side offset (meters)
+                Units.inchesToMeters(15), // Height offset (meters)
+                0.0, // Roll (degrees)
+                15.0, // Pitch (degrees)
+                0.0 // Yaw (degrees)
+        );
+
+        // Set AprilTag offset tracking point (meters)
+        // LimelightHelpers.setFiducial3DOffset("",
+        // 0.0, // Forward offset
+        // 0.0, // Side offset
+        // 0.5 // Height offset
+        // );
+
+        // Configure AprilTag detection
+        // LimelightHelpers.SetFiducialIDFiltersOverride("", new int[] { 1, 2, 3, 4 });
+        // // Only track these tag IDs
+        // LimelightHelpers.SetFiducialDownscalingOverride("limelight-dark", 2.0f); //
+        // Process at half resolution for improved framerate
+        // and reduced range
+
+        LimelightHelpers.setPipelineIndex("limelight-dark", 0);
+    }
+
+    public void updateRobotPose(SwerveDrivePoseEstimator poseEstimator, AHRS gyro) {
+        LimelightHelpers.SetRobotOrientation("limelight-dark",
+                poseEstimator.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0, 0);
+        LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-dark");
+
+        boolean doRejectUpdate = false;
+
+        // if our angular velocity is greater than 360 degrees per second, ignore vision
+        // updates
+        if (Math.abs(gyro.getRate()) > 360) {
+            doRejectUpdate = true;
+        }
+        if (mt2 != null) {
+            if (mt2.tagCount == 0) {
+                doRejectUpdate = true;
+            }
+            if (!doRejectUpdate) {
+
+                SmartDashboard.putNumber("Updating with Vision ", (new Date()).getTime());
+                poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.7, .7, 9999999));
+                poseEstimator.addVisionMeasurement(
+                        mt2.pose,
+                        mt2.timestampSeconds);
+            }
+        }
+    };
+
+    public class FiducialAndPose {
+
+        private RawFiducial fiducial;
+
+        public RawFiducial getFiducial() {
+            return fiducial;
+        }
+
+        public void setFiducial(RawFiducial fiducial) {
+            this.fiducial = fiducial;
+        }
+
+        private Pose3d pose;
+
+        public Pose3d getPose() {
+            return pose;
+        }
+
+        public void setPose(Pose3d pose) {
+            this.pose = pose;
+        }
+
+        public FiducialAndPose(RawFiducial fiducial, Pose3d pose) {
+            this.fiducial = fiducial;
+            this.pose = pose;
+        }
+
+    }
+
+    public FiducialAndPose foundTargetDetailed(int targetId) {
+
+        LimelightHelpers.setPriorityTagID("limelight-dark", targetId);
+
+        RawFiducial[] detected = LimelightHelpers.getRawFiducials("limelight-dark");
+        SmartDashboard.putNumber("Detected ", detected.length);
+
+        RawFiducial targetDetected = null;
+        Pose3d targetPose = null;
+
+        int DetetectionIndex = 0;
+        for (DetetectionIndex = 0; DetetectionIndex < detected.length; DetetectionIndex++) {
+            SmartDashboard.putNumber("Detection " + DetetectionIndex, detected[DetetectionIndex].id);
+            if (detected[DetetectionIndex].id == targetId) {
+
+                targetDetected = detected[DetetectionIndex];
+                targetPose = LimelightHelpers.getTargetPose3d_RobotSpace("limelight-dark");
+
+            }
+        }
+        return targetDetected != null ? new FiducialAndPose(targetDetected, targetPose) : null;
+    }
+
+    public RawFiducial foundTarget(int targetId) {
+
+        LimelightHelpers.setPriorityTagID("limelight-dark", targetId);
+
+        RawFiducial[] detected = LimelightHelpers.getRawFiducials("limelight-dark");
+        SmartDashboard.putNumber("Detected ", detected.length);
+
+        RawFiducial targetDetected = null;
+
+        int DetetectionIndex = 0;
+        for (DetetectionIndex = 0; DetetectionIndex < detected.length; DetetectionIndex++) {
+            SmartDashboard.putNumber("Detection " + DetetectionIndex, detected[DetetectionIndex].id);
+            if (detected[DetetectionIndex].id == targetId) {
+
+                targetDetected = detected[DetetectionIndex];
+            }
+        }
+        return targetDetected;
+    }
+
+    @Override
+    public void periodic() {
+        SmartDashboard.putString("Detection ", "Running");
+
+        LimelightHelpers.setLEDMode_ForceOn("limelight-dark");
+
+        RawFiducial[] detected = LimelightHelpers.getRawFiducials("limelight-dark");
+        SmartDashboard.putNumber("Detected ", detected.length);
+
+        int DetetectionIndex = 0;
+        for (DetetectionIndex = 0; DetetectionIndex < detected.length; DetetectionIndex++) {
+            SmartDashboard.putNumber("Detection " + DetetectionIndex, detected[DetetectionIndex].id);
+        }
+    }
+
 }
