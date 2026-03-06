@@ -63,7 +63,7 @@ public class TargetingSwerveJoystickCmd extends Command {
     private double calculateAutoRotation() {
         Pose2d robotPose2d = swerveSubsystem.getPose();
 
-        double hubX = 11.8;
+        double hubX = 12.0;
         double hubY = 4.0;
 
         double yDistance = Math.abs(robotPose2d.getY() - hubY);
@@ -81,7 +81,7 @@ public class TargetingSwerveJoystickCmd extends Command {
 
         double targetDistance = Math.sqrt(Math.pow(xDistance, 2) + Math.pow(yDistance, 2));
 
-        Rotation2d targetRotation2d = Rotation2d.fromDegrees(correctedAngle).rotateBy(Rotation2d.fromDegrees(180));
+        Rotation2d targetRotation2d = Rotation2d.fromDegrees(correctedAngle);
 
         double turningSpeed = this.turningPidController.calculate(robotPose2d.getRotation().getRadians(),
                 targetRotation2d.getRadians());
