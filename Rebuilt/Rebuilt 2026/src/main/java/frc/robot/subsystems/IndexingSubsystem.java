@@ -9,6 +9,7 @@ import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkMax;
+
 import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
@@ -32,14 +33,15 @@ public class IndexingSubsystem extends SubsystemBase {
   private SparkMaxConfig indexerMotorConfig;
   private SparkClosedLoopController indexerController;
 
+  private boolean indexerOn = false;
   private double indexerVelocity = 0.0;
 
   public static final class IndexerConstants {
     public static final class PID {
-      public static final double P = 1;
+      public static final double P = 0.0005;
       public static final double I = 0;
-      public static final double D = 0;
-      public static final double FF = 0;
+      public static final double D = 0.12;
+      public static final double FF = 1.0 / 917.0;
     }
 
     public static final class Motor {
@@ -64,7 +66,7 @@ public class IndexingSubsystem extends SubsystemBase {
     indexerMotorConfig.closedLoop.pid(IndexerConstants.PID.P, IndexerConstants.PID.I, IndexerConstants.PID.D)
         .outputRange(-0.8, 0.8);
     indexerMotorConfig.closedLoop.feedForward.kV(IndexerConstants.PID.FF);
-    indexerMotorConfig.encoder.velocityConversionFactor(1);
+    indexerMotorConfig.encoder.velocityConversionFactor(1.0 / 4.0);
     indexerMotorConfig.smartCurrentLimit(IndexerConstants.Motor.CurrentStalledLimit,
         IndexerConstants.Motor.CurrentFreeLimit);
     indexerMotor.configure(indexerMotorConfig, ResetMode.kResetSafeParameters,
@@ -74,11 +76,6 @@ public class IndexingSubsystem extends SubsystemBase {
 
   }
 
-  /* ACTIONS */
-  /* TURN TABLE ACTIONS */
-  public void setIndexerAngle(double velocity) {
-    this.indexerVelocity = velocity;
-  }
 
   /* INDEXER ACTIONS */
   public void setIndexerVelocity(double indexerVelocity) {
@@ -88,8 +85,13 @@ public class IndexingSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
 
-    SmartDashboard.putNumber("Indexer Velocity", indexerVelocity);
-    indexerController.setSetpoint(indexerVelocity, ControlType.kVelocity);
+    SmartDashboard.putNumber("Indexer Velocity", indexerVelocity * 1000);
+
+    if(indexerVelocity>0)
+    {
+    //  indexerMotor.set(70);
+    }
+    indexerController.setSetpoint(indexerVelocity * 1000, ControlType.kVelocity);
 
   }
 
@@ -111,5 +113,7 @@ public class IndexingSubsystem extends SubsystemBase {
           setIndexerVelocity(indexerVelocity - 1);
         });
   }
+
+
 
 }

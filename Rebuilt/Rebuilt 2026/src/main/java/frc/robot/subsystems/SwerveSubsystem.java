@@ -94,7 +94,6 @@ public class SwerveSubsystem extends SubsystemBase {
          * below are robot specific, and should be tuned.
          */
         private final SwerveDrivePoseEstimator poseEstimator;
-
         private final VisionSubsystem visionSubsystem;
 
         public SwerveSubsystem(VisionSubsystem visionSubsystem) {

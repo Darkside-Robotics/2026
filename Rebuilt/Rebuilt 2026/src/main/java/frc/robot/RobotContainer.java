@@ -13,7 +13,7 @@ import frc.robot.commands.SwerveJoystickCmd;
 import frc.robot.commands.TargetingSwerveJoystickCmd;
 import frc.robot.subsystems.IndexingSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
-//import frc.robot.subsystems.ClimbingSubsystem;
+import frc.robot.subsystems.ClimbingSubsystem;
 import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.TurretSubsystem;
@@ -26,9 +26,9 @@ public class RobotContainer {
     private final SwerveSubsystem swerveSubsystem = new SwerveSubsystem(visionSubsystem);
     private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
     private final IndexingSubsystem indexingSubsystem = new IndexingSubsystem();
-    // private final TurretSubsystem turretSubsystem = new TurretSubsystem();
+    private final TurretSubsystem turretSubsystem = new TurretSubsystem(indexingSubsystem);
 
-    // private final ClimbingSubsystem climbingSubsystem = new ClimbingSubsystem();
+    private final ClimbingSubsystem climbingSubsystem = new ClimbingSubsystem();
 
     private final LEDSubsystem ledSubsystem = new LEDSubsystem();
 
@@ -46,7 +46,7 @@ public class RobotContainer {
                 () -> -controller.getRightX(),
                 () -> !controller.leftTrigger(0.2).getAsBoolean(),
                 () -> !controller.leftStick().getAsBoolean(),
-                () -> controller.leftTrigger().getAsBoolean(), robot));
+                () -> controller.rightTrigger().getAsBoolean(), robot));
 
         configureButtonBindings();
 
@@ -64,24 +64,34 @@ public class RobotContainer {
         // controller.povUp().onTrue(turretSubsystem.SpinFlywheelUpCmd());
         // controller.povDown().onTrue(turretSubsystem.SpinFlywheelDownCmd());
 
-        controller.povUp().onTrue(intakeSubsystem.SpinIntakeWheelUpCmd());
-        controller.povDown().onTrue(intakeSubsystem.SpinIntakeWheelDownCmd());
+        // controller.y().onTrue(indexingSubsystem.IndexerUpCmd());
+        // controller.a().onTrue(indexingSubsystem.IndexerDownCmd());
 
-        controller.povLeft().onTrue(intakeSubsystem.ArmOutCmd());
-        controller.povRight().onTrue(intakeSubsystem.ArmInCmd());
+        controller.a().onTrue(climbingSubsystem.LeftClimbDownCommand());
+        controller.y().onTrue(climbingSubsystem.LeftClimbUpCommand());
+        controller.povDown().onTrue(climbingSubsystem.RightClimbDownCommand());
+        controller.povUp().onTrue(climbingSubsystem.RightClimbUpCommand());
 
-        controller.y().onTrue(indexingSubsystem.IndexerUpCmd());
-        controller.a().onTrue(indexingSubsystem.IndexerDownCmd());
+        controller.rightTrigger().whileTrue(turretSubsystem.FireCmd());
+        controller.rightTrigger().whileFalse(turretSubsystem.StopFiringCmd());
 
         // controller.y().onTrue(turretSubsystem.HoodUpCmd());
         // controller.a().onTrue(turretSubsystem.HoodDownCmd());
 
         controller.back().onTrue(new GyroResetCmd(swerveSubsystem));
-        // controller.leftTrigger().whileTrue(null);
+        controller.leftTrigger().whileTrue(intakeSubsystem.IntakeOnCmd());
+        controller.leftTrigger().whileFalse(intakeSubsystem.IntakeOffCmd());
+        controller.leftBumper().onTrue(intakeSubsystem.IntakeToggleCmd());
+
+
+        // controller.povUp().onTrue(intakeSubsystem.SpinIntakeWheelUpCmd());
+        // controller.povDown().onTrue(intakeSubsystem.SpinIntakeWheelDownCmd());
+
+        // controller.povLeft().onTrue(intakeSubsystem.ArmOutCmd());
+        // controller.povRight().onTrue(intakeSubsystem.ArmInCmd());
     }
 
     public Command getAutonomousCommand() {
         return autoChooser.getSelected();
     }
-
 }

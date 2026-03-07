@@ -99,14 +99,19 @@ public class TurretSubsystem extends SubsystemBase {
         public static final int CurrentStalledLimit = 40;
         public static final int Power = 10;
       }
+
     }
   }
 
   private final double kClosedLoopRampRate = 5;
 
-  /** Creates a new ExampleSubsystem. */
-  public TurretSubsystem() {
+  private boolean fire = false;
 
+  private final IndexingSubsystem indexingSubsystem;
+
+  /** Creates a new ExampleSubsystem. */
+  public TurretSubsystem(IndexingSubsystem indexingSubsystem) {
+    this.indexingSubsystem = indexingSubsystem;
     /*
      * turntableMotor = new SparkMax(TurretConstants.Turntable.Motor.MotorPort,
      * com.revrobotics.spark.SparkLowLevel.MotorType.kBrushless);
@@ -198,11 +203,21 @@ public class TurretSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-
-    SmartDashboard.putNumber("Flywheel Speed", flywheelSpeed);
-    flywheelController.setSetpoint(flywheelSpeed * -1, ControlType.kVelocity);
-
     hoodMotor.set(hoodAngle);
+    if (fire) {
+      flywheelController.setSetpoint(-400, ControlType.kVelocity);
+      if (flywheelController.isAtSetpoint()) {
+        indexingSubsystem.setIndexerVelocity(2);
+      }
+      else {
+        indexingSubsystem.setIndexerVelocity(0);
+      }
+    }
+    else {   
+      flywheelController.setSetpoint(0, ControlType.kVelocity);
+      indexingSubsystem.setIndexerVelocity(0);
+    }
+    SmartDashboard.putNumber("Flywheel Speed", flywheelSpeed);
   }
 
   @Override
@@ -267,4 +282,16 @@ public class TurretSubsystem extends SubsystemBase {
         });
   }
 
+  public Command FireCmd() {
+    return runOnce(
+        () -> {
+          fire = true;
+        });
+  }
+    public Command StopFiringCmd() {
+    return runOnce(
+        () -> {
+          fire = false;
+        });
+  }
 }
