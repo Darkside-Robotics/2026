@@ -28,54 +28,45 @@ public class IndexingSubsystem extends SubsystemBase {
   // private final SparkMaxConfig turntableMotorConfig;
   // private final SparkClosedLoopController turntableController;
 
-
-
   private SparkMax indexerMotor;
   private SparkMaxConfig indexerMotorConfig;
   private SparkClosedLoopController indexerController;
- 
 
-
-  
   private double indexerVelocity = 0.0;
 
-
-
- 
-    public static final class IndexerConstants {
-      public static final class PID {
-        public static final double P = 1;
-        public static final double I = 0;
-        public static final double D = 0;
-        public static final double FF = 0;
-      }
-      public static final class Motor {
-        public static final int MotorPort = 16;
-        public static final int CurrentFreeLimit = 60;
-        public static final int CurrentStalledLimit = 40;
-        public static final int Power = 10;
-      }
+  public static final class IndexerConstants {
+    public static final class PID {
+      public static final double P = 1;
+      public static final double I = 0;
+      public static final double D = 0;
+      public static final double FF = 0;
     }
+
+    public static final class Motor {
+      public static final int MotorPort = 16;
+      public static final int CurrentFreeLimit = 20;
+      public static final int CurrentStalledLimit = 20;
+      public static final int Power = 10;
+    }
+  }
 
   private final double kClosedLoopRampRate = 5;
 
   /** Creates a new ExampleSubsystem. */
   public IndexingSubsystem() {
 
-    
-
-   
     /*****************************************************************************************/
     indexerMotor = new SparkMax(IndexerConstants.Motor.MotorPort,
         com.revrobotics.spark.SparkLowLevel.MotorType.kBrushless);
     indexerMotorConfig = new SparkMaxConfig();
     indexerMotorConfig.idleMode(IdleMode.kBrake)
         .closedLoopRampRate(kClosedLoopRampRate);
-    indexerMotorConfig.closedLoop.pid(IndexerConstants.PID.P, IndexerConstants.PID.I, IndexerConstants.PID.D).outputRange(-0.8, 0.8);
+    indexerMotorConfig.closedLoop.pid(IndexerConstants.PID.P, IndexerConstants.PID.I, IndexerConstants.PID.D)
+        .outputRange(-0.8, 0.8);
     indexerMotorConfig.closedLoop.feedForward.kV(IndexerConstants.PID.FF);
     indexerMotorConfig.encoder.velocityConversionFactor(1);
     indexerMotorConfig.smartCurrentLimit(IndexerConstants.Motor.CurrentStalledLimit,
-  IndexerConstants.Motor.CurrentFreeLimit);
+        IndexerConstants.Motor.CurrentFreeLimit);
     indexerMotor.configure(indexerMotorConfig, ResetMode.kResetSafeParameters,
         PersistMode.kPersistParameters);
 
@@ -89,23 +80,17 @@ public class IndexingSubsystem extends SubsystemBase {
     this.indexerVelocity = velocity;
   }
 
- 
-
-  
-
-  /*  INDEXER ACTIONS */
+  /* INDEXER ACTIONS */
   public void setIndexerVelocity(double indexerVelocity) {
     this.indexerVelocity = indexerVelocity;
   }
 
-
-
   @Override
   public void periodic() {
-    
-                        SmartDashboard.putNumber("Indexer Velocity", indexerVelocity);
-    indexerController.setSetpoint(indexerVelocity , ControlType.kVelocity);
- 
+
+    SmartDashboard.putNumber("Indexer Velocity", indexerVelocity);
+    indexerController.setSetpoint(indexerVelocity, ControlType.kVelocity);
+
   }
 
   @Override
@@ -113,18 +98,17 @@ public class IndexingSubsystem extends SubsystemBase {
     // This method will be called once per scheduler run during simulation
   }
 
- 
-    public Command IndexerUpCmd() {
+  public Command IndexerUpCmd() {
     return runOnce(
         () -> {
-          setIndexerVelocity(indexerVelocity+1);
+          setIndexerVelocity(indexerVelocity + 1);
         });
   }
 
   public Command IndexerDownCmd() {
     return runOnce(
-        () -> {          
-         setIndexerVelocity(indexerVelocity-1);
+        () -> {
+          setIndexerVelocity(indexerVelocity - 1);
         });
   }
 

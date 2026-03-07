@@ -37,10 +37,10 @@ public class TurretSubsystem extends SubsystemBase {
   private SparkMax hoodMotor;
   private SparkMaxConfig hoodMotorConfig;
   private SparkClosedLoopController hoodController;
-  
+
   private double hoodAngle = 0.0;
 
-  private double flywheelSpeed = 0.0;  
+  private double flywheelSpeed = 0.0;
   private double flywheelSpeedFactor = 50.0;
 
   // private double turnTableHomeAngle = 0.0;
@@ -48,14 +48,15 @@ public class TurretSubsystem extends SubsystemBase {
   // private boolean intakeExtended = false;
 
   public static final class TurretConstants {
-    public static final class Turntable {      
+    public static final class Turntable {
       public static final class PID {
         public static final int P = 1;
         public static final int I = 0;
         public static final int D = 0;
       }
+
       public static final class Motor {
-        public static final int MotorPort = 9;
+        public static final int MotorPort = 0;
         public static final int CurrentFreeLimit = 60;
         public static final int CurrentStalledLimit = 40;
         public static final int Power = 10;
@@ -68,10 +69,11 @@ public class TurretSubsystem extends SubsystemBase {
         public static final int I = 0;
         public static final int D = 0;
       }
+
       public static final class Motor {
-        public static final int MotorPort = 0;
-        public static final int CurrentFreeLimit = 60;
-        public static final int CurrentStalledLimit = 40;
+        public static final int MotorPort = 19;
+        public static final int CurrentFreeLimit = 20;
+        public static final int CurrentStalledLimit = 20;
         public static final int Power = 10;
       }
     }
@@ -81,17 +83,18 @@ public class TurretSubsystem extends SubsystemBase {
         public static final double P = 0.0001;
         public static final double I = 0;
         public static final double D = 0;
-        public static final double FF = (1.0/565.0);
+        public static final double FF = (1.0 / 565.0);
       }
+
       public static final class LeadMotor {
-        public static final int MotorPort = 13; //USED TO BE 14 BUT MOTOR WENT BAD
+        public static final int MotorPort = 13; // USED TO BE 14 BUT MOTOR WENT BAD
         public static final int CurrentFreeLimit = 60;
         public static final int CurrentStalledLimit = 40;
         public static final int Power = 10;
       }
 
       public static final class FollowMotor {
-        public static final int MotorPort = 14; //disabled
+        public static final int MotorPort = 14; // disabled
         public static final int CurrentFreeLimit = 60;
         public static final int CurrentStalledLimit = 40;
         public static final int Power = 10;
@@ -124,7 +127,6 @@ public class TurretSubsystem extends SubsystemBase {
      * turntableController = turntableMotor.getClosedLoopController();
      * turntableMotor.getEncoder().setPosition(0);
      */
-
 
     leadflywheelMotor = new SparkFlex(TurretConstants.FlyWheel.LeadMotor.MotorPort,
         com.revrobotics.spark.SparkLowLevel.MotorType.kBrushless);
@@ -176,15 +178,13 @@ public class TurretSubsystem extends SubsystemBase {
     this.hoodAngle = angle;
   }
 
- 
-
   /* TURN TABLE ACTIONS */
   // public void rotateToAngle(double angle) {
-  //   turnTableAngle = angle;
+  // turnTableAngle = angle;
   // }
 
   // public void setHome() {
-  //   turnTableHomeAngle = turntableMotor.getEncoder().getPosition();
+  // turnTableHomeAngle = turntableMotor.getEncoder().getPosition();
   // }
 
   /* FLYWHEEL ACTIONS */
@@ -198,10 +198,10 @@ public class TurretSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    
-                        SmartDashboard.putNumber("Flywheel Speed", flywheelSpeed);
+
+    SmartDashboard.putNumber("Flywheel Speed", flywheelSpeed);
     flywheelController.setSetpoint(flywheelSpeed * -1, ControlType.kVelocity);
- 
+
     hoodMotor.set(hoodAngle);
   }
 
@@ -238,32 +238,32 @@ public class TurretSubsystem extends SubsystemBase {
   // this.armAngle=angleInDegrees;
   // }
 
-    public Command HoodUpCmd() {
+  public Command HoodUpCmd() {
     return runOnce(
         () -> {
-          setHoodAngle(hoodAngle+1);
+          setHoodAngle(hoodAngle + 1);
         });
   }
 
   public Command HoodDownCmd() {
     return runOnce(
-        () -> {          
-          setHoodAngle(hoodAngle-1);
+        () -> {
+          setHoodAngle(hoodAngle - 1);
         });
   }
 
   public Command SpinFlywheelUpCmd() {
     return runOnce(
         () -> {
-          setFlywheelSpeed(flywheelSpeed+flywheelSpeedFactor);
+          setFlywheelSpeed(flywheelSpeed + flywheelSpeedFactor);
         });
   }
 
   public Command SpinFlywheelDownCmd() {
     return runOnce(
         () -> {
-          
-          setFlywheelSpeed(flywheelSpeed-flywheelSpeedFactor);
+
+          setFlywheelSpeed(flywheelSpeed - flywheelSpeedFactor);
         });
   }
 

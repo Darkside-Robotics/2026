@@ -16,6 +16,7 @@ import java.util.Optional;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 
+import au.grapplerobotics.CanBridge;
 //import au.grapplerobotics.CanBridge;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.UsbCamera;
@@ -39,7 +40,7 @@ public class Robot extends TimedRobot {
 
 
     public Robot() {
-        // CanBridge.runTCP();
+        CanBridge.runTCP();
 
 
     }
