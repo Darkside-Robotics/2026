@@ -74,11 +74,16 @@ public class SwerveSubsystem extends SubsystemBase {
 
 
         public static AHRS gyro = new AHRS(NavXComType.kMXP_SPI);
+        
+        // Distance between right and left wheels
+        public static final double TrackWidth = Units.inchesToMeters(27.0);
+        // Distance between front and back wheels
+        public static final double TrackLength = Units.inchesToMeters(27.0);      
 
-        private final Translation2d frontLeftLocation = new Translation2d(0.355, 0.382);
-        private final Translation2d frontRightLocation = new Translation2d(0.355, -0.382);
-        private final Translation2d backLeftLocation = new Translation2d(-0.355, 0.382);
-        private final Translation2d backRightLocation = new Translation2d(-0.355, -0.382);
+        private final Translation2d frontLeftLocation = new Translation2d((TrackLength / 2.0), (TrackWidth / 2.0));
+        private final Translation2d frontRightLocation = new Translation2d((TrackLength / 2.0), -(TrackWidth / 2.0));
+        private final Translation2d backLeftLocation = new Translation2d((-TrackLength / 2.0), (TrackWidth / 2.0));
+        private final Translation2d backRightLocation = new Translation2d((-TrackLength / 2.0), -(TrackWidth / 2.0));
 
         private final SwerveDriveKinematics kinematics = new SwerveDriveKinematics(
                         frontLeftLocation, frontRightLocation, backLeftLocation, backRightLocation);

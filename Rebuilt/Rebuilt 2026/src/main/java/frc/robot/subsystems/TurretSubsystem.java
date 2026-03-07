@@ -159,7 +159,7 @@ public class TurretSubsystem extends SubsystemBase {
     hoodMotorConfig.idleMode(IdleMode.kBrake)
         .closedLoopRampRate(kClosedLoopRampRate);
     hoodMotorConfig.closedLoop.pid(Hood.PID.P, Hood.PID.I, Hood.PID.D).maxOutput(0.3);
-    hoodMotorConfig.encoder.positionConversionFactor(.05);
+    hoodMotorConfig.encoder.positionConversionFactor(2);
 
     hoodMotorConfig.smartCurrentLimit(TurretConstants.Hood.Motor.CurrentStalledLimit,
         TurretConstants.Hood.Motor.CurrentFreeLimit);

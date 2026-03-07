@@ -14,33 +14,12 @@ public final class Constants {
         public static final int Length = 0;
     }
 
-    public static final class ClimbingConstants {
-        public static final int LaserCANPort = 21;
-        public static final int LimitSwitchPort = 0;
-
-        public static final class Motor {
-            public static final int MotorPort = 12;
-            public static final int CurrentFreeLimit = 60;
-            public static final int CurrentStalledLimit = 40;
-            public static final int Power = 10;
-        }
-    }
-
     public static final class DriveConstants {
 
         public static final int CurrentFreeLimit = 60;
         public static final int CurrentStalledLimit = 40;
 
-      // Distance between right and left wheels
-        public static final double kTrackWidth = Units.inchesToMeters(21.55);
-        // Distance between front and back wheels
-        public static final double kWheelBase = Units.inchesToMeters(23.58);
 
-        public static final SwerveDriveKinematics kDriveKinematics = new SwerveDriveKinematics(
-                new Translation2d(kWheelBase / 2, -kTrackWidth / 2),
-                new Translation2d(kWheelBase / 2, kTrackWidth / 2),
-                new Translation2d(-kWheelBase / 2, -kTrackWidth / 2),
-                new Translation2d(-kWheelBase / 2, kTrackWidth / 2));
 
         public static final class Motors {
             public static final class Front {
