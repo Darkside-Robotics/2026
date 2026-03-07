@@ -1,23 +1,23 @@
 package frc.robot.commands;
 
-//import static edu.wpi.first.units.Units.Rotation;
+import static edu.wpi.first.units.Units.Rotation;
 
 import java.util.function.Supplier;
 
-//import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-//import edu.wpi.first.math.kinematics.ChassisSpeeds;
-//import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.JoystickConstants;
-//import frc.robot.library.field.FieldColor;
+import frc.robot.library.field.FieldColor;
 import frc.robot.subsystems.SwerveSubsystem;
 
 public class TargetingSwerveJoystickCmd extends Command {
@@ -63,7 +63,7 @@ public class TargetingSwerveJoystickCmd extends Command {
     private double calculateAutoRotation() {
         Pose2d robotPose2d = swerveSubsystem.getPose();
 
-        double hubX = 11.8;
+        double hubX = 12.0;
         double hubY = 4.0;
 
         double yDistance = Math.abs(robotPose2d.getY() - hubY);
@@ -81,7 +81,7 @@ public class TargetingSwerveJoystickCmd extends Command {
 
         double targetDistance = Math.sqrt(Math.pow(xDistance, 2) + Math.pow(yDistance, 2));
 
-        Rotation2d targetRotation2d = Rotation2d.fromDegrees(correctedAngle).rotateBy(Rotation2d.fromDegrees(180));
+        Rotation2d targetRotation2d = Rotation2d.fromDegrees(correctedAngle);
 
         double turningSpeed = this.turningPidController.calculate(robotPose2d.getRotation().getRadians(),
                 targetRotation2d.getRadians());

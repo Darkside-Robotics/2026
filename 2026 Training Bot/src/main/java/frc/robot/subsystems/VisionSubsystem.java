@@ -2,8 +2,6 @@ package frc.robot.subsystems;
 
 import java.util.Date;
 
-import com.studica.frc.AHRS;
-
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -12,6 +10,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.library.vision.LimelightHelpers;
 import frc.robot.library.vision.LimelightHelpers.RawFiducial;
+
+
+import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 
 public class VisionSubsystem extends SubsystemBase {
 
@@ -25,12 +26,12 @@ public class VisionSubsystem extends SubsystemBase {
         // Change the camera pose relative to robot center (x forward, y left, z up,
         // degrees)
         LimelightHelpers.setCameraPose_RobotSpace("limelight-dark",
-                Units.inchesToMeters(2.5), // Forward offset (meters)
-                Units.inchesToMeters(14.5), // Side offset (meters)
-                Units.inchesToMeters(17), // Height offset (meters)
+                Units.inchesToMeters(10), // Forward offset (meters)
+                Units.inchesToMeters(0), // Side offset (meters)
+                Units.inchesToMeters(15), // Height offset (meters)
                 0.0, // Roll (degrees)
                 15.0, // Pitch (degrees)
-                180.0 // Yaw (degrees)
+                0.0 // Yaw (degrees)
         );
 
         // Set AprilTag offset tracking point (meters)
@@ -50,7 +51,7 @@ public class VisionSubsystem extends SubsystemBase {
         LimelightHelpers.setPipelineIndex("limelight-dark", 0);
     }
 
-    public void updateRobotPose(SwerveDrivePoseEstimator poseEstimator, AHRS gyro) {
+    public void updateRobotPose(SwerveDrivePoseEstimator poseEstimator, ADXRS450_Gyro gyro) {
         LimelightHelpers.SetRobotOrientation("limelight-dark",
                 poseEstimator.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0, 0);
         LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-dark");

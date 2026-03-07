@@ -6,10 +6,26 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.library.field.FieldColor;
+import frc.robot.library.field.FieldHelper;
+import frc.robot.library.field.FieldLocation;
 
-public class ShooterSubsystem extends SubsystemBase {
-  /** Creates a new ExampleSubsystem. */
-  public ShooterSubsystem() {}
+public class TargetingSubsystem extends SubsystemBase {
+  private final int[] hubtagids;
+  private final VisionSubsystem visionSubsystem;
+
+  public TargetingSubsystem(VisionSubsystem visionSubsystem, FieldColor color) {
+    this.visionSubsystem = visionSubsystem;
+    hubtagids = new int[] { 
+      FieldHelper.lookup(color, FieldLocation.HUB_LEFT_FRONT),
+        FieldHelper.lookup(color, FieldLocation.HUB_RIGHT_FRONT),
+        FieldHelper.lookup(color, FieldLocation.BUMP_LEFT_BACK),
+        FieldHelper.lookup(color, FieldLocation.BUMP_LEFT_FRONT),
+        FieldHelper.lookup(color, FieldLocation.BUMP_RIGHT_BACK),
+        FieldHelper.lookup(color, FieldLocation.BUMP_RIGHT_FRONT) 
+      };
+
+  }
 
   /**
    * Example command factory method.
@@ -26,7 +42,8 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   /**
-   * An example method querying a boolean state of the subsystem (for example, a digital sensor).
+   * An example method querying a boolean state of the subsystem (for example, a
+   * digital sensor).
    *
    * @return value of some boolean subsystem state, such as a digital sensor.
    */

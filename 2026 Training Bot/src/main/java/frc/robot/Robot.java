@@ -14,9 +14,6 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 import java.util.Optional;
 
-import com.pathplanner.lib.auto.AutoBuilder;
-
-import au.grapplerobotics.CanBridge;
 //import au.grapplerobotics.CanBridge;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.UsbCamera;
@@ -37,28 +34,56 @@ public class Robot extends TimedRobot {
 
     private RobotContainer m_robotContainer;
 
+    private static final String kCustomAutoLeft = "Left Auto";
+    private static final String kCustomAutoMiddle = "Middle Auto";
+    private static final String kCustomAutoRight = "Right Auto";
 
+    public static final String kCustomAutoRed = "Red";
+    public static final String kCustomAutoBlue = "Blue";
+    public static final String kCustomAutoTestColor = "Test";
+
+    private String m_autoSelected;
+
+    private String m_colorSelected;
+
+    private final SendableChooser<String> m_chooser = new SendableChooser<>();
+    private final SendableChooser<String> m_ColorChooser = new SendableChooser<>();
 
     public Robot() {
-        CanBridge.runTCP();
-
-
+        // CanBridge.runTCP();
     }
-
-
 
     /**
      * This function is run when the robot is first started up and should be used
      * for any
      * initialization code.
      */
-
     @Override
     public void robotInit() {
         // Instantiate our RobotContainer. This will perform all our button bindings,
         // and put our
         // autonomous chooser on the dashboard.
         m_robotContainer = new RobotContainer(this);
+
+        m_chooser.addOption("Left Auto", kCustomAutoLeft);
+        m_chooser.addOption("Middle Auto", kCustomAutoMiddle);
+        m_chooser.setDefaultOption("Right Auto - (Default)", kCustomAutoRight);
+
+        SmartDashboard.putData("Auto choices", m_chooser);
+
+        m_ColorChooser.addOption("Testing", kCustomAutoTestColor);
+        m_ColorChooser.addOption("Blue", kCustomAutoBlue);
+        m_ColorChooser.setDefaultOption("Red (Default)", kCustomAutoRed);
+
+        SmartDashboard.putData("Color choices", m_ColorChooser);
+
+//         Optional<Alliance> ally = DriverStation.getAlliance();
+//         if (ally.isPresent()) {
+
+//         } else {
+// //fallback
+//         }
+
     }
 
     /**
@@ -101,16 +126,51 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void autonomousInit() {
-        Command autonomousCommand = m_robotContainer.getAutonomousCommand();
-        // schedule the autonomous command (example)
-        if (autonomousCommand != null) {
-            CommandScheduler.getInstance().schedule(autonomousCommand);
-        }
+
+        // m_autoSelected = m_chooser.getSelected();
+        // m_colorSelected = m_ColorChooser.getSelected();
+
+        // SmartDashboard.putString("Routine Selection", m_autoSelected);
+        // switch (m_autoSelected) {
+        // case kCustomAutoRight:
+        // m_autonomousCommand =
+        // m_robotContainer.getAutonomousCommandRight(m_colorSelected);
+        // break;
+        // case kCustomAutoMiddle:
+        // m_autonomousCommand =
+        // m_robotContainer.getAutonomousCommandMiddle(m_colorSelected);
+        // break;
+        // case kCustomAutoLeft:
+        // m_autonomousCommand =
+        // m_robotContainer.getAutonomousCommandLeft(m_colorSelected);
+        // break;
+        // default:
+        // m_autonomousCommand =
+        // m_robotContainer.getAutonomousCommandRight(m_colorSelected);
+        // break;
+        // }
+
+        // // schedule the autonomous command (example)
+        // if (m_autonomousCommand != null) {
+        // m_autonomousCommand.schedule();
+        // }
     }
 
     /** This function is called periodically during autonomous. */
     @Override
     public void autonomousPeriodic() {
+        switch (m_autoSelected) {
+            case kCustomAutoRight:
+
+                break;
+            case kCustomAutoMiddle:
+
+                break;
+            case kCustomAutoLeft:
+            default:
+
+                break;
+        }
     }
 
     @Override

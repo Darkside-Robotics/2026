@@ -4,7 +4,7 @@ import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.ClosedLoopSlot;
-import com.revrobotics.spark.SparkFlex;
+import com.revrobotics.spark.SparkMax;
 
 import edu.wpi.first.wpilibj.AnalogEncoder;
 import edu.wpi.first.math.controller.PIDController;
@@ -18,36 +18,51 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
 
-import com.revrobotics.spark.config.SparkFlexConfig;
+import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 public class SwerveModule {
 
     public static final class SwerveModuleConstants {
         public static final double kWheelDiameterMeters = Units.inchesToMeters(4);
-        public static final double kDriveMotorGearRatio = 1.0 / 6.75;
-        public static final double kTurningMotorGearRatio = 1.0 / (150.0/7.0);
+        public static final double kDriveMotorGearRatio = 1 / 6.75;
+        public static final double kTurningMotorGearRatio = 1 / 12.8;
         public static final double kDistancePerWheelRotation = Math.PI * kWheelDiameterMeters;
         public static final double kDriveEncoderRot2Meter = kDriveMotorGearRatio * kDistancePerWheelRotation;
         public static final double kTurningEncoderRot2Rad = kTurningMotorGearRatio * 2 * Math.PI;
-        public static final double kDriveEncoderRPM2MeterPerSec = kDriveEncoderRot2Meter / 60.0;
-        public static final double kTurningEncoderRPM2RadPerSec = kTurningEncoderRot2Rad / 60.0;
+        public static final double kDriveEncoderRPM2MeterPerSec = kDriveEncoderRot2Meter / 60;
+        public static final double kTurningEncoderRPM2RadPerSec = kTurningEncoderRot2Rad / 60;
         public static final double kPTurning = 0.5;
-        public static final double kDriveMotorFeedforwardVoltsPerRotationsPerMinute = 1.0 / 473.0;
-        public static final double kDriveMotorFeedforwardVoltsPerRotationsPerSecond = 1.0 / (473.0 / 60.0);
-        public static final double kDriveMotorFeedforwardVoltsPerMetersPerSecond = 1.0
-                / (473.0 / 60.0 * kDistancePerWheelRotation * kDriveMotorGearRatio);
+        public static final double kDriveMotorFeedforwardVoltsPerRotationsPerMinute = 1 / 473;
+        public static final double kDriveMotorFeedforwardVoltsPerRotationsPerSecond = 1 / (473 / 60);
+        public static final double kDriveMotorFeedforwardVoltsPerMetersPerSecond = 1
+                / (473 / 60 * kDistancePerWheelRotation * kDriveMotorGearRatio);
         public static final double kModuleMaxAngularVelocity = Math.PI;
         public static final double kModuleMaxAngularAcceleration = 2 * Math.PI; // radians per second squared
     }
 
-    private final SparkFlex driveMotor;
-    private final SparkFlex turningMotor;
+    private final SparkMax driveMotor;
+    private final SparkMax turningMotor;
 
-    private final SparkFlexConfig turningMaxConfig;
-    private final SparkFlexConfig driveMaxConfig;
+    // private final SparkClosedLoopController
+
+    // private final RelativeEncoder driveEncoder;
+    // private final RelativeEncoder turningEncoder;
+
+    private final SparkMaxConfig turningMaxConfig;
+    private final SparkMaxConfig driveMaxConfig;
 
     private final PIDController turningPidController = new PIDController(SwerveModuleConstants.kPTurning, 0, 0);
+    /*
+     * private final ProfiledPIDController turningPidController = new
+     * ProfiledPIDController(
+     * SwerveModuleConstants.kPTurning,
+     * 0,
+     * 0,
+     * new TrapezoidProfile.Constraints(
+     * SwerveModuleConstants.kModuleMaxAngularVelocity,
+     * SwerveModuleConstants.kModuleMaxAngularAcceleration));
+     */
 
     private final AnalogEncoder absoluteEncoder;
     private final double absoluteEncoderOffsetRad;
@@ -69,8 +84,8 @@ public class SwerveModule {
         absoluteEncoder = new AnalogEncoder(absoluteEncoderId);
         absoluteEncoder.setInverted(absoluteEncoderReversed);
 
-        driveMotor = new SparkFlex(driveMotorId, com.revrobotics.spark.SparkLowLevel.MotorType.kBrushless);
-        driveMaxConfig = new SparkFlexConfig();
+        driveMotor = new SparkMax(driveMotorId, com.revrobotics.spark.SparkLowLevel.MotorType.kBrushless);
+        driveMaxConfig = new SparkMaxConfig();
 
         driveMaxConfig.idleMode(IdleMode.kBrake);
         driveMaxConfig
@@ -84,8 +99,8 @@ public class SwerveModule {
                 .velocityConversionFactor(SwerveModuleConstants.kDriveEncoderRPM2MeterPerSec);
         driveMotor.configure(driveMaxConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-        turningMotor = new SparkFlex(turningMotorId, com.revrobotics.spark.SparkLowLevel.MotorType.kBrushless);
-        turningMaxConfig = new SparkFlexConfig();
+        turningMotor = new SparkMax(turningMotorId, com.revrobotics.spark.SparkLowLevel.MotorType.kBrushless);
+        turningMaxConfig = new SparkMaxConfig();
 
         turningMaxConfig.idleMode(IdleMode.kBrake);
         turningMaxConfig
@@ -107,6 +122,7 @@ public class SwerveModule {
         return new SwerveModuleState(getDriveVelocity(), new Rotation2d(getTurningPosition()));
     }
 
+    // TODO : VERIFY getDrivePosition() IS SIMILAR TO getDistance() in EXAMPLE CODE
     /**
      * Returns the current position of the module.
      *
