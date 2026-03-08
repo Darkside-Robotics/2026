@@ -106,9 +106,9 @@ public class TargetingSwerveJoystickCmd extends Command {
         turningSpeed = Math.abs(turningSpeed) > JoystickConstants.kDeadband ? turningSpeed : 0.0;
 
         if (boost.get()) {
-            speed = DriveConstants.kTeleDriveMaxSpeedMetersPerSecond / 2.3;
-        } else {
             speed = DriveConstants.kTeleDriveMaxSpeedMetersPerSecond;
+        } else {
+            speed = 1;
         }
 
         // 3. Make the driving smoother

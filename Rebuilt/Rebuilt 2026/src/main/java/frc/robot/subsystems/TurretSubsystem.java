@@ -205,7 +205,7 @@ public class TurretSubsystem extends SubsystemBase {
   public void periodic() {
     hoodMotor.set(hoodAngle);
     if (fire) {
-      flywheelController.setSetpoint(-400, ControlType.kVelocity);
+      flywheelController.setSetpoint(-800, ControlType.kVelocity);
       if (flywheelController.isAtSetpoint()) {
         indexingSubsystem.setIndexerVelocity(2);
       }
