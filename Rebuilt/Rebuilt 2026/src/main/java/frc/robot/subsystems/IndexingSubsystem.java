@@ -22,7 +22,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.TurretSubsystem.TurretConstants;
-import frc.robot.subsystems.TurretSubsystem.TurretConstants.FlyWheel;
+import frc.robot.subsystems.TurretSubsystem.TurretConstants.FlyWheelConstants;
 
 public class IndexingSubsystem extends SubsystemBase {
   // private final SparkMax turntableMotor;
@@ -37,6 +37,9 @@ public class IndexingSubsystem extends SubsystemBase {
   private double indexerVelocity = 0.0;
 
   public static final class IndexerConstants {
+
+    public static final double ClosedLoopRampRate = 1;
+
     public static final class PID {
       public static final double P = 0.0005;
       public static final double I = 0;
@@ -52,8 +55,6 @@ public class IndexingSubsystem extends SubsystemBase {
     }
   }
 
-  private final double kClosedLoopRampRate = 5;
-
   /** Creates a new ExampleSubsystem. */
   public IndexingSubsystem() {
 
@@ -62,7 +63,7 @@ public class IndexingSubsystem extends SubsystemBase {
         com.revrobotics.spark.SparkLowLevel.MotorType.kBrushless);
     indexerMotorConfig = new SparkMaxConfig();
     indexerMotorConfig.idleMode(IdleMode.kBrake)
-        .closedLoopRampRate(kClosedLoopRampRate);
+        .closedLoopRampRate(IndexerConstants.ClosedLoopRampRate);
     indexerMotorConfig.closedLoop.pid(IndexerConstants.PID.P, IndexerConstants.PID.I, IndexerConstants.PID.D)
         .outputRange(-0.8, 0.8);
     indexerMotorConfig.closedLoop.feedForward.kV(IndexerConstants.PID.FF);
@@ -76,7 +77,6 @@ public class IndexingSubsystem extends SubsystemBase {
 
   }
 
-
   /* INDEXER ACTIONS */
   public void setIndexerVelocity(double indexerVelocity) {
     this.indexerVelocity = indexerVelocity;
@@ -87,9 +87,8 @@ public class IndexingSubsystem extends SubsystemBase {
 
     SmartDashboard.putNumber("Indexer Velocity", indexerVelocity * 1000);
 
-    if(indexerVelocity>0)
-    {
-    //  indexerMotor.set(70);
+    if (indexerVelocity > 0) {
+      // indexerMotor.set(70);
     }
     indexerController.setSetpoint(indexerVelocity * 1000, ControlType.kVelocity);
 
@@ -113,7 +112,5 @@ public class IndexingSubsystem extends SubsystemBase {
           setIndexerVelocity(indexerVelocity - 1);
         });
   }
-
-
 
 }

@@ -19,10 +19,12 @@ import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.JoystickConstants;
 //import frc.robot.library.field.FieldColor;
 import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.subsystems.TargetingSubsystem;
 
 public class TargetingSwerveJoystickCmd extends Command {
 
     private final SwerveSubsystem swerveSubsystem;
+    private final TargetingSubsystem targetingSubsystem;
     private final Supplier<Double> xSpdFunction, ySpdFunction, turningSpdFunction;
     private final Supplier<Boolean> fieldOrientedFunction;
     private final SlewRateLimiter xLimiter, yLimiter, turningLimiter;
@@ -33,12 +35,17 @@ public class TargetingSwerveJoystickCmd extends Command {
 
     private final ProfiledPIDController turningPidController;
 
-    public TargetingSwerveJoystickCmd(SwerveSubsystem swerveSubsystem,
+    double targetDistance = 10;
+    Rotation2d targetRotation2d = Rotation2d.fromDegrees(180);
+
+
+    public TargetingSwerveJoystickCmd(TargetingSubsystem targetingSubsystem,SwerveSubsystem swerveSubsystem,
             Supplier<Double> xSpdFunction, Supplier<Double> ySpdFunction, Supplier<Double> turningSpdFunction,
             Supplier<Boolean> fieldOrientedFunction,
             Supplier<Boolean> boost, Supplier<Boolean> autoTarget, TimedRobot robot) {
         this.robot = robot;
         this.swerveSubsystem = swerveSubsystem;
+        this.targetingSubsystem = targetingSubsystem;
         this.xSpdFunction = xSpdFunction;
         this.ySpdFunction = ySpdFunction;
         this.turningSpdFunction = turningSpdFunction;
@@ -50,10 +57,11 @@ public class TargetingSwerveJoystickCmd extends Command {
         this.turningLimiter = new SlewRateLimiter(DriveConstants.kTeleDriveMaxAngularAccelerationUnitsPerSecond);
 
         this.turningPidController = new ProfiledPIDController(
-                3, 0, .05, AutoConstants.kThetaControllerConstraints);
+                4.2, 0, 0.07, AutoConstants.kThetaControllerConstraints);
         this.turningPidController.enableContinuousInput(-Math.PI, Math.PI);
 
         addRequirements(swerveSubsystem);
+        addRequirements(targetingSubsystem);
     }
 
     @Override
@@ -63,31 +71,32 @@ public class TargetingSwerveJoystickCmd extends Command {
     private double calculateAutoRotation() {
         Pose2d robotPose2d = swerveSubsystem.getPose();
 
-        double hubX = 11.8;
-        double hubY = 4.0;
+        // double hubX = 11.8;
+        // double hubY = 4.0;
 
-        double yDistance = Math.abs(robotPose2d.getY() - hubY);
-        double xDistance = Math.abs(robotPose2d.getX() - hubX);
-        double relativeTargetAngle = Math.toDegrees(Math.atan(yDistance / xDistance));
+        // double yDistance = Math.abs(robotPose2d.getY() - hubY);
+        // double xDistance = Math.abs(robotPose2d.getX() - hubX);
+        // double relativeTargetAngle = Math.toDegrees(Math.atan(yDistance / xDistance));
 
-        double shootingLineX = 12.5;
-        double middleLineY = 4;
+        // double shootingLineX = 12.5;
+        // double middleLineY = 4;
 
-        boolean positiveSide = shootingLineX < robotPose2d.getX();
-        boolean leftSide = middleLineY < robotPose2d.getY();
+        // boolean positiveSide = shootingLineX < robotPose2d.getX();
+        // boolean leftSide = middleLineY < robotPose2d.getY();
 
-        double correctedAngle = ((leftSide ? -1 : 1) * (positiveSide ? 180 : 0)) +
-                ((leftSide ? 1 : -1) * relativeTargetAngle);
+        // double correctedAngle = ((leftSide ? -1 : 1) * (positiveSide ? 180 : 0)) +
+        //         ((leftSide ? 1 : -1) * relativeTargetAngle);
 
-        double targetDistance = Math.sqrt(Math.pow(xDistance, 2) + Math.pow(yDistance, 2));
+        // targetDistance = Math.sqrt(Math.pow(xDistance, 2) + Math.pow(yDistance, 2));
+        // targetRotation2d = Rotation2d.fromDegrees(correctedAngle).rotateBy(Rotation2d.fromDegrees(180));
 
-        Rotation2d targetRotation2d = Rotation2d.fromDegrees(correctedAngle).rotateBy(Rotation2d.fromDegrees(180));
+        Rotation2d targetRotation2d = targetingSubsystem.getTargetRotation2d();
 
         double turningSpeed = this.turningPidController.calculate(robotPose2d.getRotation().getRadians(),
                 targetRotation2d.getRadians());
 
         SmartDashboard.putNumber("robotCurrentAngle", robotPose2d.getRotation().getDegrees());
-        SmartDashboard.putNumber("robotTargetAngle", correctedAngle);
+        //SmartDashboard.putNumber("robotTargetAngle", targetRotation2d.getDegrees());
         SmartDashboard.putNumber("robotTurningSpeed", turningSpeed);
 
         return turningSpeed;
@@ -124,25 +133,6 @@ public class TargetingSwerveJoystickCmd extends Command {
         }
 
         swerveSubsystem.drive(xSpeed, ySpeed, turningSpeed, true, robot.getPeriod());
-        /*
-         * // 4. Construct desired chassis speeds
-         * ChassisSpeeds chassisSpeeds;
-         * if (fieldOrientedFunction.get()) {
-         * // Relative to field
-         * chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
-         * xSpeed, ySpeed, turningSpeed, swerveSubsystem.getRotation2d());
-         * } else {
-         * // Relative to robot
-         * chassisSpeeds = new ChassisSpeeds(xSpeed, ySpeed, turningSpeed);
-         * }
-         * 
-         * // 5. Convert chassis speeds to individual module states
-         * SwerveModuleState[] moduleStates =
-         * DriveConstants.kDriveKinematics.toSwerveModuleStates(chassisSpeeds);
-         * 
-         * // 6. Output each module states to wheels
-         * swerveSubsystem.setModuleStates(moduleStates, false);
-         */
     }
 
     @Override

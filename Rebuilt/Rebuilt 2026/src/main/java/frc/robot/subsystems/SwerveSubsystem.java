@@ -72,13 +72,12 @@ public class SwerveSubsystem extends SubsystemBase {
 
         private boolean pathplannerReady;
 
-
         public static AHRS gyro = new AHRS(NavXComType.kMXP_SPI);
-        
+
         // Distance between right and left wheels
         public static final double TrackWidth = Units.inchesToMeters(27.0);
         // Distance between front and back wheels
-        public static final double TrackLength = Units.inchesToMeters(27.0);      
+        public static final double TrackLength = Units.inchesToMeters(27.0);
 
         private final Translation2d frontLeftLocation = new Translation2d((TrackLength / 2.0), (TrackWidth / 2.0));
         private final Translation2d frontRightLocation = new Translation2d((TrackLength / 2.0), -(TrackWidth / 2.0));
@@ -101,7 +100,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
                 zeroHeading();
 
-                Pose2d RedSideRightCornerPose2d = new Pose2d(16.063, 7.65, Rotation2d.k180deg);
+                Pose2d RedSideRightCornerPose2d = new Pose2d(16.063, 7.65, Rotation2d.kZero);
 
                 poseEstimator = new SwerveDrivePoseEstimator(
                                 kinematics,
@@ -158,22 +157,26 @@ public class SwerveSubsystem extends SubsystemBase {
                                         },
                                         this // Reference to this subsystem to set requirements
                         );
-                
-                        this.pathplannerReady=true;
+
+                        this.pathplannerReady = true;
 
                 } catch (Exception e) {
                         // Handle exception as needed
                         e.printStackTrace();
-                        this.pathplannerReady=false;
+                        this.pathplannerReady = false;
                 }
 
         }
 
-        public boolean isPathplannerReady (){
+        public boolean isPathplannerReady() {
                 return this.pathplannerReady;
         }
 
         public void zeroHeading() {
+                if (this.poseEstimator != null) {
+                        Pose2d RedSideRightCornerPose2d = new Pose2d(16.063, 7.65, Rotation2d.kZero);
+                        this.poseEstimator.resetPose(RedSideRightCornerPose2d);
+                }
                 gyro.reset();
         }
 
@@ -251,7 +254,8 @@ public class SwerveSubsystem extends SubsystemBase {
                                                 backLeft.getPosition(),
                                                 backRight.getPosition()
                                 });
-                visionSubsystem.updateRobotPose(poseEstimator, gyro);
+                visionSubsystem.updateRobotPoseTurretSide(poseEstimator, gyro);
+                visionSubsystem.updateRobotPoseBinSide(poseEstimator, gyro);
         }
 
         // ****************************************************************** */

@@ -25,12 +25,23 @@ public class VisionSubsystem extends SubsystemBase {
         // Change the camera pose relative to robot center (x forward, y left, z up,
         // degrees)
         LimelightHelpers.setCameraPose_RobotSpace("limelight-dark",
-                Units.inchesToMeters(2.5), // Forward offset (meters)
-                Units.inchesToMeters(14.5), // Side offset (meters)
+                Units.inchesToMeters(-2.5), // Forward offset (meters)
+                Units.inchesToMeters(-14.5), // Side offset (meters)
                 Units.inchesToMeters(17), // Height offset (meters)
                 0.0, // Roll (degrees)
                 15.0, // Pitch (degrees)
                 180.0 // Yaw (degrees)
+        );
+
+                // Change the camera pose relative to robot center (x forward, y left, z up,
+        // degrees)
+        LimelightHelpers.setCameraPose_RobotSpace("limelight-bin",
+                Units.inchesToMeters(2.5), // Forward offset (meters)
+                Units.inchesToMeters(0), // Side offset (meters)
+                Units.inchesToMeters(19), // Height offset (meters)
+                0.0, // Roll (degrees)
+                0, // Pitch (degrees)
+                0 // Yaw (degrees)
         );
 
         // Set AprilTag offset tracking point (meters)
@@ -48,9 +59,11 @@ public class VisionSubsystem extends SubsystemBase {
         // and reduced range
 
         LimelightHelpers.setPipelineIndex("limelight-dark", 0);
+        LimelightHelpers.setPipelineIndex("limelight-bin", 0);
     }
 
-    public void updateRobotPose(SwerveDrivePoseEstimator poseEstimator, AHRS gyro) {
+    public void updateRobotPoseTurretSide(SwerveDrivePoseEstimator poseEstimator, AHRS gyro) {
+      
         LimelightHelpers.SetRobotOrientation("limelight-dark",
                 poseEstimator.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0, 0);
         LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-dark");
@@ -69,6 +82,34 @@ public class VisionSubsystem extends SubsystemBase {
             if (!doRejectUpdate) {
 
                 SmartDashboard.putNumber("Updating with Vision ", (new Date()).getTime());
+                poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.7, .7, 9999999));
+                poseEstimator.addVisionMeasurement(
+                        mt2.pose,
+                        mt2.timestampSeconds);
+            }
+        }
+    };
+
+    public void updateRobotPoseBinSide(SwerveDrivePoseEstimator poseEstimator, AHRS gyro) {
+      
+        LimelightHelpers.SetRobotOrientation("limelight-bin",
+                poseEstimator.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0, 0);
+        LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-dark");
+
+        boolean doRejectUpdate = false;
+
+        // if our angular velocity is greater than 360 degrees per second, ignore vision
+        // updates
+        if (Math.abs(gyro.getRate()) > 360) {
+            doRejectUpdate = true;
+        }
+        if (mt2 != null) {
+            if (mt2.tagCount == 0) {
+                doRejectUpdate = true;
+            }
+            if (!doRejectUpdate) {
+
+                SmartDashboard.putNumber("Updating with Vision 2", (new Date()).getTime());
                 poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.7, .7, 9999999));
                 poseEstimator.addVisionMeasurement(
                         mt2.pose,

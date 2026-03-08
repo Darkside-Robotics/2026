@@ -16,6 +16,7 @@ import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ClimbingSubsystem;
 import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.subsystems.TargetingSubsystem;
 import frc.robot.subsystems.TurretSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 
@@ -25,8 +26,11 @@ public class RobotContainer {
     private final VisionSubsystem visionSubsystem = new VisionSubsystem();
     private final SwerveSubsystem swerveSubsystem = new SwerveSubsystem(visionSubsystem);
     private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
+
     private final IndexingSubsystem indexingSubsystem = new IndexingSubsystem();
-    private final TurretSubsystem turretSubsystem = new TurretSubsystem(indexingSubsystem);
+    private final TargetingSubsystem targetingSubsystem = new TargetingSubsystem(visionSubsystem, swerveSubsystem);
+    private final TurretSubsystem turretSubsystem = new TurretSubsystem(indexingSubsystem, targetingSubsystem);
+    
 
     private final ClimbingSubsystem climbingSubsystem = new ClimbingSubsystem();
 
@@ -40,13 +44,14 @@ public class RobotContainer {
     public RobotContainer(TimedRobot robot) {
 
         swerveSubsystem.setDefaultCommand(new TargetingSwerveJoystickCmd(
+                targetingSubsystem,
                 swerveSubsystem,
                 () -> controller.getLeftY(),
                 () -> controller.getLeftX(),
                 () -> -controller.getRightX(),
                 () -> !controller.leftTrigger(0.2).getAsBoolean(),
                 () -> !controller.leftStick().getAsBoolean(),
-                () -> controller.rightTrigger().getAsBoolean(), robot));
+                () -> controller.rightBumper().getAsBoolean(), robot));
 
         configureButtonBindings();
 
@@ -72,6 +77,9 @@ public class RobotContainer {
         controller.povDown().onTrue(climbingSubsystem.RightClimbDownCommand());
         controller.povUp().onTrue(climbingSubsystem.RightClimbUpCommand());
 
+        controller.rightBumper().whileTrue(turretSubsystem.FireCmd());
+        controller.rightBumper().whileFalse(turretSubsystem.StopFiringCmd());
+        
         controller.rightTrigger().whileTrue(turretSubsystem.FireCmd());
         controller.rightTrigger().whileFalse(turretSubsystem.StopFiringCmd());
 

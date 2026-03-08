@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+import java.util.Date;
+
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkClosedLoopController;
@@ -20,7 +22,7 @@ import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.subsystems.TurretSubsystem.TurretConstants.FlyWheel;
+import frc.robot.subsystems.TurretSubsystem.TurretConstants.FlyWheelConstants;
 import frc.robot.subsystems.TurretSubsystem.TurretConstants.Hood;
 
 public class TurretSubsystem extends SubsystemBase {
@@ -40,8 +42,10 @@ public class TurretSubsystem extends SubsystemBase {
 
   private double hoodAngle = 0.0;
 
-  private double flywheelSpeed = 0.0;
+  private double flywheelDefaultSpeed = 50.0;
   private double flywheelSpeedFactor = 50.0;
+
+  private double flywheelSpeed = 50.0;
 
   // private double turnTableHomeAngle = 0.0;
   // private double turnTableAngle = 0.0;
@@ -78,11 +82,13 @@ public class TurretSubsystem extends SubsystemBase {
       }
     }
 
-    public static final class FlyWheel {
+    public static final class FlyWheelConstants {
+      public static final double ClosedLoopRampRate = 1.0;
+
       public static final class PID {
         public static final double P = 0.0001;
         public static final double I = 0;
-        public static final double D = 0;
+        public static final double D = 0.12;
         public static final double FF = (1.0 / 565.0);
       }
 
@@ -103,15 +109,16 @@ public class TurretSubsystem extends SubsystemBase {
     }
   }
 
-  private final double kClosedLoopRampRate = 5;
-
   private boolean fire = false;
 
   private final IndexingSubsystem indexingSubsystem;
+  private final TargetingSubsystem targetingSubsystem;
 
   /** Creates a new ExampleSubsystem. */
-  public TurretSubsystem(IndexingSubsystem indexingSubsystem) {
+  public TurretSubsystem(IndexingSubsystem indexingSubsystem, TargetingSubsystem targetingSubsystem) {
     this.indexingSubsystem = indexingSubsystem;
+    this.targetingSubsystem = targetingSubsystem;
+
     /*
      * turntableMotor = new SparkMax(TurretConstants.Turntable.Motor.MotorPort,
      * com.revrobotics.spark.SparkLowLevel.MotorType.kBrushless);
@@ -133,26 +140,28 @@ public class TurretSubsystem extends SubsystemBase {
      * turntableMotor.getEncoder().setPosition(0);
      */
 
-    leadflywheelMotor = new SparkFlex(TurretConstants.FlyWheel.LeadMotor.MotorPort,
+    leadflywheelMotor = new SparkFlex(TurretConstants.FlyWheelConstants.LeadMotor.MotorPort,
         com.revrobotics.spark.SparkLowLevel.MotorType.kBrushless);
     leadflywheelMotorConfig = new SparkFlexConfig();
-    leadflywheelMotorConfig.closedLoop.pid(FlyWheel.PID.P, FlyWheel.PID.I, FlyWheel.PID.D).outputRange(-0.8, 0.8);
-    leadflywheelMotorConfig.closedLoop.feedForward.kV(FlyWheel.PID.FF);
-    leadflywheelMotorConfig.idleMode(IdleMode.kCoast).closedLoopRampRate(kClosedLoopRampRate);
+    leadflywheelMotorConfig.closedLoop.pid(FlyWheelConstants.PID.P, FlyWheelConstants.PID.I, FlyWheelConstants.PID.D)
+        .outputRange(-0.8, 0.8);
+    leadflywheelMotorConfig.closedLoop.feedForward.kV(FlyWheelConstants.PID.FF);
+    leadflywheelMotorConfig.idleMode(IdleMode.kCoast)
+        .closedLoopRampRate(TurretConstants.FlyWheelConstants.ClosedLoopRampRate);
     leadflywheelMotorConfig.encoder.velocityConversionFactor(1);
-    leadflywheelMotorConfig.smartCurrentLimit(TurretConstants.FlyWheel.LeadMotor.CurrentStalledLimit,
-        TurretConstants.FlyWheel.LeadMotor.CurrentFreeLimit);
+    leadflywheelMotorConfig.smartCurrentLimit(TurretConstants.FlyWheelConstants.LeadMotor.CurrentStalledLimit,
+        TurretConstants.FlyWheelConstants.LeadMotor.CurrentFreeLimit);
     leadflywheelMotor.configure(leadflywheelMotorConfig, ResetMode.kResetSafeParameters,
         PersistMode.kPersistParameters);
 
-    followflywheelMotor = new SparkFlex(TurretConstants.FlyWheel.FollowMotor.MotorPort,
+    followflywheelMotor = new SparkFlex(TurretConstants.FlyWheelConstants.FollowMotor.MotorPort,
         com.revrobotics.spark.SparkLowLevel.MotorType.kBrushless);
     followflywheelMotorConfig = new SparkFlexConfig();
-    followflywheelMotorConfig.idleMode(IdleMode.kCoast).follow(FlyWheel.LeadMotor.MotorPort, true);
+    followflywheelMotorConfig.idleMode(IdleMode.kCoast).follow(FlyWheelConstants.LeadMotor.MotorPort, true);
     followflywheelMotorConfig.encoder.velocityConversionFactor(1);
-    followflywheelMotorConfig.smartCurrentLimit(TurretConstants.FlyWheel.LeadMotor.CurrentStalledLimit,
-        TurretConstants.FlyWheel.LeadMotor.CurrentFreeLimit);
-    followflywheelMotor.configure(leadflywheelMotorConfig, ResetMode.kResetSafeParameters,
+    followflywheelMotorConfig.smartCurrentLimit(TurretConstants.FlyWheelConstants.LeadMotor.CurrentStalledLimit,
+        TurretConstants.FlyWheelConstants.LeadMotor.CurrentFreeLimit);
+    followflywheelMotor.configure(followflywheelMotorConfig, ResetMode.kResetSafeParameters,
         PersistMode.kPersistParameters);
 
     flywheelController = leadflywheelMotor.getClosedLoopController();
@@ -162,7 +171,7 @@ public class TurretSubsystem extends SubsystemBase {
         com.revrobotics.spark.SparkLowLevel.MotorType.kBrushless);
     hoodMotorConfig = new SparkMaxConfig();
     hoodMotorConfig.idleMode(IdleMode.kBrake)
-        .closedLoopRampRate(kClosedLoopRampRate);
+        .closedLoopRampRate(1);
     hoodMotorConfig.closedLoop.pid(Hood.PID.P, Hood.PID.I, Hood.PID.D).maxOutput(0.3);
     hoodMotorConfig.encoder.positionConversionFactor(2);
 
@@ -198,26 +207,36 @@ public class TurretSubsystem extends SubsystemBase {
   }
 
   public double calculateFlywheelSpeed(double distance) {
+    return (850/20) * (distance*3.28);
+    //return 650;
+  }
+  public double calculateHoodAngle(double distance) {
     return 0;
+    //return 650;
   }
 
   @Override
   public void periodic() {
+
+    double invertFlywheel = -1;
+
     hoodMotor.set(hoodAngle);
     if (fire) {
-      flywheelController.setSetpoint(-800, ControlType.kVelocity);
-      if (flywheelController.isAtSetpoint()) {
-        indexingSubsystem.setIndexerVelocity(2);
-      }
-      else {
+      flywheelController.setSetpoint(invertFlywheel * calculateFlywheelSpeed(targetingSubsystem.getTargetDistance()), ControlType.kVelocity);
+
+      if (Math.abs(leadflywheelMotor.getEncoder().getVelocity() - 50) > calculateFlywheelSpeed(targetingSubsystem.getTargetDistance())) {
+
+        indexingSubsystem.setIndexerVelocity(2.5);
+
+      } else {
         indexingSubsystem.setIndexerVelocity(0);
       }
-    }
-    else {   
-      flywheelController.setSetpoint(0, ControlType.kVelocity);
+    } else {
+
+      flywheelController.setSetpoint(invertFlywheel * this.flywheelDefaultSpeed, ControlType.kVelocity);
       indexingSubsystem.setIndexerVelocity(0);
     }
-    SmartDashboard.putNumber("Flywheel Speed", flywheelSpeed);
+    SmartDashboard.putNumber("Flywheel Speed", calculateFlywheelSpeed(targetingSubsystem.getTargetDistance()));
   }
 
   @Override
@@ -288,7 +307,8 @@ public class TurretSubsystem extends SubsystemBase {
           fire = true;
         });
   }
-    public Command StopFiringCmd() {
+
+  public Command StopFiringCmd() {
     return runOnce(
         () -> {
           fire = false;

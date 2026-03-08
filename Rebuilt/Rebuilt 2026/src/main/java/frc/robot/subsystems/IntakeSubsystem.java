@@ -51,7 +51,7 @@ public class IntakeSubsystem extends SubsystemBase {
     private SparkMaxConfig intakeWheelMotorConfig;
     private SparkClosedLoopController intakeWheelController;
     private double intakeWheelSpeed = 0.0;
-    private double spinningIntakeWheelSpeed = 600.0;
+    private double spinningIntakeWheelSpeed = 900.0;
     private boolean spin = false;
 
     public static final class IntakeWheelConstants {
