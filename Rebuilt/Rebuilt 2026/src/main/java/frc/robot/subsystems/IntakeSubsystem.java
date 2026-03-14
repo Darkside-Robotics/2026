@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+import java.util.Date;
+
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkClosedLoopController;
@@ -43,7 +45,7 @@ public class IntakeSubsystem extends SubsystemBase {
     private final SparkMaxConfig armMotorConfig;
     private final SparkClosedLoopController armController;
     private double armPosition = 0.0;
-    private double extendedArmPosition = 0.0;
+    private double extendedArmPosition = 6.0;
     private boolean armOut = false;
 
     // wheels:
@@ -80,8 +82,7 @@ public class IntakeSubsystem extends SubsystemBase {
         armMotorConfig.idleMode(IdleMode.kBrake)
                 .closedLoopRampRate(kClosedLoopRampRate);
         armMotorConfig.closedLoop.pid(ArmConstants.PID.P,
-                ArmConstants.PID.I, ArmConstants.PID.D)
-                .maxOutput(0.8);
+                ArmConstants.PID.I, ArmConstants.PID.D).outputRange(-0.3, 0.8);
         armMotorConfig.encoder.positionConversionFactor(1);
 
         armMotorConfig.smartCurrentLimit(ArmConstants.Motor.CurrentStalledLimit,
@@ -128,16 +129,52 @@ public class IntakeSubsystem extends SubsystemBase {
         return 0;
     }
 
+    private boolean extendedSetpointFound = false;
+    private Date outSetPointTimer = null;
+
+    public void pushOutToHardStop() {
+        armMotor.set((ArmConstants.ArmInverted ? -1 : 1) * 0.2);
+        if (Math.abs(armMotor.getAppliedOutput()) - 0.3 < .025) {
+            if (outSetPointTimer == null) {
+                outSetPointTimer = new Date();
+                SmartDashboard.putNumber("Intake Arm Out Limit Timer (start)", outSetPointTimer.getTime());
+
+            } else {
+                long currentTime = (new Date()).getTime();
+
+                SmartDashboard.putNumber("Intake Arm Out Limit Elapsed Time",
+                        (currentTime - outSetPointTimer.getTime()));
+
+                if ((currentTime - outSetPointTimer.getTime()) > 2000) {
+                    extendedSetpointFound = true;
+                    armMotor.getEncoder()
+                            .setPosition((ArmConstants.ArmInverted ? -1 : 1) * extendedArmPosition
+                                    - (ArmConstants.ArmInverted ? -1 : 1) * .025);
+                }
+            }
+        }
+
+        SmartDashboard.putBoolean("Intake Arm Out Limit Set Point Found", extendedSetpointFound);
+    }
+
     @Override
     public void periodic() {
         if (armOut == true && spin == true) {
-
-            armController.setSetpoint((ArmConstants.ArmInverted ? -1 : 1) * extendedArmPosition, ControlType.kPosition);
+            if (extendedSetpointFound == false) {
+                pushOutToHardStop();
+            } else {
+                armController.setSetpoint((ArmConstants.ArmInverted ? -1 : 1) * extendedArmPosition,
+                        ControlType.kPosition);
+            }
             intakeWheelController.setSetpoint(spinningIntakeWheelSpeed, ControlType.kVelocity);
         } else {
             if (armOut == true) {
-                armController.setSetpoint((ArmConstants.ArmInverted ? -1 : 1) * extendedArmPosition,
-                        ControlType.kPosition);
+                if (extendedSetpointFound == false) {
+                    pushOutToHardStop();
+                } else {
+                    armController.setSetpoint((ArmConstants.ArmInverted ? -1 : 1) * extendedArmPosition,
+                            ControlType.kPosition);
+                }
             } else {
                 armController.setSetpoint(0, ControlType.kPosition);
             }
@@ -197,7 +234,6 @@ public class IntakeSubsystem extends SubsystemBase {
                 });
     }
 
-    
     public Command IntakeOffCmd() {
         return runOnce(
                 () -> {
