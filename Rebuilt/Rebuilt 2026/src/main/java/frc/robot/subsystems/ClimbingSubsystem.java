@@ -80,6 +80,9 @@ public class ClimbingSubsystem extends SubsystemBase {
     public void stop() {
         rightClimbingMotor.set(0);
         leftClimbingMotor.set(0);
+        
+        rightClimbingMotor.stopMotor();
+        leftClimbingMotor.stopMotor();
     }
 
     public Command LeftClimbUpCommand() {
@@ -107,6 +110,30 @@ public class ClimbingSubsystem extends SubsystemBase {
         return runOnce(
                 () -> {
                     rightGoDown();
+                });
+    }
+
+
+    public Command ClimbUpCommand() {
+        return runOnce(
+                () -> {
+                    rightGoUp();
+                    leftGoUp();
+                });
+    }
+
+    public Command ClimbDownCommand() {
+        return runOnce(
+                () -> {
+                    rightGoDown();
+                    leftGoDown();
+                });
+    }
+
+    public Command StopCommand() {
+        return runOnce(
+                () -> {
+                    stop();
                 });
     }
 

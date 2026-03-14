@@ -6,6 +6,7 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -51,20 +52,23 @@ public class TargetingSubsystem extends SubsystemBase {
 
     double hubX = 4.6;
     double hubY = 4.0;
+    double shootingLineX = 12.5;
+    double middleLineY = 4;
+
     if (isRed) {
-      hubX = 11.9;
+      hubX = 11.75;
       hubY = 4.0;
+      shootingLineX = 12.5;
     } else {
-      hubX = 4.6;
+      hubX = 4.75;
       hubY = 4.0;
+      shootingLineX = 4.0;
     }
 
     double yDistance = Math.abs(robotPose2d.getY() - hubY);
     double xDistance = Math.abs(robotPose2d.getX() - hubX);
     double relativeTargetAngle = Math.toDegrees(Math.atan(yDistance / xDistance));
 
-    double shootingLineX = 12.5;
-    double middleLineY = 4;
 
     boolean positiveSide = shootingLineX < robotPose2d.getX();
     boolean leftSide = middleLineY < robotPose2d.getY();
@@ -78,7 +82,7 @@ public class TargetingSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Robot Current Angle (Targeting)", robotPose2d.getRotation().rotateBy(Rotation2d.fromDegrees(180)).getDegrees());
     SmartDashboard.putNumber("Robot Target Angle", correctedAngle);
     SmartDashboard.putNumber("Robot Target Distance", targetDistance);    
-    SmartDashboard.putNumber("Robot Target Distance (f)", targetDistance);
+    SmartDashboard.putNumber("Robot Target Distance (f)", Units.metersToFeet(targetDistance));
   }
 
   @Override

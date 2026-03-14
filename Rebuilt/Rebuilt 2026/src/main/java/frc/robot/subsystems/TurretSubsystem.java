@@ -52,6 +52,7 @@ public class TurretSubsystem extends SubsystemBase {
   // private boolean intakeExtended = false;
 
   public static final class TurretConstants {
+
     public static final class Turntable {
       public static final class PID {
         public static final int P = 1;
@@ -69,9 +70,9 @@ public class TurretSubsystem extends SubsystemBase {
 
     public static final class Hood {
       public static final class PID {
-        public static final double P = 0.025;
+        public static final double P = 0.09;
         public static final double I = 0;
-        public static final double D = 0.001;
+        public static final double D = 0.012;
       }
 
       public static final class Motor {
@@ -83,6 +84,7 @@ public class TurretSubsystem extends SubsystemBase {
     }
 
     public static final class FlyWheelConstants {
+
       public static final double ClosedLoopRampRate = 1.0;
 
       public static final class PID {
@@ -109,158 +111,157 @@ public class TurretSubsystem extends SubsystemBase {
     }
   }
 
-
-  private static final double[][] firingTable = new double[][]{{ 1.97855480669544, 60, 8.8 },
-{ 2.02377745659021, 60, 8.9 },
-{ 2.05229919599899, 59, 8.9 },
-{ 2.06147713718133, 60, 8.6 },
-{ 2.11893501437614, 60, 8.4 },
-{ 2.16968615063316, 60, 8.5 },
-{ 2.20715741127838, 60, 8.3 },
-{ 2.23385778603523, 57, 9.2 },
-{ 2.26673997598778, 57, 8.9 },
-{ 2.29315366602036, 56, 9.3 },
-{ 2.31796412138631, 57, 9 },
-{ 2.34976836202329, 58, 8.5 },
-{ 2.37723096217951, 57, 8.8 },
-{ 2.41468544027858, 57, 8.6 },
-{ 2.4251147833136, 58, 8.4 },
-{ 2.48319930689353, 58, 8.5 },
-{ 2.48723271463479, 58, 8.3 },
-{ 2.52575493454939, 59, 8.2 },
-{ 2.56572359775245, 59, 8.1 },
-{ 2.57981435100718, 60, 8 },
-{ 2.62946585448674, 59, 8.2 },
-{ 2.66113773223191, 59, 8.1 },
-{ 2.66753139501133, 60, 8 },
-{ 2.71206272426009, 57, 8.3 },
-{ 2.73873385818534, 58, 8.2 },
-{ 2.77780731345321, 57, 8.4 },
-{ 2.81215036580624, 57, 8.3 },
-{ 2.83121514458465, 58, 8.2 },
-{ 2.86373240552014, 52, 9.2 },
-{ 2.9004118417721, 53, 9 },
-{ 2.91427078988342, 54, 8.8 },
-{ 2.96353047061474, 54, 8.7 },
-{ 2.97805310582273, 56, 8.4 },
-{ 3.00856004854453, 57, 8.2 },
-{ 3.04399145117283, 55, 8.5 },
-{ 3.07032474652129, 56, 8.4 },
-{ 3.10430481260994, 54, 8.6 },
-{ 3.13854712038984, 55, 8.5 },
-{ 3.16496277894266, 56, 8.3 },
-{ 3.20111300088596, 54, 8.6 },
-{ 3.22860013869176, 55, 8.5 },
-{ 3.25753343929261, 53, 8.7 },
-{ 3.29341848273054, 54, 8.6 },
-{ 3.3169804008309, 55, 8.4 },
-{ 3.35206011598177, 53, 8.7 },
-{ 3.3815282608549, 54, 8.6 },
-{ 3.40402844710434, 52, 8.8 },
-{ 3.44238560704031, 53, 8.7 },
-{ 3.46426366817758, 54, 8.5 },
-{ 3.49653871164523, 52, 8.8 },
-{ 3.52878390283543, 53, 8.7 },
-{ 3.5638286816088, 50, 9.1 },
-{ 3.58511236918437, 52, 8.8 },
-{ 3.63420266468649, 51, 8.9 },
-{ 3.66999545765938, 52, 8.8 },
-{ 3.69078070745128, 53, 8.7 },
-{ 3.72121829495454, 51, 8.9 },
-{ 3.75141393027827, 52, 8.8 },
-{ 3.76466356006548, 50, 9 },
-{ 3.80475330001187, 51, 8.9 },
-{ 3.82957566399241, 52, 8.8 },
-{ 3.88501242251793, 51, 8.9 },
-{ 3.90467223167854, 52, 8.8 },
-{ 3.93261650631243, 50, 9 },
-{ 3.96218465569684, 51, 8.9 },
-{ 3.99432675359731, 48, 9.4 },
-{ 4.01026088046147, 47, 9.5 },
-{ 4.05964436639066, 49, 9.2 },
-{ 4.08973471638599, 48, 9.3 },
-{ 4.10594838055325, 47, 9.5 },
-{ 4.14268732728467, 49, 9.2 },
-{ 4.17479801202616, 48, 9.3 },
-{ 4.19815633518715, 47, 9.5 },
-{ 4.23253248175341, 50, 9 },
-{ 4.25682333282205, 48, 9.3 },
-{ 4.29987578897691, 49, 9.2 },
-{ 4.33597057218649, 48, 9.3 },
-{ 4.37286614396717, 47, 9.5 },
-{ 4.38649267735931, 46, 9.6 },
-{ 4.41238859640044, 48, 9.3 },
-{ 4.44622366710416, 49, 9.2 },
-{ 4.48621617911561, 48, 9.3 },
-{ 4.51567689740184, 49, 9.2 },
-{ 4.55323533944965, 46, 9.6 },
-{ 4.56867142371728, 45, 9.8 },
-{ 4.61309213103971, 47, 9.5 },
-{ 4.63250644109915, 46, 9.6 },
-{ 4.65426714125765, 45, 9.8 },
-{ 4.69340971770335, 48, 9.3 },
-{ 4.71059402759211, 49, 9.2 },
-{ 4.760327413439, 47, 9.5 },
-{ 4.78349901566963, 46, 9.6 },
-{ 4.83043945267676, 47, 9.5 },
-{ 4.85545641448837, 46, 9.6 },
-{ 4.87610488374287, 42, 10.4 },
-{ 4.90701651629587, 43, 10.2 },
-{ 4.92519973949731, 46, 9.6 },
-{ 4.96419165060725, 47, 9.5 },
-{ 4.99282963041507, 46, 9.6 },
-{ 5.02802792689226, 47, 9.5 },
-{ 5.04718334567607, 48, 9.4 },
-{ 5.08995864269115, 47, 9.5 },
-{ 5.10555066208128, 48, 9.4 },
-{ 5.16220129270988, 48, 9.4 },
-{ 5.18294657312464, 45, 9.8 },
-{ 5.22303057246782, 44, 10 },
-{ 5.2497156111037, 45, 9.8 },
-{ 5.26995988749666, 51, 9.2 },
-{ 5.31523745620172, 51, 9.2 },
-{ 5.31912423878291, 53, 9.1 },
-{ 5.36178771187151, 54, 9.1 },
-{ 5.39934331431934, 54, 9.1 },
-{ 5.42897902261059, 55, 9.1 },
-{ 5.46374748692629, 55, 9.1 },
-{ 5.48041163181749, 56, 9.1 },
-{ 5.51603231037915, 53, 9.2 },
-{ 5.55408254285007, 53, 9.2 },
-{ 5.59227831160241, 54, 9.2 },
-{ 5.60397827852857, 51, 9.3 },
-{ 5.65167515424488, 50, 9.4 },
-{ 5.66441760623259, 52, 9.3 },
-{ 5.70295371312822, 52, 9.3 },
-{ 5.7313067018242, 49, 9.5 },
-{ 5.77576667078583, 49, 9.5 },
-{ 5.80092475488831, 48, 9.6 },
-{ 5.81116112026753, 47, 9.7 },
-{ 5.85994954302607, 47, 9.7 },
-{ 5.87397096483327, 55, 9.3 },
-{ 5.90487919506244, 55, 9.3 },
-{ 5.93830832927968, 52, 9.4 },
-{ 5.98152414551117, 53, 9.4 },
-{ 6.01540630087529, 53, 9.4 },
-{ 6.04527113968229, 54, 9.4 },
-{ 6.07678393771944, 54, 9.4 },
-{ 6.09333332500969, 55, 9.4 },
-{ 6.13685726070912, 52, 9.5 },
-{ 6.17129757679985, 52, 9.5 },
-{ 6.18484514119768, 50, 9.6 },
-{ 6.22224668725877, 50, 9.6 },
-{ 6.24283069092141, 53, 9.5 },
-{ 6.26878350687093, 54, 9.5 },
-{ 6.29867197130141, 54, 9.5 },
-{ 6.32785018981971, 43, 10.3 },
-{ 6.38094877693918, 43, 10.3 },
-{ 6.39669359910852, 48, 9.8 },
-{ 6.42595485567963, 47, 9.9 }
+  private static final double[][] firingTable = new double[][] {
+      { 1.7344, 63, 8.5 },
+      { 1.7755, 63, 8.6 },
+      { 1.8192, 62, 8.6 },
+      { 1.8617, 62, 8.7 },
+      { 1.9007, 61, 8.7 },
+      { 1.9287, 63, 8.2 },
+      { 1.9638, 62, 8.2 },
+      { 1.9681, 63, 8 },
+      { 2.0176, 63, 8.1 },
+      { 2.0388, 63, 7.9 },
+      { 2.0615, 60, 8.6 },
+      { 2.0957, 63, 7.8 },
+      { 2.122, 62, 8 },
+      { 2.1753, 62, 8.1 },
+      { 2.1798, 62, 7.9 },
+      { 2.2353, 62, 8 },
+      { 2.2614, 61, 8 },
+      { 2.2829, 62, 7.9 },
+      { 2.3183, 61, 8.1 },
+      { 2.3401, 60, 8.1 },
+      { 2.3669, 61, 8 },
+      { 2.4046, 61, 7.9 },
+      { 2.448, 60, 8.1 },
+      { 2.4658, 61, 8 },
+      { 2.4952, 61, 7.9 },
+      { 2.5384, 63, 7.8 },
+      { 2.5686, 62, 7.8 },
+      { 2.5805, 61, 7.9 },
+      { 2.6348, 62, 7.9 },
+      { 2.6421, 62, 7.8 },
+      { 2.68, 63, 7.8 },
+      { 2.7115, 62, 7.8 },
+      { 2.745, 63, 7.8 },
+      { 2.7815, 62, 7.9 },
+      { 2.8087, 61, 7.9 },
+      { 2.8488, 62, 7.9 },
+      { 2.8768, 61, 7.9 },
+      { 2.903, 60, 8 },
+      { 2.9172, 59, 8.1 },
+      { 2.9414, 61, 7.9 },
+      { 2.9732, 62, 7.9 },
+      { 3.0307, 62, 7.9 },
+      { 3.0489, 63, 7.9 },
+      { 3.0792, 61, 8 },
+      { 3.104, 60, 8 },
+      { 3.139, 61, 8 },
+      { 3.1646, 60, 8 },
+      { 3.196, 61, 8 },
+      { 3.2175, 62, 8 },
+      { 3.2685, 62, 8 },
+      { 3.2767, 63, 8 },
+      { 3.3222, 63, 8 },
+      { 3.36, 60, 8.1 },
+      { 3.3853, 61, 8.1 },
+      { 3.4141, 60, 8.1 },
+      { 3.4361, 61, 8.1 },
+      { 3.4847, 61, 8.1 },
+      { 3.4938, 62, 8.1 },
+      { 3.5223, 59, 8.2 },
+      { 3.5761, 59, 8.2 },
+      { 3.6026, 60, 8.2 },
+      { 3.6277, 59, 8.2 },
+      { 3.6512, 60, 8.2 },
+      { 3.6824, 58, 8.3 },
+      { 3.7313, 56, 8.4 },
+      { 3.7561, 55, 8.5 },
+      { 3.79, 56, 8.4 },
+      { 3.8193, 55, 8.5 },
+      { 3.8362, 54, 8.6 },
+      { 3.8802, 55, 8.5 },
+      { 3.9015, 54, 8.6 },
+      { 3.9386, 55, 8.5 },
+      { 3.9644, 54, 8.6 },
+      { 3.9942, 56, 8.5 },
+      { 4.0257, 58, 8.4 },
+      { 4.0468, 59, 8.4 },
+      { 4.0895, 59, 8.4 },
+      { 4.1048, 53, 8.7 },
+      { 4.1449, 55, 8.6 },
+      { 4.165, 53, 8.7 },
+      { 4.1984, 55, 8.6 },
+      { 4.2499, 55, 8.6 },
+      { 4.2559, 58, 8.5 },
+      { 4.296, 56, 8.6 },
+      { 4.3433, 56, 8.6 },
+      { 4.3449, 54, 8.7 },
+      { 4.3965, 54, 8.7 },
+      { 4.4334, 53, 8.8 },
+      { 4.4574, 52, 8.9 },
+      { 4.4868, 53, 8.8 },
+      { 4.5147, 52, 8.9 },
+      { 4.5385, 53, 8.8 },
+      { 4.57, 52, 8.9 },
+      { 4.5985, 54, 8.8 },
+      { 4.6462, 54, 8.8 },
+      { 4.6615, 58, 8.7 },
+      { 4.6982, 58, 8.7 },
+      { 4.7371, 55, 8.8 },
+      { 4.7429, 53, 8.9 },
+      { 4.7908, 53, 8.9 },
+      { 4.8116, 56, 8.8 },
+      { 4.8508, 56, 8.8 },
+      { 4.8699, 57, 8.8 },
+      { 4.9325, 54, 8.9 },
+      { 4.9719, 55, 8.9 },
+      { 5.0116, 55, 8.9 },
+      { 5.0381, 56, 8.9 },
+      { 5.0538, 57, 8.9 },
+      { 5.0885, 57, 8.9 },
+      { 5.1278, 54, 9 },
+      { 5.1679, 54, 9 },
+      { 5.2023, 55, 9 },
+      { 5.2393, 55, 9 },
+      { 5.2608, 56, 9 },
+      { 5.2951, 56, 9 },
+      { 5.3191, 53, 9.1 },
+      { 5.3618, 54, 9.1 },
+      { 5.3993, 54, 9.1 },
+      { 5.429, 55, 9.1 },
+      { 5.4637, 55, 9.1 },
+      { 5.4804, 56, 9.1 },
+      { 5.516, 53, 9.2 },
+      { 5.5541, 53, 9.2 },
+      { 5.5923, 54, 9.2 },
+      { 5.6276, 54, 9.2 },
+      { 5.6663, 56, 9.2 },
+      { 5.6974, 56, 9.2 },
+      { 5.786, 53, 9.3 },
+      { 5.8199, 54, 9.3 },
+      { 5.8532, 54, 9.3 },
+      { 5.874, 55, 9.3 },
+      { 5.9049, 55, 9.3 },
+      { 5.9383, 52, 9.4 },
+      { 5.9815, 53, 9.4 },
+      { 6.0154, 53, 9.4 },
+      { 6.0453, 54, 9.4 },
+      { 6.0768, 54, 9.4 },
+      { 6.0933, 55, 9.4 },
+      { 6.1369, 52, 9.5 },
+      { 6.1713, 52, 9.5 },
+      { 6.2049, 52, 9.5 },
+      { 6.2428, 53, 9.5 },
+      { 6.2688, 54, 9.5 },
+      { 6.2987, 54, 9.5 },
+      { 6.4024, 52, 9.6 },
+      { 6.4382, 53, 9.6 },
   };
 
-
-
   private boolean fire = false;
+  private double flywheelAdjustableConstant = 0.3055;
 
   private final IndexingSubsystem indexingSubsystem;
   private final TargetingSubsystem targetingSubsystem;
@@ -269,27 +270,6 @@ public class TurretSubsystem extends SubsystemBase {
   public TurretSubsystem(IndexingSubsystem indexingSubsystem, TargetingSubsystem targetingSubsystem) {
     this.indexingSubsystem = indexingSubsystem;
     this.targetingSubsystem = targetingSubsystem;
-
-    /*
-     * turntableMotor = new SparkMax(TurretConstants.Turntable.Motor.MotorPort,
-     * com.revrobotics.spark.SparkLowLevel.MotorType.kBrushless);
-     * turntableMotorConfig = new SparkMaxConfig();
-     * turntableMotorConfig.idleMode(IdleMode.kBrake)
-     * .closedLoopRampRate(kClosedLoopRampRate);
-     * turntableMotorConfig.closedLoop.pid(TurntablePIDConstants.kP,
-     * TurntablePIDConstants.kI, TurntablePIDConstants.kD)
-     * .maxOutput(0.3);
-     * turntableMotorConfig.encoder.positionConversionFactor((2 * Math.PI) * 1.25);
-     * 
-     * turntableMotorConfig.smartCurrentLimit(TurretConstants.Turntable.Motor.
-     * CurrentStalledLimit,
-     * TurretConstants.Turntable.Motor.CurrentFreeLimit);
-     * turntableMotor.configure(turntableMotorConfig,
-     * ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-     * 
-     * turntableController = turntableMotor.getClosedLoopController();
-     * turntableMotor.getEncoder().setPosition(0);
-     */
 
     leadflywheelMotor = new SparkFlex(TurretConstants.FlyWheelConstants.LeadMotor.MotorPort,
         com.revrobotics.spark.SparkLowLevel.MotorType.kBrushless);
@@ -308,7 +288,7 @@ public class TurretSubsystem extends SubsystemBase {
     followflywheelMotor = new SparkFlex(TurretConstants.FlyWheelConstants.FollowMotor.MotorPort,
         com.revrobotics.spark.SparkLowLevel.MotorType.kBrushless);
     followflywheelMotorConfig = new SparkFlexConfig();
-    followflywheelMotorConfig.idleMode(IdleMode.kCoast).follow(FlyWheelConstants.LeadMotor.MotorPort, true);  
+    followflywheelMotorConfig.idleMode(IdleMode.kCoast).follow(FlyWheelConstants.LeadMotor.MotorPort, true);
     followflywheelMotorConfig.smartCurrentLimit(TurretConstants.FlyWheelConstants.LeadMotor.CurrentStalledLimit,
         TurretConstants.FlyWheelConstants.LeadMotor.CurrentFreeLimit);
     followflywheelMotor.configure(followflywheelMotorConfig, ResetMode.kResetSafeParameters,
@@ -331,75 +311,72 @@ public class TurretSubsystem extends SubsystemBase {
         PersistMode.kPersistParameters);
 
     hoodController = hoodMotor.getClosedLoopController();
-
     hoodMotor.getEncoder().setPosition(0);
-
   }
 
+  public void resetHood() {
+    hoodMotor.set(-0.4);
+    while (!hoodMotor.getReverseLimitSwitch().isPressed()) {
+      hoodMotor.set(-0.4);
+    }
+
+    hoodMotor.getEncoder().setPosition(0);
+  }
+
+  /**************************************************************** */
   /* ACTIONS */
-  /* TURN TABLE ACTIONS */
+  /**************************************************************** */
+  /* HOOD ACTIONS */
   public void setHoodAngle(double angle) {
     this.hoodAngle = angle;
   }
-
-  /* TURN TABLE ACTIONS */
-  // public void rotateToAngle(double angle) {
-  // turnTableAngle = angle;
-  // }
-
-  // public void setHome() {
-  // turnTableHomeAngle = turntableMotor.getEncoder().getPosition();
-  // }
 
   /* FLYWHEEL ACTIONS */
   public void setFlywheelSpeed(double flywheelSpeed) {
     this.flywheelSpeed = flywheelSpeed;
   }
 
+  public void setFlywheelConstant(double flywheelAdjustableConstant) {
+    this.flywheelAdjustableConstant = flywheelAdjustableConstant;
+  }
 
-  public static double[] getTurrentSettings(double distance)
-  {
+  public static double[] getTurrentSettings(double distance) {
     int fireTableIndex = 0;
-    while(fireTableIndex < firingTable.length && firingTable[fireTableIndex][0] < distance)
-    {      
+    while (fireTableIndex < firingTable.length - 1 && firingTable[fireTableIndex][0] < distance) {
       fireTableIndex++;
     }
     return firingTable[fireTableIndex];
-
   }
-
-
-  // public double calculateFlywheelSpeed(double distance) {
-  //   //return (850/20) * (distance*3.28);
-  //   //turn 400;
-  // }
-  // public double calculateHoodAngle(double distance) {
-  //   return 60-;
-  //   //return 650;
-  // }
 
   @Override
   public void periodic() {
 
     double[] targetingValues = getTurrentSettings(targetingSubsystem.getTargetDistance());
-    
-    SmartDashboard.putNumber("Target distance", targetingSubsystem.getTargetDistance()); 
-    SmartDashboard.putNumberArray("Target table", targetingValues); 
+
+    SmartDashboard.putNumber("Target distance", targetingSubsystem.getTargetDistance());
+    SmartDashboard.putNumberArray("Target table", targetingValues);
 
     double invertFlywheel = -1;
     double hoodAngle = targetingValues[1];
     double wheelSpeed = targetingValues[2];
-    double convertedWheelSpeed = wheelSpeed * 60.0 / 0.31918 / 4;
+    double convertedWheelSpeed = wheelSpeed * 60.0 / 0.31918 * flywheelAdjustableConstant;
 
-    hoodController.setSetpoint(Math.abs(60 - hoodAngle), ControlType.kPosition);
+    hoodController.setSetpoint(Math.abs(64.0 - hoodAngle), ControlType.kPosition);
 
     if (fire) {
+
       flywheelController.setSetpoint(invertFlywheel * convertedWheelSpeed, ControlType.kVelocity);
 
-      if (Math.abs(leadflywheelMotor.getEncoder().getVelocity() - 10) > convertedWheelSpeed) {
+      double currentRPM = leadflywheelMotor.getEncoder().getVelocity();
+      double targetRPM = convertedWheelSpeed;
+      double error = Math.abs(currentRPM - targetRPM);
+      double maxError = targetRPM * .05;
 
+      SmartDashboard.putNumber("Current Flywheel Speed (rpm)", currentRPM);
+      SmartDashboard.putNumber("Flywheel Error (rpm)", error);  
+
+      if (error < maxError) {
         indexingSubsystem.setIndexerVelocity(2.5);
-
       } else {
         indexingSubsystem.setIndexerVelocity(0);
       }
@@ -408,9 +385,12 @@ public class TurretSubsystem extends SubsystemBase {
       flywheelController.setSetpoint(invertFlywheel * this.flywheelDefaultSpeed, ControlType.kVelocity);
       indexingSubsystem.setIndexerVelocity(0);
     }
-    SmartDashboard.putNumber("Flywheel Speed (m/s)", wheelSpeed); 
-    SmartDashboard.putNumber("Converted Flywheel Speed (rpm)", convertedWheelSpeed);    
+    SmartDashboard.putNumber("Flywheel Speed (m/s)", wheelSpeed);
+    SmartDashboard.putNumber("Converted Flywheel Speed (rpm)", convertedWheelSpeed);  
+    SmartDashboard.putNumber("Flywheel Adjustment Constant", flywheelAdjustableConstant);  
     SmartDashboard.putNumber("Hood Angle", hoodAngle);
+    SmartDashboard.putNumber("Hood Set Point", Math.abs(64.0 - hoodAngle));
+    SmartDashboard.putNumber("Hood Encoder Position", hoodMotor.getEncoder().getPosition());
   }
 
   @Override
@@ -460,6 +440,20 @@ public class TurretSubsystem extends SubsystemBase {
         });
   }
 
+  public Command FlywheelAdjustmentConstantUpCmd() {
+    return runOnce(
+        () -> {
+          setFlywheelConstant(flywheelAdjustableConstant + .01);
+        });
+  }
+
+  public Command FlywheelAdjustmentConstantDownCmd() {
+    return runOnce(
+        () -> {
+          setFlywheelConstant(flywheelAdjustableConstant + .01);
+        });
+  }
+
   public Command SpinFlywheelUpCmd() {
     return runOnce(
         () -> {
@@ -470,7 +464,6 @@ public class TurretSubsystem extends SubsystemBase {
   public Command SpinFlywheelDownCmd() {
     return runOnce(
         () -> {
-
           setFlywheelSpeed(flywheelSpeed - flywheelSpeedFactor);
         });
   }
@@ -486,6 +479,13 @@ public class TurretSubsystem extends SubsystemBase {
     return runOnce(
         () -> {
           fire = false;
+        });
+  }
+
+  public Command ResetHoodCmd() {
+    return runOnce(
+        () -> {
+          this.resetHood();
         });
   }
 }

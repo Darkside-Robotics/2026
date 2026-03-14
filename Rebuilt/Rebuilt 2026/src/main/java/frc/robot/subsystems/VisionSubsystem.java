@@ -1,22 +1,29 @@
 package frc.robot.subsystems;
 
 import java.util.Date;
+import java.util.Vector;
 
 import com.studica.frc.AHRS;
 
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.library.vision.LimelightHelpers;
 import frc.robot.library.vision.LimelightHelpers.RawFiducial;
 
 public class VisionSubsystem extends SubsystemBase {
 
-    public VisionSubsystem() {
+    private double limeLightDarkAdjustmentTranslationX = 0.0;
+    private double limeLightDarkAdjustmentTranslationY = 0.0;
 
+    public VisionSubsystem() {
         LimelightHelpers.setLEDMode_ForceOff("limelight-dark");
 
         // Set a custom crop window for improved performance (-1 to 1 for each value)
@@ -24,16 +31,17 @@ public class VisionSubsystem extends SubsystemBase {
 
         // Change the camera pose relative to robot center (x forward, y left, z up,
         // degrees)
+
         LimelightHelpers.setCameraPose_RobotSpace("limelight-dark",
                 Units.inchesToMeters(-2.5), // Forward offset (meters)
                 Units.inchesToMeters(-14.5), // Side offset (meters)
                 Units.inchesToMeters(17), // Height offset (meters)
                 0.0, // Roll (degrees)
-                15.0, // Pitch (degrees)
-                180.0 // Yaw (degrees)
+                18.0, // Pitch (degrees)
+                -180.0 // Yaw (degrees)
         );
 
-                // Change the camera pose relative to robot center (x forward, y left, z up,
+        // Change the camera pose relative to robot center (x forward, y left, z up,
         // degrees)
         LimelightHelpers.setCameraPose_RobotSpace("limelight-bin",
                 Units.inchesToMeters(2.5), // Forward offset (meters)
@@ -63,7 +71,7 @@ public class VisionSubsystem extends SubsystemBase {
     }
 
     public void updateRobotPoseTurretSide(SwerveDrivePoseEstimator poseEstimator, AHRS gyro) {
-      
+
         LimelightHelpers.SetRobotOrientation("limelight-dark",
                 poseEstimator.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0, 0);
         LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-dark");
@@ -84,14 +92,15 @@ public class VisionSubsystem extends SubsystemBase {
                 SmartDashboard.putNumber("Updating with Vision ", (new Date()).getTime());
                 poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.7, .7, 9999999));
                 poseEstimator.addVisionMeasurement(
-                        mt2.pose,
+                        new Pose2d(mt2.pose.getX() + limeLightDarkAdjustmentTranslationX,
+                                mt2.pose.getY() + limeLightDarkAdjustmentTranslationY, mt2.pose.getRotation()),
                         mt2.timestampSeconds);
             }
         }
     };
 
     public void updateRobotPoseBinSide(SwerveDrivePoseEstimator poseEstimator, AHRS gyro) {
-      
+
         LimelightHelpers.SetRobotOrientation("limelight-bin",
                 poseEstimator.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0, 0);
         LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-dark");
@@ -118,91 +127,122 @@ public class VisionSubsystem extends SubsystemBase {
         }
     };
 
-    public class FiducialAndPose {
-
-        private RawFiducial fiducial;
-
-        public RawFiducial getFiducial() {
-            return fiducial;
-        }
-
-        public void setFiducial(RawFiducial fiducial) {
-            this.fiducial = fiducial;
-        }
-
-        private Pose3d pose;
-
-        public Pose3d getPose() {
-            return pose;
-        }
-
-        public void setPose(Pose3d pose) {
-            this.pose = pose;
-        }
-
-        public FiducialAndPose(RawFiducial fiducial, Pose3d pose) {
-            this.fiducial = fiducial;
-            this.pose = pose;
-        }
-
+    public void setLimeLightDarkAdjustmentTranslationX(double limeLightDarkAdjustmentTranslationX) {
+        this.limeLightDarkAdjustmentTranslationX = limeLightDarkAdjustmentTranslationX;
     }
 
-    public FiducialAndPose foundTargetDetailed(int targetId) {
+    // public class FiducialAndPose {
 
-        LimelightHelpers.setPriorityTagID("limelight-dark", targetId);
+    // private RawFiducial fiducial;
 
-        RawFiducial[] detected = LimelightHelpers.getRawFiducials("limelight-dark");
-        SmartDashboard.putNumber("Detected ", detected.length);
+    // public RawFiducial getFiducial() {
+    // return fiducial;
+    // }
 
-        RawFiducial targetDetected = null;
-        Pose3d targetPose = null;
+    // public void setFiducial(RawFiducial fiducial) {
+    // this.fiducial = fiducial;
+    // }
 
-        int DetetectionIndex = 0;
-        for (DetetectionIndex = 0; DetetectionIndex < detected.length; DetetectionIndex++) {
-            SmartDashboard.putNumber("Detection " + DetetectionIndex, detected[DetetectionIndex].id);
-            if (detected[DetetectionIndex].id == targetId) {
+    // private Pose3d pose;
 
-                targetDetected = detected[DetetectionIndex];
-                targetPose = LimelightHelpers.getTargetPose3d_RobotSpace("limelight-dark");
+    // public Pose3d getPose() {
+    // return pose;
+    // }
 
-            }
-        }
-        return targetDetected != null ? new FiducialAndPose(targetDetected, targetPose) : null;
-    }
+    // public void setPose(Pose3d pose) {
+    // this.pose = pose;
+    // }
 
-    public RawFiducial foundTarget(int targetId) {
+    // public FiducialAndPose(RawFiducial fiducial, Pose3d pose) {
+    // this.fiducial = fiducial;
+    // this.pose = pose;
+    // }
 
-        LimelightHelpers.setPriorityTagID("limelight-dark", targetId);
+    // }
 
-        RawFiducial[] detected = LimelightHelpers.getRawFiducials("limelight-dark");
-        SmartDashboard.putNumber("Detected ", detected.length);
+    // public FiducialAndPose foundTargetDetailed(int targetId) {
 
-        RawFiducial targetDetected = null;
+    // LimelightHelpers.setPriorityTagID("limelight-dark", targetId);
 
-        int DetetectionIndex = 0;
-        for (DetetectionIndex = 0; DetetectionIndex < detected.length; DetetectionIndex++) {
-            SmartDashboard.putNumber("Detection " + DetetectionIndex, detected[DetetectionIndex].id);
-            if (detected[DetetectionIndex].id == targetId) {
+    // RawFiducial[] detected = LimelightHelpers.getRawFiducials("limelight-dark");
+    // SmartDashboard.putNumber("Detected ", detected.length);
 
-                targetDetected = detected[DetetectionIndex];
-            }
-        }
-        return targetDetected;
-    }
+    // RawFiducial targetDetected = null;
+    // Pose3d targetPose = null;
+
+    // int DetetectionIndex = 0;
+    // for (DetetectionIndex = 0; DetetectionIndex < detected.length;
+    // DetetectionIndex++) {
+    // SmartDashboard.putNumber("Detection " + DetetectionIndex,
+    // detected[DetetectionIndex].id);
+    // if (detected[DetetectionIndex].id == targetId) {
+
+    // targetDetected = detected[DetetectionIndex];
+    // targetPose = LimelightHelpers.getTargetPose3d_RobotSpace("limelight-dark");
+
+    // }
+    // }
+    // return targetDetected != null ? new FiducialAndPose(targetDetected,
+    // targetPose) : null;
+    // }
+
+    // public RawFiducial foundTarget(int targetId) {
+
+    // LimelightHelpers.setPriorityTagID("limelight-dark", targetId);
+
+    // RawFiducial[] detected = LimelightHelpers.getRawFiducials("limelight-dark");
+    // SmartDashboard.putNumber("Detected ", detected.length);
+
+    // RawFiducial targetDetected = null;
+
+    // int DetetectionIndex = 0;
+    // for (DetetectionIndex = 0; DetetectionIndex < detected.length;
+    // DetetectionIndex++) {
+    // SmartDashboard.putNumber("Detection " + DetetectionIndex,
+    // detected[DetetectionIndex].id);
+    // if (detected[DetetectionIndex].id == targetId) {
+
+    // targetDetected = detected[DetetectionIndex];
+    // }
+    // }
+    // return targetDetected;
+    // }
 
     @Override
     public void periodic() {
-        SmartDashboard.putString("Detection ", "Running");
 
-        LimelightHelpers.setLEDMode_ForceOn("limelight-dark");
+        SmartDashboard.putNumber("Vision Offset X", limeLightDarkAdjustmentTranslationX);
+        SmartDashboard.putNumber("Vision Offset Y", limeLightDarkAdjustmentTranslationY);
+        /*
+         * SmartDashboard.putString("Detection ", "Running");
+         * 
+         * LimelightHelpers.setLEDMode_ForceOn("limelight-dark");
+         * 
+         * RawFiducial[] detected = LimelightHelpers.getRawFiducials("limelight-dark");
+         * SmartDashboard.putNumber("Detected ", detected.length);
+         * 
+         * int DetetectionIndex = 0;
+         * for (DetetectionIndex = 0; DetetectionIndex < detected.length;
+         * DetetectionIndex++) {
+         * SmartDashboard.putNumber("Detection " + DetetectionIndex,
+         * detected[DetetectionIndex].id);
+         * }
+         */
+    }
 
-        RawFiducial[] detected = LimelightHelpers.getRawFiducials("limelight-dark");
-        SmartDashboard.putNumber("Detected ", detected.length);
+    public Command MoveVisionLeftCmd() {
+        return runOnce(
+                () -> {
+                    setLimeLightDarkAdjustmentTranslationX(limeLightDarkAdjustmentTranslationX + 0.01);
+                });
+    }
 
-        int DetetectionIndex = 0;
-        for (DetetectionIndex = 0; DetetectionIndex < detected.length; DetetectionIndex++) {
-            SmartDashboard.putNumber("Detection " + DetetectionIndex, detected[DetetectionIndex].id);
-        }
+    public Command MoveVisionRightCmd() {
+        return runOnce(
+                () -> {
+
+                    setLimeLightDarkAdjustmentTranslationX(limeLightDarkAdjustmentTranslationX - 0.01);
+                });
     }
 
 }

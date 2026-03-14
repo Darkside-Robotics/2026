@@ -19,6 +19,7 @@ import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.TargetingSubsystem;
 import frc.robot.subsystems.TurretSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
+import frc.robot.subsystems.TurretSubsystem.TurretConstants;
 
 public class RobotContainer {
 
@@ -64,39 +65,98 @@ public class RobotContainer {
         SmartDashboard.putData("Auto Chooser", autoChooser);
     }
 
+    private enum TestingTuningEnum
+    {
+        NONE,
+        CLIMBING,
+        INTAKE,
+        INDEXING,
+        TARGETING,
+        FLYWHEEL,
+        HOOD,
+        VISION
+    }
+    private static TestingTuningEnum tune = TestingTuningEnum.FLYWHEEL;
+
     private void configureButtonBindings() {
 
-        // controller.povUp().onTrue(turretSubsystem.SpinFlywheelUpCmd());
-        // controller.povDown().onTrue(turretSubsystem.SpinFlywheelDownCmd());
+        //******************************************************************
+        //CLIMBING
+        //******************************************************************
+        controller.y().whileTrue(climbingSubsystem.ClimbUpCommand()).whileFalse(climbingSubsystem.StopCommand());
+        controller.a().whileTrue(climbingSubsystem.ClimbDownCommand()).whileFalse(climbingSubsystem.StopCommand());
+       
+        if(tune == TestingTuningEnum.CLIMBING)
+        {
+            controller.a().onTrue(climbingSubsystem.LeftClimbDownCommand());
+            controller.y().onTrue(climbingSubsystem.LeftClimbUpCommand());
+            controller.povDown().onTrue(climbingSubsystem.RightClimbDownCommand());
+            controller.povUp().onTrue(climbingSubsystem.RightClimbUpCommand());
+        }
 
-        // controller.y().onTrue(indexingSubsystem.IndexerUpCmd());
-        // controller.a().onTrue(indexingSubsystem.IndexerDownCmd());
 
-        controller.a().onTrue(climbingSubsystem.LeftClimbDownCommand());
-        controller.y().onTrue(climbingSubsystem.LeftClimbUpCommand());
-        controller.povDown().onTrue(climbingSubsystem.RightClimbDownCommand());
-        controller.povUp().onTrue(climbingSubsystem.RightClimbUpCommand());
+        //******************************************************************
+        //INTAKE
+        //******************************************************************
+        // controller.leftTrigger().whileTrue(intakeSubsystem.IntakeOnCmd());
+        // controller.leftTrigger().whileFalse(intakeSubsystem.IntakeOffCmd());
+        // controller.leftBumper().onTrue(intakeSubsystem.IntakeToggleCmd());
 
+        if(tune == TestingTuningEnum.INTAKE)
+        {
+            controller.povUp().onTrue(intakeSubsystem.SpinIntakeWheelUpCmd());
+            controller.povDown().onTrue(intakeSubsystem.SpinIntakeWheelDownCmd());
+            controller.povLeft().onTrue(intakeSubsystem.ArmOutIncrementCmd());
+            controller.povRight().onTrue(intakeSubsystem.ArmInIncrementCmd());
+        }
+
+
+        //******************************************************************
+        //INDEXING
+        //******************************************************************
+        if(tune == TestingTuningEnum.INDEXING)
+        {
+            controller.y().onTrue(indexingSubsystem.IndexerUpCmd());
+            controller.a().onTrue(indexingSubsystem.IndexerDownCmd());
+        }
+
+
+        //******************************************************************
+        //SHOOTING
+        //******************************************************************
         controller.rightBumper().whileTrue(turretSubsystem.FireCmd());
         controller.rightBumper().whileFalse(turretSubsystem.StopFiringCmd());
         
         controller.rightTrigger().whileTrue(turretSubsystem.FireCmd());
         controller.rightTrigger().whileFalse(turretSubsystem.StopFiringCmd());
 
+
+        if(tune == TestingTuningEnum.FLYWHEEL)
+        {
+            controller.povUp().onTrue(turretSubsystem.FlywheelAdjustmentConstantUpCmd());
+            controller.povDown().onTrue(turretSubsystem.FlywheelAdjustmentConstantDownCmd());
+        }
+
+        //******************************************************************
+        //VISION
+        //******************************************************************
+        if(tune == TestingTuningEnum.VISION)
+        {
+            controller.povLeft().onTrue(visionSubsystem.MoveVisionLeftCmd());
+            controller.povRight().onTrue(visionSubsystem.MoveVisionRightCmd());
+        }
+
+
+        //controller.start().onTrue(turretSubsystem.ResetHoodCmd());
+
         // controller.y().onTrue(turretSubsystem.HoodUpCmd());
         // controller.a().onTrue(turretSubsystem.HoodDownCmd());
 
         controller.back().onTrue(new GyroResetCmd(swerveSubsystem));
-        controller.leftTrigger().whileTrue(intakeSubsystem.IntakeOnCmd());
-        controller.leftTrigger().whileFalse(intakeSubsystem.IntakeOffCmd());
-        controller.leftBumper().onTrue(intakeSubsystem.IntakeToggleCmd());
 
 
-        // controller.povUp().onTrue(intakeSubsystem.SpinIntakeWheelUpCmd());
-        // controller.povDown().onTrue(intakeSubsystem.SpinIntakeWheelDownCmd());
 
-        // controller.povLeft().onTrue(intakeSubsystem.ArmOutCmd());
-        // controller.povRight().onTrue(intakeSubsystem.ArmInCmd());
+
     }
 
     public Command getAutonomousCommand() {
