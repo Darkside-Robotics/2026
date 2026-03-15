@@ -3,12 +3,13 @@
   "robotLength": 0.889,
   "holonomicMode": true,
   "pathFolders": [
-    "Left",
     "Left - Fuel First",
     "Middle - Fuel First",
     "Right - Fuel First"
   ],
-  "autoFolders": [],
+  "autoFolders": [
+    "Fuel First"
+  ],
   "defaultMaxVel": 3.0,
   "defaultMaxAccel": 3.0,
   "defaultMaxAngVel": 540.0,

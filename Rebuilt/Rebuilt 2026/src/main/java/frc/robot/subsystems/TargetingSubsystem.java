@@ -56,11 +56,11 @@ public class TargetingSubsystem extends SubsystemBase {
     double middleLineY = 4;
 
     if (isRed) {
-      hubX = 11.75;
+      hubX = 12.0;
       hubY = 4.0;
       shootingLineX = 12.5;
     } else {
-      hubX = 4.75;
+      hubX = 4.0;
       hubY = 4.0;
       shootingLineX = 4.0;
     }

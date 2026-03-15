@@ -42,7 +42,7 @@ public class TurretSubsystem extends SubsystemBase {
 
   private double hoodAngle = 0.0;
 
-  private double flywheelDefaultSpeed = 50.0;
+  private double flywheelDefaultSpeed = 250.0;
   private double flywheelSpeedFactor = 50.0;
 
   private double flywheelSpeed = 50.0;
@@ -70,7 +70,7 @@ public class TurretSubsystem extends SubsystemBase {
 
     public static final class Hood {
       public static final class PID {
-        public static final double P = 0.09;
+        public static final double P = 0.07;
         public static final double I = 0;
         public static final double D = 0.012;
       }
@@ -88,10 +88,10 @@ public class TurretSubsystem extends SubsystemBase {
       public static final double ClosedLoopRampRate = 1.0;
 
       public static final class PID {
-        public static final double P = 0.0001;
+        public static final double P = 0.0002;
         public static final double I = 0;
-        public static final double D = 0.12;
-        public static final double FF = (1.0 / 565.0);
+        public static final double D = 0.005;
+        public static final double FF = (12.0 / 5767.0) / 13.25; // (1.0 / 565.0) / 10;
       }
 
       public static final class LeadMotor {
@@ -111,39 +111,40 @@ public class TurretSubsystem extends SubsystemBase {
     }
   }
 
+  private static double reduction = 0.0;
   private static final double[][] firingTable = new double[][] {
-      { 1.7344, 63, 8.5 },
-      { 1.7755, 63, 8.6 },
-      { 1.8192, 62, 8.6 },
-      { 1.8617, 62, 8.7 },
-      { 1.9007, 61, 8.7 },
-      { 1.9287, 63, 8.2 },
-      { 1.9638, 62, 8.2 },
-      { 1.9681, 63, 8 },
-      { 2.0176, 63, 8.1 },
-      { 2.0388, 63, 7.9 },
-      { 2.0615, 60, 8.6 },
-      { 2.0957, 63, 7.8 },
-      { 2.122, 62, 8 },
-      { 2.1753, 62, 8.1 },
-      { 2.1798, 62, 7.9 },
-      { 2.2353, 62, 8 },
-      { 2.2614, 61, 8 },
-      { 2.2829, 62, 7.9 },
-      { 2.3183, 61, 8.1 },
-      { 2.3401, 60, 8.1 },
-      { 2.3669, 61, 8 },
-      { 2.4046, 61, 7.9 },
-      { 2.448, 60, 8.1 },
-      { 2.4658, 61, 8 },
-      { 2.4952, 61, 7.9 },
-      { 2.5384, 63, 7.8 },
-      { 2.5686, 62, 7.8 },
-      { 2.5805, 61, 7.9 },
-      { 2.6348, 62, 7.9 },
-      { 2.6421, 62, 7.8 },
-      { 2.68, 63, 7.8 },
-      { 2.7115, 62, 7.8 },
+      { 1.7344, 63, 8.5 - reduction },
+      { 1.7755, 63, 8.6 - reduction },
+      { 1.8192, 62, 8.6 - reduction },
+      { 1.8617, 62, 8.7 - reduction },
+      { 1.9007, 61, 8.7 - reduction },
+      { 1.9287, 63, 8.2 - reduction },
+      { 1.9638, 62, 8.2 - reduction },
+      { 1.9681, 63, 8 - reduction },
+      { 2.0176, 63, 8.1 - reduction },
+      { 2.0388, 63, 7.9 - reduction },
+      { 2.0615, 60, 8.6 - reduction },
+      { 2.0957, 63, 7.8 - reduction },
+      { 2.122, 62, 8 - reduction },
+      { 2.1753, 62, 8.1 - reduction },
+      { 2.1798, 62, 7.9 - reduction },
+      { 2.2353, 62, 8 - reduction },
+      { 2.2614, 61, 8 - reduction },
+      { 2.2829, 62, 7.9 - reduction },
+      { 2.3183, 61, 8.1 - reduction },
+      { 2.3401, 60, 8.1 - reduction },
+      { 2.3669, 61, 8 - reduction },
+      { 2.4046, 61, 7.9 - reduction },
+      { 2.448, 60, 8.1 - reduction },
+      { 2.4658, 61, 8 - reduction },
+      { 2.4952, 61, 7.9 - reduction },
+      { 2.5384, 63, 7.8 - reduction },
+      { 2.5686, 62, 7.8 - reduction },
+      { 2.5805, 61, 7.9 - reduction },
+      { 2.6348, 62, 7.9 - reduction },
+      { 2.6421, 62, 7.8 - reduction },
+      { 2.68, 63, 7.8 - reduction },
+      { 2.7115, 62, 7.8 - reduction },
       { 2.745, 63, 7.8 },
       { 2.7815, 62, 7.9 },
       { 2.8087, 61, 7.9 },
@@ -261,7 +262,9 @@ public class TurretSubsystem extends SubsystemBase {
   };
 
   private boolean fire = false;
-  private double flywheelAdjustableConstant = 0.3055;
+  private double flywheelAdjustableConstant = 2.083;
+
+  private boolean homing = false;
 
   private final IndexingSubsystem indexingSubsystem;
   private final TargetingSubsystem targetingSubsystem;
@@ -279,7 +282,7 @@ public class TurretSubsystem extends SubsystemBase {
     leadflywheelMotorConfig.closedLoop.feedForward.kV(FlyWheelConstants.PID.FF);
     leadflywheelMotorConfig.idleMode(IdleMode.kCoast)
         .closedLoopRampRate(TurretConstants.FlyWheelConstants.ClosedLoopRampRate);
-    leadflywheelMotorConfig.encoder.velocityConversionFactor(1.0).positionConversionFactor(1);
+    leadflywheelMotorConfig.encoder.velocityConversionFactor(1.0);
     leadflywheelMotorConfig.smartCurrentLimit(TurretConstants.FlyWheelConstants.LeadMotor.CurrentStalledLimit,
         TurretConstants.FlyWheelConstants.LeadMotor.CurrentFreeLimit);
     leadflywheelMotor.configure(leadflywheelMotorConfig, ResetMode.kResetSafeParameters,
@@ -314,15 +317,6 @@ public class TurretSubsystem extends SubsystemBase {
     hoodMotor.getEncoder().setPosition(0);
   }
 
-  public void resetHood() {
-    hoodMotor.set(-0.4);
-    while (!hoodMotor.getReverseLimitSwitch().isPressed()) {
-      hoodMotor.set(-0.4);
-    }
-
-    hoodMotor.getEncoder().setPosition(0);
-  }
-
   /**************************************************************** */
   /* ACTIONS */
   /**************************************************************** */
@@ -350,47 +344,62 @@ public class TurretSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
+    if (!this.homing) {
 
-    double[] targetingValues = getTurrentSettings(targetingSubsystem.getTargetDistance());
+      double[] targetingValues = getTurrentSettings(targetingSubsystem.getTargetDistance());
 
-    SmartDashboard.putNumber("Target distance", targetingSubsystem.getTargetDistance());
-    SmartDashboard.putNumberArray("Target table", targetingValues);
+      SmartDashboard.putNumber("Target distance", targetingSubsystem.getTargetDistance());
+      SmartDashboard.putNumberArray("Target table", targetingValues);
 
-    double invertFlywheel = -1;
-    double hoodAngle = targetingValues[1];
-    double wheelSpeed = targetingValues[2];
-    double convertedWheelSpeed = wheelSpeed * 60.0 / 0.31918 * flywheelAdjustableConstant;
+      double invertFlywheel = -1;
+      double hoodAngle = targetingValues[1];
+      double wheelSpeed = targetingValues[2];
+      double finalAdjustmentConstant = flywheelAdjustableConstant;
 
-    hoodController.setSetpoint(Math.abs(64.0 - hoodAngle), ControlType.kPosition);
+      if (targetingSubsystem.getTargetDistance() < 2.75)
+        finalAdjustmentConstant = finalAdjustmentConstant - (Math.abs(52 - hoodAngle) * .004);
 
-    if (fire) {
+      double targetRPM = (wheelSpeed * 60.0 / 0.31918 * finalAdjustmentConstant);
 
-      flywheelController.setSetpoint(invertFlywheel * convertedWheelSpeed, ControlType.kVelocity);
+      hoodController.setSetpoint(Math.abs(64.0 - hoodAngle), ControlType.kPosition);
 
-      double currentRPM = leadflywheelMotor.getEncoder().getVelocity();
-      double targetRPM = convertedWheelSpeed;
-      double error = Math.abs(currentRPM - targetRPM);
-      double maxError = targetRPM * .05;
+      if (fire) {
 
-      SmartDashboard.putNumber("Current Flywheel Speed (rpm)", currentRPM);
-      SmartDashboard.putNumber("Flywheel Error (rpm)", error);  
+        flywheelController.setSetpoint(invertFlywheel * targetRPM, ControlType.kVelocity);
 
-      if (error < maxError) {
-        indexingSubsystem.setIndexerVelocity(2.5);
+        double currentRPM = Math.abs(leadflywheelMotor.getEncoder().getVelocity());
+
+        double error = Math.abs(currentRPM - targetRPM);
+        double maxError = targetRPM * .05;
+
+        SmartDashboard.putNumber("Current Flywheel Speed (rpm)", currentRPM);
+        SmartDashboard.putNumber("Flywheel Error (rpm)", error);
+
+        if (error < maxError) {
+          indexingSubsystem.setIndexerVelocity(2.5);
+        } else {
+          indexingSubsystem.setIndexerVelocity(0);
+        }
       } else {
+
+        flywheelController.setSetpoint(invertFlywheel * this.flywheelDefaultSpeed, ControlType.kVelocity);
         indexingSubsystem.setIndexerVelocity(0);
       }
+      SmartDashboard.putNumber("Flywheel Speed (m/s)", wheelSpeed);
+      SmartDashboard.putNumber("Flywheel Target (rpm)", targetRPM);
+      SmartDashboard.putNumber("Flywheel Adjustment Constant", flywheelAdjustableConstant);
+      SmartDashboard.putNumber("Hood Angle", hoodAngle);
+      SmartDashboard.putNumber("Hood Set Point", Math.abs(64.0 - hoodAngle));
+      SmartDashboard.putNumber("Hood Encoder Position", hoodMotor.getEncoder().getPosition());
     } else {
 
-      flywheelController.setSetpoint(invertFlywheel * this.flywheelDefaultSpeed, ControlType.kVelocity);
-      indexingSubsystem.setIndexerVelocity(0);
+      hoodMotor.set(-0.4);
+      if (hoodMotor.getReverseLimitSwitch().isPressed()) {
+        hoodMotor.stopMotor();
+        homing = false;
+      }
     }
-    SmartDashboard.putNumber("Flywheel Speed (m/s)", wheelSpeed);
-    SmartDashboard.putNumber("Converted Flywheel Speed (rpm)", convertedWheelSpeed);  
-    SmartDashboard.putNumber("Flywheel Adjustment Constant", flywheelAdjustableConstant);  
-    SmartDashboard.putNumber("Hood Angle", hoodAngle);
-    SmartDashboard.putNumber("Hood Set Point", Math.abs(64.0 - hoodAngle));
-    SmartDashboard.putNumber("Hood Encoder Position", hoodMotor.getEncoder().getPosition());
+    SmartDashboard.putBoolean("Homing", this.homing);
   }
 
   @Override
@@ -485,7 +494,7 @@ public class TurretSubsystem extends SubsystemBase {
   public Command ResetHoodCmd() {
     return runOnce(
         () -> {
-          this.resetHood();
+          this.homing = true;
         });
   }
 }

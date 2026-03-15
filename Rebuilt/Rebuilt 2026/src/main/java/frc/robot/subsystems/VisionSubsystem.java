@@ -33,12 +33,12 @@ public class VisionSubsystem extends SubsystemBase {
         // degrees)
 
         LimelightHelpers.setCameraPose_RobotSpace("limelight-dark",
-                Units.inchesToMeters(-2.5), // Forward offset (meters)
-                Units.inchesToMeters(-14.5), // Side offset (meters)
-                Units.inchesToMeters(17), // Height offset (meters)
-                0.0, // Roll (degrees)
-                18.0, // Pitch (degrees)
-                -180.0 // Yaw (degrees)
+                Units.inchesToMeters(6.5), // Forward offset (meters) 0.1651
+                Units.inchesToMeters(11.25), // Side offset (meters) 0.28575
+                Units.inchesToMeters(16.5), // Height offset (meters) 0.4191
+                180, // Roll (degrees)
+                16.9, // Pitch (degrees)
+                180.0 // Yaw (degrees)
         );
 
         // Change the camera pose relative to robot center (x forward, y left, z up,
@@ -87,6 +87,7 @@ public class VisionSubsystem extends SubsystemBase {
             if (mt2.tagCount == 0) {
                 doRejectUpdate = true;
             }
+           
             if (!doRejectUpdate) {
 
                 SmartDashboard.putNumber("Updating with Vision ", (new Date()).getTime());

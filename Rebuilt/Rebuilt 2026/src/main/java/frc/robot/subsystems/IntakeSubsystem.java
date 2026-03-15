@@ -8,16 +8,20 @@ import java.util.Date;
 
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
+import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkClosedLoopController;
 //import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkMax;
 //import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.config.FeedForwardConfig;
 //import com.revrobotics.spark.config.FeedForwardConfig;
 //import com.revrobotics.spark.config.SparkFlexConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
+import edu.wpi.first.math.controller.ArmFeedforward;
+import edu.wpi.first.math.util.Units;
 // import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -28,9 +32,9 @@ public class IntakeSubsystem extends SubsystemBase {
         public static final boolean ArmInverted = true;
 
         public static final class PID {
-            public static final double P = 0.5;
+            public static final double P = 0.02;
             public static final double I = 0;
-            public static final double D = 0;
+            public static final double D = .012;
         }
 
         public static final class Motor {
@@ -45,7 +49,6 @@ public class IntakeSubsystem extends SubsystemBase {
     private final SparkMaxConfig armMotorConfig;
     private final SparkClosedLoopController armController;
     private double armPosition = 0.0;
-    private double extendedArmPosition = 6.0;
     private boolean armOut = false;
 
     // wheels:
@@ -66,12 +69,14 @@ public class IntakeSubsystem extends SubsystemBase {
         public static final class Motor {
             public static final int MotorPort = 20;
             public static final int CurrentFreeLimit = 20;
-            public static final int CurrentStalledLimit = 20;
+            public static final int CurrentStalledLimit = 40;
             public static final int Power = 10;
         }
     }
 
     private final double kClosedLoopRampRate = 5;
+
+    private final double InPosition = 0;
 
     /** Creates a new Subsystem. */
     public IntakeSubsystem() {
@@ -81,9 +86,13 @@ public class IntakeSubsystem extends SubsystemBase {
         armMotorConfig = new SparkMaxConfig();
         armMotorConfig.idleMode(IdleMode.kBrake)
                 .closedLoopRampRate(kClosedLoopRampRate);
+
+
         armMotorConfig.closedLoop.pid(ArmConstants.PID.P,
-                ArmConstants.PID.I, ArmConstants.PID.D).outputRange(-0.3, 0.8);
-        armMotorConfig.encoder.positionConversionFactor(1);
+                ArmConstants.PID.I, ArmConstants.PID.D);
+
+        armMotorConfig.closedLoop.outputRange(-0.3, 0.8);
+        armMotorConfig.encoder.positionConversionFactor(360/100);//* (40/18).positionConversionFactor();
 
         armMotorConfig.smartCurrentLimit(ArmConstants.Motor.CurrentStalledLimit,
                 ArmConstants.Motor.CurrentFreeLimit);
@@ -91,7 +100,7 @@ public class IntakeSubsystem extends SubsystemBase {
                 ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
         armController = armMotor.getClosedLoopController();
-        armMotor.getEncoder().setPosition(0);
+        armMotor.getEncoder().setPosition(InPosition);
 
         // /*****************************************************************************************/
         intakeWheelMotor = new SparkMax(IntakeWheelConstants.Motor.MotorPort,
@@ -147,9 +156,11 @@ public class IntakeSubsystem extends SubsystemBase {
 
                 if ((currentTime - outSetPointTimer.getTime()) > 2000) {
                     extendedSetpointFound = true;
+                    armMotor.stopMotor();
                     armMotor.getEncoder()
-                            .setPosition((ArmConstants.ArmInverted ? -1 : 1) * extendedArmPosition
-                                    - (ArmConstants.ArmInverted ? -1 : 1) * .025);
+                            .setPosition((ArmConstants.ArmInverted ? -1.0 : 1.0) * 50.0);
+                    armPosition=45;
+                                    
                 }
             }
         }
@@ -163,8 +174,9 @@ public class IntakeSubsystem extends SubsystemBase {
             if (extendedSetpointFound == false) {
                 pushOutToHardStop();
             } else {
-                armController.setSetpoint((ArmConstants.ArmInverted ? -1 : 1) * extendedArmPosition,
-                        ControlType.kPosition);
+       
+                armController.setSetpoint(InPosition + (ArmConstants.ArmInverted ? -1 : 1) * armPosition,
+                        ControlType.kPosition, ClosedLoopSlot.kSlot0, -Math.cos(Units.radiansToDegrees(90 - Math.abs(armMotor.getEncoder().getPosition()))) * 0.8);
             }
             intakeWheelController.setSetpoint(spinningIntakeWheelSpeed, ControlType.kVelocity);
         } else {
@@ -172,15 +184,16 @@ public class IntakeSubsystem extends SubsystemBase {
                 if (extendedSetpointFound == false) {
                     pushOutToHardStop();
                 } else {
-                    armController.setSetpoint((ArmConstants.ArmInverted ? -1 : 1) * extendedArmPosition,
-                            ControlType.kPosition);
+                    armController.setSetpoint(InPosition + (ArmConstants.ArmInverted ? -1 : 1) * armPosition,
+                            ControlType.kPosition, ClosedLoopSlot.kSlot0, -Math.cos(Units.radiansToDegrees(90 - Math.abs(armMotor.getEncoder().getPosition()))) * 0.8);
                 }
             } else {
-                armController.setSetpoint(0, ControlType.kPosition);
+                armController.setSetpoint(InPosition, ControlType.kPosition, ClosedLoopSlot.kSlot0, -Math.cos(Units.radiansToDegrees(90 - Math.abs(armMotor.getEncoder().getPosition()))) * 0.8);
             }
             intakeWheelController.setSetpoint(0, ControlType.kVelocity);
         }
-        SmartDashboard.putNumber("Arm Position", (ArmConstants.ArmInverted ? -1 : 1) * armPosition);
+        SmartDashboard.putNumber("Arm Expected Position", armController.getSetpoint());
+        SmartDashboard.putNumber("Intake Arm Encoder Position", armMotor.getEncoder().getPosition());
         SmartDashboard.putNumber("Intake Wheel Speed", intakeWheelSpeed);
     }
 

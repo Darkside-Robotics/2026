@@ -98,9 +98,9 @@ public class RobotContainer {
         //******************************************************************
         //INTAKE
         //******************************************************************
-        // controller.leftTrigger().whileTrue(intakeSubsystem.IntakeOnCmd());
-        // controller.leftTrigger().whileFalse(intakeSubsystem.IntakeOffCmd());
-        // controller.leftBumper().onTrue(intakeSubsystem.IntakeToggleCmd());
+        controller.leftTrigger().whileTrue(intakeSubsystem.IntakeOnCmd());
+        controller.leftTrigger().whileFalse(intakeSubsystem.IntakeOffCmd());
+        controller.leftBumper().onTrue(intakeSubsystem.IntakeToggleCmd());
 
         if(tune == TestingTuningEnum.INTAKE)
         {
@@ -130,6 +130,7 @@ public class RobotContainer {
         controller.rightTrigger().whileTrue(turretSubsystem.FireCmd());
         controller.rightTrigger().whileFalse(turretSubsystem.StopFiringCmd());
 
+        controller.start().onTrue(turretSubsystem.ResetHoodCmd());
 
         if(tune == TestingTuningEnum.FLYWHEEL)
         {
@@ -147,7 +148,6 @@ public class RobotContainer {
         }
 
 
-        //controller.start().onTrue(turretSubsystem.ResetHoodCmd());
 
         // controller.y().onTrue(turretSubsystem.HoodUpCmd());
         // controller.a().onTrue(turretSubsystem.HoodDownCmd());
