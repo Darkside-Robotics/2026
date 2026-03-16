@@ -54,6 +54,10 @@ public class Robot extends TimedRobot {
         // and put our
         // autonomous chooser on the dashboard.
         m_robotContainer = new RobotContainer(this);
+                // In disabledPeriodic or before match starts
+        LimelightHelpers.SetIMUMode("limelight-dark", 4); // Seed internal IMU
+        // In disabledPeriodic or before match starts
+        LimelightHelpers.SetIMUMode("limelight-bin", 4); // Seed internal IMU
     }
 
     /**
@@ -69,10 +73,7 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void robotPeriodic() {
-        // In disabledPeriodic or before match starts
-        LimelightHelpers.SetIMUMode("limelight-dark", 4); // Seed internal IMU
-        // In disabledPeriodic or before match starts
-        LimelightHelpers.SetIMUMode("limelight-bin", 4); // Seed internal IMU
+
 
         // Runs the Scheduler. This is responsible for polling buttons, adding
         // newly-scheduled
@@ -89,6 +90,10 @@ public class Robot extends TimedRobot {
     /** This function is called once each time the robot enters Disabled mode. */
     @Override
     public void disabledInit() {
+       // In disabledPeriodic or before match starts
+        LimelightHelpers.SetIMUMode("limelight-dark", 1); // Seed internal IMU
+        // In disabledPeriodic or before match starts
+        LimelightHelpers.SetIMUMode("limelight-bin", 1); // Seed internal IMU
     }
 
     @Override

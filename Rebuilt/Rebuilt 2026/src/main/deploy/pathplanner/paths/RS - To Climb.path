@@ -1,0 +1,54 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 1.9420930232558136,
+        "y": 2.031162790697674
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.1955706187020207,
+        "y": 1.8203590091396507
+      },
+      "isLocked": false,
+      "linkedName": "RS - First Shot"
+    },
+    {
+      "anchor": {
+        "x": 1.1686022727272727,
+        "y": 2.695113636363636
+      },
+      "prevControl": {
+        "x": 0.9300333836773177,
+        "y": 2.769845725705968
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 180.0
+  },
+  "reversed": false,
+  "folder": "Right Start - Shoot Then Climb",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": -142.7651660184254
+  },
+  "useDefaultConstraints": true
+}

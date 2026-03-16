@@ -262,7 +262,7 @@ public class TurretSubsystem extends SubsystemBase {
   };
 
   private boolean fire = false;
-  private double flywheelAdjustableConstant = 2.083;
+  private double flywheelAdjustableConstant = 2.087;
 
   private boolean homing = false;
 
@@ -320,6 +320,13 @@ public class TurretSubsystem extends SubsystemBase {
   /**************************************************************** */
   /* ACTIONS */
   /**************************************************************** */
+
+  public void startFiring(){
+        fire = true;
+  }
+    public void stopFiring(){
+        fire = false;
+  }
   /* HOOD ACTIONS */
   public void setHoodAngle(double angle) {
     this.hoodAngle = angle;
@@ -342,7 +349,7 @@ public class TurretSubsystem extends SubsystemBase {
     return firingTable[fireTableIndex];
   }
 
-  @Override
+   @Override
   public void periodic() {
     if (!this.homing) {
 
@@ -356,8 +363,8 @@ public class TurretSubsystem extends SubsystemBase {
       double wheelSpeed = targetingValues[2];
       double finalAdjustmentConstant = flywheelAdjustableConstant;
 
-      if (targetingSubsystem.getTargetDistance() < 2.75)
-        finalAdjustmentConstant = finalAdjustmentConstant - (Math.abs(52 - hoodAngle) * .004);
+      if (targetingSubsystem.getTargetDistance() < 2.4)
+        finalAdjustmentConstant = finalAdjustmentConstant - (Math.abs(52 - hoodAngle) * .005);
 
       double targetRPM = (wheelSpeed * 60.0 / 0.31918 * finalAdjustmentConstant);
 
