@@ -5,11 +5,12 @@
   "pathFolders": [
     "Left - Fuel First",
     "Middle - Fuel First",
-    "Right Start - Shoot Then Climb",
-    "Right - Fuel First"
+    "Right - Fuel First",
+    "Start - Shoot Then Climb"
   ],
   "autoFolders": [
-    "Fuel First"
+    "Fuel First",
+    "Shoot Then Climb"
   ],
   "defaultMaxVel": 3.0,
   "defaultMaxAccel": 3.0,

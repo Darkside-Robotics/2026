@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.FireForTimeCmd;
 import frc.robot.commands.GyroResetCmd;
 import frc.robot.commands.MoveForwardGentlyCmd;
+import frc.robot.commands.MoveLeftGentlyCmd;
 import frc.robot.commands.MoveRightGentlyCmd;
 import frc.robot.commands.SwerveJoystickCmd;
 import frc.robot.commands.TargetingSwerveJoystickCmd;
@@ -67,8 +68,11 @@ public class RobotContainer {
         NamedCommands.registerCommand("StopFiringCmd", turretSubsystem.StopFiringCmd());
         NamedCommands.registerCommand("RightClimbUpCommand", climbingSubsystem.ClimbUpCommand());
         NamedCommands.registerCommand("RightClimbDownCommand", climbingSubsystem.ClimbDownCommand());
+        NamedCommands.registerCommand("LeftClimbUpCommand", climbingSubsystem.ClimbUpCommand());
+        NamedCommands.registerCommand("LeftClimbDownCommand", climbingSubsystem.ClimbDownCommand());
         NamedCommands.registerCommand("MoveForwardGentlyCmd", new MoveForwardGentlyCmd(swerveSubsystem, 750, robot));
         NamedCommands.registerCommand("MoveRightGentlyCmd", new MoveRightGentlyCmd(swerveSubsystem, 750, robot));
+        NamedCommands.registerCommand("MoveLeftGentlyCmd", new MoveLeftGentlyCmd(swerveSubsystem, 750, robot));
 
         // Build an auto chooser. This will use Commands.none() as the default option.
         autoChooser = AutoBuilder.buildAutoChooser();

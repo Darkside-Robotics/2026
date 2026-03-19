@@ -45,7 +45,7 @@
     "rotation": 180.0
   },
   "reversed": false,
-  "folder": "Right Start - Shoot Then Climb",
+  "folder": "Start - Shoot Then Climb",
   "idealStartingState": {
     "velocity": 0,
     "rotation": -142.7651660184254
