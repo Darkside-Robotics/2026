@@ -21,14 +21,14 @@ public class ClimbingSubsystem extends SubsystemBase {
             public static final int MotorPort = 11;
             public static final int CurrentFreeLimit = 60;
             public static final int CurrentStalledLimit = 40;
-            public static final double Power = 0.5;
+            public static final double Power = 0.6;
         }
 
         public static final class LeftMotor {
             public static final int MotorPort = 17;
             public static final int CurrentFreeLimit = 60;
             public static final int CurrentStalledLimit = 40;
-            public static final double Power = 0.5;
+            public static final double Power = 0.6;
         }
     }
 
@@ -62,19 +62,19 @@ public class ClimbingSubsystem extends SubsystemBase {
     }
 
     public void leftGoUp() {
-        leftClimbingMotor.set(ClimbingConstants.LeftMotor.Power);
+        leftClimbingMotor.set(-1 *ClimbingConstants.LeftMotor.Power);
     }
 
     public void leftGoDown() {
-        leftClimbingMotor.set(-1 * ClimbingConstants.LeftMotor.Power);
+        leftClimbingMotor.set( ClimbingConstants.LeftMotor.Power);
     }
 
     public void rightGoUp() {
-        rightClimbingMotor.set(ClimbingConstants.RightMotor.Power);
+        rightClimbingMotor.set(-1 * ClimbingConstants.RightMotor.Power);
     }
 
     public void rightGoDown() {
-        rightClimbingMotor.set(-1 * ClimbingConstants.RightMotor.Power);
+        rightClimbingMotor.set(ClimbingConstants.RightMotor.Power);
     }
 
     public void stop() {

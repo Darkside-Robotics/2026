@@ -42,7 +42,7 @@ public class MoveForwardGentlyCmd extends Command {
     @Override
     public void initialize() {
         this.endMoving =  (new Date()).getTime() + milliseconds ;   
-            swerveSubsystem.drive(0, 1, 0, false, robot.getPeriod());
+            swerveSubsystem.drive(0, .15, 0, false, robot.getPeriod());
     }
 
     @Override

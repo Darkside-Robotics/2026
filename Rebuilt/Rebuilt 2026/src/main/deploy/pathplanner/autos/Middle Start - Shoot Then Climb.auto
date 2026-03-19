@@ -5,6 +5,12 @@
     "data": {
       "commands": [
         {
+          "type": "named",
+          "data": {
+            "name": "HomeHoodCmd"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "MS - Move To Shoot"

@@ -40,7 +40,7 @@ public class MoveRightGentlyCmd extends Command {
     @Override
     public void initialize() {
         this.endMoving =  (new Date()).getTime() + milliseconds ;   
-            swerveSubsystem.drive(-1, 0, 0, false, robot.getPeriod());
+            swerveSubsystem.drive(-.15, 0, 0, false, robot.getPeriod());
     }
 
     @Override

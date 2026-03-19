@@ -100,7 +100,14 @@ public class SwerveSubsystem extends SubsystemBase {
 
                 zeroHeading();
 
-                Pose2d RedSideRightCornerPose2d = new Pose2d(16.063, 7.65, Rotation2d.kZero);
+                Pose2d SideRightCornerPose2d = new Pose2d(16.063, 7.65, Rotation2d.kZero);
+
+                var alliance = DriverStation.getAlliance();
+                if (alliance.isPresent() && alliance.get() == DriverStation.Alliance.Red) {
+                        SideRightCornerPose2d = new Pose2d(16.063, 7.65, Rotation2d.kZero);
+                } else {
+                        SideRightCornerPose2d = new Pose2d(0.063, 0.35, Rotation2d.k180deg);
+                }
 
                 poseEstimator = new SwerveDrivePoseEstimator(
                                 kinematics,
@@ -111,7 +118,7 @@ public class SwerveSubsystem extends SubsystemBase {
                                                 backLeft.getPosition(),
                                                 backRight.getPosition()
                                 },
-                                RedSideRightCornerPose2d,
+                                SideRightCornerPose2d,
                                 // Pose2d.kZero,
                                 VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(3)),
                                 VecBuilder.fill(0.7, 0.7, 9999999));
@@ -149,9 +156,9 @@ public class SwerveSubsystem extends SubsystemBase {
                                                 // This will flip the path being followed to the red side of the field.
                                                 // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
 
-                                                var alliance = DriverStation.getAlliance();
-                                                if (alliance.isPresent()) {
-                                                        return alliance.get() == DriverStation.Alliance.Red;
+                                                var alliance1 = DriverStation.getAlliance();
+                                                if (alliance1.isPresent()) {
+                                                        return alliance1.get() == DriverStation.Alliance.Red;
                                                 }
                                                 return false;
                                         },
@@ -174,8 +181,16 @@ public class SwerveSubsystem extends SubsystemBase {
 
         public void zeroHeading() {
                 if (this.poseEstimator != null) {
-                        Pose2d RedSideRightCornerPose2d = new Pose2d(16.063, 7.65, Rotation2d.kZero);
-                        this.poseEstimator.resetPose(RedSideRightCornerPose2d);
+                        var alliance = DriverStation.getAlliance();
+
+                        Pose2d SideRightCornerPose2d = new Pose2d(16.063, 7.65, Rotation2d.kZero);
+
+                        if (alliance.isPresent() && alliance.get() == DriverStation.Alliance.Red) {
+                                SideRightCornerPose2d = new Pose2d(16.063, 7.65, Rotation2d.kZero);
+                        } else {
+                                SideRightCornerPose2d = new Pose2d(0.063, 0.35, Rotation2d.k180deg);
+                        }
+                        this.poseEstimator.resetPose(SideRightCornerPose2d);
                 }
                 gyro.reset();
         }
