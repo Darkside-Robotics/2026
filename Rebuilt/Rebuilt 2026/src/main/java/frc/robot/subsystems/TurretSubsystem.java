@@ -47,6 +47,14 @@ public class TurretSubsystem extends SubsystemBase {
 
   private double flywheelSpeed = 50.0;
 
+
+    private double indexerDefaultSpeed = 0;
+
+    
+
+
+  
+
   // private double turnTableHomeAngle = 0.0;
   // private double turnTableAngle = 0.0;
   // private boolean intakeExtended = false;
@@ -91,7 +99,7 @@ public class TurretSubsystem extends SubsystemBase {
         public static final double P = 0.0002;
         public static final double I = 0;
         public static final double D = 0.005;
-        public static final double FF = (12.0 / 5767.0) / 13.25; // (1.0 / 565.0) / 10;
+        public static final double FF = (1.0 / 565.0);//  / 12; // (1.0 / 565.0) / 10;
       }
 
       public static final class LeadMotor {
@@ -262,6 +270,7 @@ public class TurretSubsystem extends SubsystemBase {
   };
 
   private boolean fire = false;
+  private boolean manual = false;
   private double flywheelAdjustableConstant = 2.087;
 
   private boolean homing = false;
@@ -321,6 +330,8 @@ public class TurretSubsystem extends SubsystemBase {
   /* ACTIONS */
   /**************************************************************** */
 
+
+
   public void startFiring(){
         fire = true;
   }
@@ -351,9 +362,25 @@ public class TurretSubsystem extends SubsystemBase {
 
    @Override
   public void periodic() {
+
+    if(spinIndexerBackward)
+    {
+      indexingSubsystem.setIndexerVelocity(-2.5);
+      
+    }
+      SmartDashboard.putBoolean("Spin Backward", spinIndexerBackward);
+      if(spinIndexerForward)
+    {
+      indexingSubsystem.setIndexerVelocity(2.5);
+    }
+      SmartDashboard.putBoolean("Spin Forward", spinIndexerForward);
+
+
     if (!this.homing) {
 
-      double[] targetingValues = getTurrentSettings(targetingSubsystem.getTargetDistance());
+      double targetDistance = (manual? 3.3:targetingSubsystem.getTargetDistance());
+
+      double[] targetingValues = getTurrentSettings(targetDistance);
 
       SmartDashboard.putNumber("Target distance", targetingSubsystem.getTargetDistance());
       SmartDashboard.putNumberArray("Target table", targetingValues);
@@ -385,12 +412,15 @@ public class TurretSubsystem extends SubsystemBase {
         if (error < maxError) {
           indexingSubsystem.setIndexerVelocity(2.5);
         } else {
+          if(!spinIndexerBackward && !spinIndexerForward)
           indexingSubsystem.setIndexerVelocity(0);
         }
       } else {
 
         flywheelController.setSetpoint(invertFlywheel * this.flywheelDefaultSpeed, ControlType.kVelocity);
-        indexingSubsystem.setIndexerVelocity(0);
+        
+          if(!spinIndexerBackward && !spinIndexerForward)
+          indexingSubsystem.setIndexerVelocity(0);
       }
       SmartDashboard.putNumber("Flywheel Speed (m/s)", wheelSpeed);
       SmartDashboard.putNumber("Flywheel Target (rpm)", targetRPM);
@@ -484,10 +514,18 @@ public class TurretSubsystem extends SubsystemBase {
         });
   }
 
-  public Command FireCmd() {
+  public Command FireAutoCmd() {
+    return runOnce(
+        () -> {
+          fire = true;          
+          manual =false;
+        });
+  }    
+  public Command FireManualCmd() {
     return runOnce(
         () -> {
           fire = true;
+          manual =true;
         });
   }
 
@@ -498,10 +536,38 @@ public class TurretSubsystem extends SubsystemBase {
         });
   }
 
+
+
+
   public Command ResetHoodCmd() {
     return runOnce(
         () -> {
           this.homing = true;
         });
   }
+
+
+  
+  boolean spinIndexerForward = false;
+  boolean spinIndexerBackward= false;
+    public Command spinIndexerForwardCommand() {
+    return runOnce(
+        () -> {
+          this.spinIndexerForward = true;
+        });
+  }
+    public Command spinIndexerBackwardCommand() {
+    return runOnce(
+        () -> {
+          this.spinIndexerBackward = true;
+        });
+  }
+      public Command stopSpinIndexCommand() {
+    return runOnce(
+        () -> {
+          this.spinIndexerForward = false;
+          this.spinIndexerBackward = false;
+        });
+  }
+
 }

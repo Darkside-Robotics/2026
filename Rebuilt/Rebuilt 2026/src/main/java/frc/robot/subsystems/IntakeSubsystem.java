@@ -32,7 +32,7 @@ public class IntakeSubsystem extends SubsystemBase {
         public static final boolean ArmInverted = true;
 
         public static final class PID {
-            public static final double P = 0.02;
+            public static final double P = 0.015;
             public static final double I = 0;
             public static final double D = .012;
         }
@@ -56,7 +56,7 @@ public class IntakeSubsystem extends SubsystemBase {
     private SparkMaxConfig intakeWheelMotorConfig;
     private SparkClosedLoopController intakeWheelController;
     private double intakeWheelSpeed = 0.0;
-    private double spinningIntakeWheelSpeed = 900.0;
+    private double spinningIntakeWheelSpeed = 1180.0;
     private boolean spin = false;
 
     public static final class IntakeWheelConstants {
@@ -74,7 +74,7 @@ public class IntakeSubsystem extends SubsystemBase {
         }
     }
 
-    private final double kClosedLoopRampRate = 5;
+    private final double kClosedLoopRampRate = 0.5;
 
     private final double InPosition = 0;
 

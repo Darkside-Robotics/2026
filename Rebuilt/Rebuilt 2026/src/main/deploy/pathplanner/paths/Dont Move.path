@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.8226506024096385,
-        "y": 6.965606276747503
+        "x": 1.0,
+        "y": 1.0
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.6544714251024653,
-        "y": 6.579682587116
+        "x": 1.25,
+        "y": 1.0
       },
       "isLocked": false,
-      "linkedName": "LS - First Shot"
+      "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.1796148359486442,
-        "y": 5.011868758915835
+        "x": 1.0,
+        "y": 1.0
       },
       "prevControl": {
-        "x": 1.015011216269338,
-        "y": 4.823704871869276
+        "x": 0.75,
+        "y": 1.0
       },
       "nextControl": null,
       "isLocked": false,
@@ -42,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 177.98540121212946
+    "rotation": 180.0
   },
   "reversed": false,
-  "folder": "Start - Shoot Then Climb",
+  "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 139.4338749575619
+    "rotation": -179.3338000298169
   },
   "useDefaultConstraints": true
 }

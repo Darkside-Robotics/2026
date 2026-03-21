@@ -1,5 +1,7 @@
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Millisecond;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
@@ -44,47 +46,36 @@ public class RobotContainer {
     private final TurretSubsystem turretSubsystem = new TurretSubsystem(indexingSubsystem, targetingSubsystem);
     private final ClimbingSubsystem climbingSubsystem = new ClimbingSubsystem();
 
-     private final LEDSubsystem2 ledSubsystem = new LEDSubsystem2();
+    private final LEDSubsystem2 ledSubsystem = new LEDSubsystem2();
 
     private final CommandXboxController controller = new CommandXboxController(0);
-    //private final XboxController secondaryController = new XboxController(1);
+    // private final XboxController secondaryController = new XboxController(1);
 
     private final SendableChooser<Command> autoChooser;
-    private final int invert;
 
     public RobotContainer(TimedRobot robot) {
-
-        var alliance = DriverStation.getAlliance();
-
-        if (alliance.isPresent() && alliance.get() == DriverStation.Alliance.Red) {
-            invert = 1;
-        } else {
-            invert = -1;
-        }
-
         swerveSubsystem.setDefaultCommand(new TargetingSwerveJoystickCmd(
                 targetingSubsystem,
                 swerveSubsystem,
-                () -> invert * controller.getLeftY(),
-                () -> invert * controller.getLeftX(),
+                () -> controller.getLeftY(),
+                () -> controller.getLeftX(),
                 () -> -controller.getRightX(),
                 () -> !controller.leftTrigger(0.2).getAsBoolean(),
                 () -> !controller.leftStick().getAsBoolean(),
                 () -> controller.rightBumper().getAsBoolean(), robot));
 
-
         // Register Named Commands
         NamedCommands.registerCommand("HomeHoodCmd", turretSubsystem.ResetHoodCmd());
-        NamedCommands.registerCommand("TurnToShootCmd", new TurnToShootCmd(targetingSubsystem, swerveSubsystem, robot));
-        NamedCommands.registerCommand("FireForTimeCmd", new FireForTimeCmd(turretSubsystem, 2000, robot));
+        NamedCommands.registerCommand("TurnToShootCmd", new TurnToShootCmd(targetingSubsystem, swerveSubsystem, turretSubsystem, 6000, robot));
+        NamedCommands.registerCommand("FireForTimeCmd", new FireForTimeCmd(turretSubsystem, 1000, robot));
         NamedCommands.registerCommand("StopFiringCmd", turretSubsystem.StopFiringCmd());
         NamedCommands.registerCommand("RightClimbUpCommand", climbingSubsystem.ClimbUpCommand());
         NamedCommands.registerCommand("RightClimbDownCommand", climbingSubsystem.ClimbDownCommand());
         NamedCommands.registerCommand("LeftClimbUpCommand", climbingSubsystem.ClimbUpCommand());
         NamedCommands.registerCommand("LeftClimbDownCommand", climbingSubsystem.ClimbDownCommand());
-        NamedCommands.registerCommand("MoveForwardGentlyCmd", new MoveForwardGentlyCmd(swerveSubsystem, 1500, robot));
-        NamedCommands.registerCommand("MoveRightGentlyCmd", new MoveRightGentlyCmd(swerveSubsystem, 1500, robot));
-        NamedCommands.registerCommand("MoveLeftGentlyCmd", new MoveLeftGentlyCmd(swerveSubsystem, 1500, robot));
+        NamedCommands.registerCommand("MoveForwardGentlyCmd", new MoveForwardGentlyCmd(swerveSubsystem, 3000, robot));
+        NamedCommands.registerCommand("MoveRightGentlyCmd", new MoveRightGentlyCmd(swerveSubsystem, 3000, robot));
+        NamedCommands.registerCommand("MoveLeftGentlyCmd", new MoveLeftGentlyCmd(swerveSubsystem, 3000, robot));
 
         // Build an auto chooser. This will use Commands.none() as the default option.
         autoChooser = AutoBuilder.buildAutoChooser();
@@ -108,7 +99,7 @@ public class RobotContainer {
         VISION
     }
 
-    private static TestingTuningEnum tune = TestingTuningEnum.FLYWHEEL;
+    private static TestingTuningEnum tune = TestingTuningEnum.INDEXING;
 
     private void configureButtonBindings() {
 
@@ -131,6 +122,7 @@ public class RobotContainer {
         controller.leftTrigger().whileTrue(intakeSubsystem.IntakeOnCmd());
         controller.leftTrigger().whileFalse(intakeSubsystem.IntakeOffCmd());
         controller.leftBumper().onTrue(intakeSubsystem.IntakeToggleCmd());
+        controller.leftTrigger().whileTrue(intakeSubsystem.IntakeOnCmd());
 
         if (tune == TestingTuningEnum.INTAKE) {
             controller.povUp().onTrue(intakeSubsystem.SpinIntakeWheelUpCmd());
@@ -143,17 +135,23 @@ public class RobotContainer {
         // INDEXING
         // ******************************************************************
         if (tune == TestingTuningEnum.INDEXING) {
-            controller.y().onTrue(indexingSubsystem.IndexerUpCmd());
-            controller.a().onTrue(indexingSubsystem.IndexerDownCmd());
+            // controller.povUp().onTrue(indexingSubsystem.IndexerUpCmd());
+            // controller.povDown().onTrue(indexingSubsystem.IndexerDownCmd());
         }
+
+        controller.povUp().whileTrue(turretSubsystem.spinIndexerForwardCommand())
+                .whileFalse(turretSubsystem.stopSpinIndexCommand());
+
+        controller.povDown().whileTrue(turretSubsystem.spinIndexerBackwardCommand())
+                .whileFalse(turretSubsystem.stopSpinIndexCommand());
 
         // ******************************************************************
         // SHOOTING
         // ******************************************************************
-        controller.rightBumper().whileTrue(turretSubsystem.FireCmd());
+        controller.rightBumper().whileTrue(turretSubsystem.FireAutoCmd());
         controller.rightBumper().whileFalse(turretSubsystem.StopFiringCmd());
 
-        controller.rightTrigger().whileTrue(turretSubsystem.FireCmd());
+        controller.rightTrigger().whileTrue(turretSubsystem.FireManualCmd());
         controller.rightTrigger().whileFalse(turretSubsystem.StopFiringCmd());
 
         controller.start().onTrue(turretSubsystem.ResetHoodCmd());

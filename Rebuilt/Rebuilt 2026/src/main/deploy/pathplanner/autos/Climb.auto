@@ -5,6 +5,12 @@
     "data": {
       "commands": [
         {
+          "type": "path",
+          "data": {
+            "pathName": "Dont Move"
+          }
+        },
+        {
           "type": "named",
           "data": {
             "name": "HomeHoodCmd"
@@ -61,7 +67,7 @@
       ]
     }
   },
-  "resetOdom": false,
+  "resetOdom": true,
   "folder": null,
   "choreoAuto": false
 }

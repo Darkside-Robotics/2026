@@ -33,17 +33,20 @@ public class TargetingSubsystem extends SubsystemBase {
     return targetRotation2d;
   }
 
-  private final boolean isRed;
+  //private final boolean isRed;
 
   public TargetingSubsystem(VisionSubsystem visionSubsystem, SwerveSubsystem swerveSubsystem) {
     this.visionSubsystem = visionSubsystem;
     this.swerveSubsystem = swerveSubsystem;
+  }
 
-    var alliance = DriverStation.getAlliance();
+  private boolean isRed()
+  {
+  var alliance = DriverStation.getAlliance();
     if (alliance.isPresent()) {
-      isRed = alliance.get() == DriverStation.Alliance.Red;
+      return alliance.get() == DriverStation.Alliance.Red;
     } else {
-      isRed = true;
+      return true;
     }
   }
 
@@ -55,7 +58,7 @@ public class TargetingSubsystem extends SubsystemBase {
     double shootingLineX = 12.5;
     double middleLineY = 4;
 
-    if (isRed) {
+    if (isRed()) {
       hubX = 12.0;
       hubY = 4.0;
       shootingLineX = 12.5;
@@ -73,8 +76,14 @@ public class TargetingSubsystem extends SubsystemBase {
     boolean positiveSide = shootingLineX < robotPose2d.getX();
     boolean leftSide = middleLineY < robotPose2d.getY();
 
-    double correctedAngle = ((leftSide ? -1 : 1) * (positiveSide ? 180 : 0)) +
+    double correctedAngle;
+    if(isRed()){
+     correctedAngle = ((leftSide ? -1 : 1) * (positiveSide ? 180 : 0)) +
         ((leftSide ? 1 : -1) * relativeTargetAngle);
+    }else{      
+      correctedAngle = ((leftSide ? -1 : 1) * (positiveSide ? 180 : 0)) +
+        ((leftSide ? -1 : 1) * relativeTargetAngle);
+    }
 
     targetDistance = Math.sqrt(Math.pow(xDistance, 2) + Math.pow(yDistance, 2));
     targetRotation2d = Rotation2d.fromDegrees(correctedAngle).rotateBy(Rotation2d.fromDegrees(180));

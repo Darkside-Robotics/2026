@@ -18,40 +18,43 @@ import frc.robot.subsystems.TurretSubsystem;
 public class FireForTimeCmd extends Command {
 
     private final TurretSubsystem turretSubsystem;
-    
+
     private final TimedRobot robot;
-    private final long milliseconds; //TIME TO END MOVING
-    private long endMoving; //TIME TO END MOVING
+    private final long milliseconds; // TIME TO END MOVING
+    private long endMoving; // TIME TO END MOVING
+    private boolean finished = false;
 
     public FireForTimeCmd(TurretSubsystem turretSubsystem, long milliseconds,
             TimedRobot robot) {
         this.robot = robot;
-        this.turretSubsystem = turretSubsystem;       
+        this.turretSubsystem = turretSubsystem;
         this.milliseconds = milliseconds;
 
         addRequirements(turretSubsystem);
     }
 
     @Override
-    public void initialize() { 
-        this.endMoving =  (new Date()).getTime() + milliseconds ;
+    public void initialize() {
+        finished = false;
+        this.endMoving = (new Date()).getTime() + milliseconds;
         turretSubsystem.startFiring();
     }
 
     @Override
     public void execute() {
-        if (new Date().getTime()  > endMoving) {          
-        end(false);
+        if ((new Date()).getTime() > endMoving) {
+
+            finished = true;
         }
     }
 
     @Override
     public void end(boolean interrupted) {
-                turretSubsystem.stopFiring();
+        turretSubsystem.stopFiring();
     }
 
     @Override
     public boolean isFinished() {
-        return false;
+        return finished;
     }
 }

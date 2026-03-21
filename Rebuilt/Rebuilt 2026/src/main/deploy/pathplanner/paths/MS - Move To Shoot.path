@@ -8,20 +8,20 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.8486482409004337,
-        "y": 4.666229372609376
+        "x": 2.890916047575473,
+        "y": 4.6455772648545
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.839486447931526,
-        "y": 5.4517831669044226
+        "x": 1.3527590361445787,
+        "y": 6.111265060240965
       },
       "prevControl": {
-        "x": 1.6505401383647018,
-        "y": 5.615488060237144
+        "x": 1.1448961820220969,
+        "y": 6.313718564607003
       },
       "nextControl": null,
       "isLocked": false,
@@ -33,8 +33,8 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.0,
-    "maxAcceleration": 3.0,
+    "maxVelocity": 2.0,
+    "maxAcceleration": 2.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
@@ -42,7 +42,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 150.06848815949226
+    "rotation": 149.74356283647091
   },
   "reversed": false,
   "folder": "Start - Shoot Then Climb",

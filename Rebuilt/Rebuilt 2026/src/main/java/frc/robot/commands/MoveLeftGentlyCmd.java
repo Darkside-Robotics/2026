@@ -17,12 +17,13 @@ import frc.robot.subsystems.SwerveSubsystem;
 public class MoveLeftGentlyCmd extends Command {
 
     private final SwerveSubsystem swerveSubsystem;
-    
+
     private final TimedRobot robot;
 
     private final ProfiledPIDController turningPidController;
-    private final long milliseconds; //TIME TO END MOVING
-    private long endMoving; //TIME TO END MOVING
+    private final long milliseconds; // TIME TO END MOVING
+    private long endMoving; // TIME TO END MOVING
+    private boolean finished = false;
 
     public MoveLeftGentlyCmd(SwerveSubsystem swerveSubsystem, long milliseconds,
             TimedRobot robot) {
@@ -33,20 +34,21 @@ public class MoveLeftGentlyCmd extends Command {
                 4.2, 0, 0.07, AutoConstants.kThetaControllerConstraints);
         this.turningPidController.enableContinuousInput(-Math.PI, Math.PI);
 
-        addRequirements(swerveSubsystem); 
+        addRequirements(swerveSubsystem);
         this.milliseconds = milliseconds;
     }
 
     @Override
     public void initialize() {
-        this.endMoving =  (new Date()).getTime() + milliseconds ;   
-            swerveSubsystem.drive(.15, 0, 0, false, robot.getPeriod());
+        finished = false;
+        this.endMoving = (new Date()).getTime() + milliseconds;
+        swerveSubsystem.drive(.25, 0, 0, false, robot.getPeriod());
     }
 
     @Override
     public void execute() {
-        if (new Date().getTime()  > endMoving) {
-            end(false);
+        if ((new Date()).getTime() > endMoving) {
+            finished = true;
         }
     }
 
@@ -57,6 +59,6 @@ public class MoveLeftGentlyCmd extends Command {
 
     @Override
     public boolean isFinished() {
-        return false;
+        return finished;
     }
 }

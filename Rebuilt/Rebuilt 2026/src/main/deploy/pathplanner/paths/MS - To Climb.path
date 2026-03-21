@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.839486447931526,
-        "y": 5.4517831669044226
+        "x": 1.3527590361445787,
+        "y": 6.111265060240965
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.0737031728766673,
-        "y": 5.587680767465832
+        "x": 1.5799777034238875,
+        "y": 6.237092802805346
       },
       "isLocked": false,
       "linkedName": "MS - First Shot"
     },
     {
       "anchor": {
-        "x": 1.3866333808844504,
-        "y": 4.778972895863053
+        "x": 1.3527590361445787,
+        "y": 4.952927710843373
       },
       "prevControl": {
-        "x": 1.166988407169489,
-        "y": 4.898371746451129
+        "x": 1.0618016973902078,
+        "y": 5.35271205794565
       },
       "nextControl": null,
       "isLocked": false,
@@ -33,8 +33,8 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.0,
-    "maxAcceleration": 3.0,
+    "maxVelocity": 2.0,
+    "maxAcceleration": 2.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
@@ -48,7 +48,7 @@
   "folder": "Start - Shoot Then Climb",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 150.06848815949226
+    "rotation": 149.74356283647091
   },
   "useDefaultConstraints": true
 }

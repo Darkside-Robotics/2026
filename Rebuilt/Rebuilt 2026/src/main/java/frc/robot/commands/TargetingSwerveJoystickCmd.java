@@ -9,6 +9,7 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DriverStation;
 //import edu.wpi.first.math.kinematics.ChassisSpeeds;
 //import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -38,8 +39,7 @@ public class TargetingSwerveJoystickCmd extends Command {
     double targetDistance = 10;
     Rotation2d targetRotation2d = Rotation2d.fromDegrees(180);
 
-
-    public TargetingSwerveJoystickCmd(TargetingSubsystem targetingSubsystem,SwerveSubsystem swerveSubsystem,
+    public TargetingSwerveJoystickCmd(TargetingSubsystem targetingSubsystem, SwerveSubsystem swerveSubsystem,
             Supplier<Double> xSpdFunction, Supplier<Double> ySpdFunction, Supplier<Double> turningSpdFunction,
             Supplier<Boolean> fieldOrientedFunction,
             Supplier<Boolean> boost, Supplier<Boolean> autoTarget, TimedRobot robot) {
@@ -76,7 +76,8 @@ public class TargetingSwerveJoystickCmd extends Command {
 
         // double yDistance = Math.abs(robotPose2d.getY() - hubY);
         // double xDistance = Math.abs(robotPose2d.getX() - hubX);
-        // double relativeTargetAngle = Math.toDegrees(Math.atan(yDistance / xDistance));
+        // double relativeTargetAngle = Math.toDegrees(Math.atan(yDistance /
+        // xDistance));
 
         // double shootingLineX = 12.5;
         // double middleLineY = 4;
@@ -85,10 +86,11 @@ public class TargetingSwerveJoystickCmd extends Command {
         // boolean leftSide = middleLineY < robotPose2d.getY();
 
         // double correctedAngle = ((leftSide ? -1 : 1) * (positiveSide ? 180 : 0)) +
-        //         ((leftSide ? 1 : -1) * relativeTargetAngle);
+        // ((leftSide ? 1 : -1) * relativeTargetAngle);
 
         // targetDistance = Math.sqrt(Math.pow(xDistance, 2) + Math.pow(yDistance, 2));
-        // targetRotation2d = Rotation2d.fromDegrees(correctedAngle).rotateBy(Rotation2d.fromDegrees(180));
+        // targetRotation2d =
+        // Rotation2d.fromDegrees(correctedAngle).rotateBy(Rotation2d.fromDegrees(180));
 
         Rotation2d targetRotation2d = targetingSubsystem.getTargetRotation2d();
 
@@ -96,7 +98,7 @@ public class TargetingSwerveJoystickCmd extends Command {
                 targetRotation2d.getRadians());
 
         SmartDashboard.putNumber("robotCurrentAngle", robotPose2d.getRotation().getDegrees());
-        //SmartDashboard.putNumber("robotTargetAngle", targetRotation2d.getDegrees());
+        // SmartDashboard.putNumber("robotTargetAngle", targetRotation2d.getDegrees());
         SmartDashboard.putNumber("robotTurningSpeed", turningSpeed);
 
         return turningSpeed;
@@ -104,9 +106,16 @@ public class TargetingSwerveJoystickCmd extends Command {
 
     @Override
     public void execute() {
+
+        var alliance = DriverStation.getAlliance();
+        boolean isRed = true;
+        if (alliance.isPresent()) {
+            isRed = alliance.get() == DriverStation.Alliance.Red;
+        }
+
         // 1. Get real-time joystick inputs
-        double xSpeed = xSpdFunction.get();
-        double ySpeed = ySpdFunction.get();
+        double xSpeed = (isRed ? 1.0 : 1.0) * xSpdFunction.get();
+        double ySpeed = (isRed ? 1.0 : 1.0) * ySpdFunction.get();
         double turningSpeed = turningSpdFunction.get();
 
         // 2. Apply deadband

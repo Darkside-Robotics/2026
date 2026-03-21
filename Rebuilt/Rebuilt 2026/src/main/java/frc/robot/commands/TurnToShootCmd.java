@@ -1,5 +1,7 @@
 package frc.robot.commands;
 
+import java.util.Date;
+
 //import static edu.wpi.first.units.Units.Rotation;
 
 import java.util.function.Supplier;
@@ -20,83 +22,74 @@ import frc.robot.Constants.JoystickConstants;
 //import frc.robot.library.field.FieldColor;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.TargetingSubsystem;
+import frc.robot.subsystems.TurretSubsystem;
 
 public class TurnToShootCmd extends Command {
 
     private final SwerveSubsystem swerveSubsystem;
     private final TargetingSubsystem targetingSubsystem;
-    
+    private final TurretSubsystem turretSubsystem;
     private final TimedRobot robot;
-
     private final ProfiledPIDController turningPidController;
 
-    double targetDistance = 10;
-    Rotation2d targetRotation2d = Rotation2d.fromDegrees(180);
+    private final long milliseconds; // TIME TO END MOVING
+    private long endMoving; // TIME TO END MOVING
+    private boolean finished = false;
 
-
-    public TurnToShootCmd(TargetingSubsystem targetingSubsystem,SwerveSubsystem swerveSubsystem,
+    public TurnToShootCmd(TargetingSubsystem targetingSubsystem, SwerveSubsystem swerveSubsystem,
+            TurretSubsystem turretSubsystem, long milliseconds,
             TimedRobot robot) {
+
         this.robot = robot;
+        this.turretSubsystem = turretSubsystem;
+        this.milliseconds = milliseconds;
+
         this.swerveSubsystem = swerveSubsystem;
         this.targetingSubsystem = targetingSubsystem;
 
         this.turningPidController = new ProfiledPIDController(
                 4.2, 0, 0.07, AutoConstants.kThetaControllerConstraints);
         this.turningPidController.enableContinuousInput(-Math.PI, Math.PI);
-
+        addRequirements(turretSubsystem);
         addRequirements(swerveSubsystem);
         addRequirements(targetingSubsystem);
     }
 
     @Override
     public void initialize() {
-    }
-
-    private double calculateAutoRotation() {
-        Pose2d robotPose2d = swerveSubsystem.getPose();
-
-        Rotation2d targetRotation2d = targetingSubsystem.getTargetRotation2d();
-
-        double turningSpeed = this.turningPidController.calculate(robotPose2d.getRotation().getRadians(),
-                targetRotation2d.getRadians());
-
-        SmartDashboard.putNumber("robotCurrentAngle", robotPose2d.getRotation().getDegrees());
-        SmartDashboard.putNumber("robotTurningSpeed", turningSpeed);
-
-        return turningSpeed;
+        finished = false;
+        this.endMoving = (new Date()).getTime() + milliseconds;
     }
 
     @Override
     public void execute() {
 
- Pose2d robotPose2d = swerveSubsystem.getPose();
-
+        Pose2d robotPose2d = swerveSubsystem.getPose();
         Rotation2d targetRotation2d = targetingSubsystem.getTargetRotation2d();
-
         double turningSpeed = this.turningPidController.calculate(robotPose2d.getRotation().getRadians(),
                 targetRotation2d.getRadians());
 
         SmartDashboard.putNumber("robotCurrentAngle", robotPose2d.getRotation().getDegrees());
-        //SmartDashboard.putNumber("robotTargetAngle", targetRotation2d.getDegrees());
         SmartDashboard.putNumber("robotTurningSpeed", turningSpeed);
         SmartDashboard.putBoolean("Shoot At Setpoint", this.turningPidController.atSetpoint());
+        swerveSubsystem.drive(0, 0, turningSpeed, true, robot.getPeriod());
 
-        if (Math.abs(turningSpeed) < 0.08) {
-            end(false);
+        if (this.turningPidController.atGoal() || Math.abs(turningSpeed) < 0.08) {;
+        turretSubsystem.startFiring();
         }
-        else {
-            double autoRotation = calculateAutoRotation();
-                    swerveSubsystem.drive(0, 0, turningSpeed, true, robot.getPeriod());
+        if ((new Date()).getTime() > endMoving){
+            finished = true;
         }
     }
 
     @Override
     public void end(boolean interrupted) {
         swerveSubsystem.stopModules();
+        turretSubsystem.stopFiring();
     }
 
     @Override
     public boolean isFinished() {
-        return false;
+        return finished;
     }
 }

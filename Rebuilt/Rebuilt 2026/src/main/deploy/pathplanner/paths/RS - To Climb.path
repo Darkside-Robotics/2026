@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.9420930232558136,
-        "y": 2.031162790697674
+        "x": 1.341831325301205,
+        "y": 1.860385542168674
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.1955706187020207,
-        "y": 1.8203590091396507
+        "x": 1.5953089207474123,
+        "y": 1.6495817606106504
       },
       "isLocked": false,
       "linkedName": "RS - First Shot"
     },
     {
       "anchor": {
-        "x": 1.1686022727272727,
-        "y": 2.695113636363636
+        "x": 1.309001426533523,
+        "y": 2.462952924393724
       },
       "prevControl": {
-        "x": 0.9300333836773177,
-        "y": 2.769845725705968
+        "x": 1.070432537483568,
+        "y": 2.5376850137360556
       },
       "nextControl": null,
       "isLocked": false,
@@ -33,8 +33,8 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.0,
-    "maxAcceleration": 3.0,
+    "maxVelocity": 2.0,
+    "maxAcceleration": 2.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
@@ -48,7 +48,7 @@
   "folder": "Start - Shoot Then Climb",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -142.7651660184254
+    "rotation": -142.92692668268967
   },
   "useDefaultConstraints": true
 }
