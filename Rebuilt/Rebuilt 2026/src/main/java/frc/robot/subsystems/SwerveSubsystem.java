@@ -282,6 +282,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
         // ****************************************************************** */
         public Rotation2d getRotation2d() {
+                
                 return gyro.getRotation2d();
         }
 
@@ -299,7 +300,8 @@ public class SwerveSubsystem extends SubsystemBase {
                                 backRight.getState());
         }
 
-        public void resetPose(Pose2d pose) {                
+        public void resetPose(Pose2d pose) {  
+                
                 poseEstimator.resetPosition(getRotation2d(), new SwerveModulePosition[] {
                                 frontLeft.getPosition(),
                                 frontRight.getPosition(),

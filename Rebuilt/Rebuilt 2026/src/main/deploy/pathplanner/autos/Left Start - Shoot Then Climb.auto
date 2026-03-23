@@ -23,45 +23,9 @@
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "FireForTimeCmd"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "StopFiringCmd"
-          }
-        },
-        {
           "type": "path",
           "data": {
             "pathName": "LS - To Climb"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "LeftClimbUpCommand"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "MoveLeftGentlyCmd"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "MoveForwardGentlyCmd"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "LeftClimbDownCommand"
           }
         }
       ]

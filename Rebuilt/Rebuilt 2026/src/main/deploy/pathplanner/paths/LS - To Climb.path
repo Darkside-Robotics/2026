@@ -3,38 +3,87 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.8226506024096385,
-        "y": 6.965606276747503
+        "x": 2.434602409638554,
+        "y": 6.154975903614457
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.6544714251024653,
-        "y": 6.579682587116
+        "x": 1.2653373493975906,
+        "y": 7.815987951807228
       },
       "isLocked": false,
       "linkedName": "LS - First Shot"
     },
     {
       "anchor": {
-        "x": 1.1796148359486442,
-        "y": 5.011868758915835
+        "x": 7.461349397590361,
+        "y": 7.127542168674699
       },
       "prevControl": {
-        "x": 1.015011216269338,
-        "y": 4.823704871869276
+        "x": 6.598060240963856,
+        "y": 7.6083614457831334
+      },
+      "nextControl": {
+        "x": 8.104964506851886,
+        "y": 6.769072993896127
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 6.827542168674698,
+        "y": 4.799939759036144
+      },
+      "prevControl": {
+        "x": 7.985879518072285,
+        "y": 4.734373493975904
+      },
+      "nextControl": {
+        "x": 6.357704331394032,
+        "y": 4.8265343535992
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 6.204662650602408,
+        "y": 7.499084337349398
+      },
+      "prevControl": {
+        "x": 5.963741634289229,
+        "y": 7.565845582833773
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": null
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.3410788381742803,
+      "rotationDegrees": -0.6051383933313943
+    },
+    {
+      "waypointRelativePos": 0.5,
+      "rotationDegrees": 0.0
+    },
+    {
+      "waypointRelativePos": 1.023236514522819,
+      "rotationDegrees": -93.64675719509063
+    },
+    {
+      "waypointRelativePos": 1.5161825726140632,
+      "rotationDegrees": -87.18128205186379
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 2.0,
-    "maxAcceleration": 2.0,
+    "maxVelocity": 2.5,
+    "maxAcceleration": 3.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
@@ -42,7 +91,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 177.98540121212946
+    "rotation": 1.1233027140754863
   },
   "reversed": false,
   "folder": "Start - Shoot Then Climb",
