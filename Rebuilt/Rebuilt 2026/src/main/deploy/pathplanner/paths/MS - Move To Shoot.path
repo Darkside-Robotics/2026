@@ -33,7 +33,7 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 2.5,
+    "maxVelocity": 0.5,
     "maxAcceleration": 3.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
@@ -48,7 +48,7 @@
   "folder": "Start - Shoot Then Climb",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.4699790947220148
+    "rotation": 179.13919828056754
   },
   "useDefaultConstraints": true
 }

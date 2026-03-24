@@ -11,33 +11,15 @@
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "Intake"
-          }
-        },
-        {
           "type": "path",
           "data": {
             "pathName": "RFF - Refuel"
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "Stop inatke"
-          }
-        },
-        {
           "type": "path",
           "data": {
             "pathName": "RFF-Return"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Shoot"
           }
         },
         {

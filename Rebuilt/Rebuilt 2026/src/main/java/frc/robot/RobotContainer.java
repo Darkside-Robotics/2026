@@ -1,38 +1,27 @@
 package frc.robot;
 
-import static edu.wpi.first.units.Units.Millisecond;
-
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.FireForTimeCmd;
 import frc.robot.commands.GyroResetCmd;
 import frc.robot.commands.MoveForwardGentlyCmd;
 import frc.robot.commands.MoveLeftGentlyCmd;
 import frc.robot.commands.MoveRightGentlyCmd;
-import frc.robot.commands.SwerveJoystickCmd;
 import frc.robot.commands.TargetingSwerveJoystickCmd;
 import frc.robot.commands.TurnToShootCmd;
 import frc.robot.subsystems.IndexingSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ClimbingSubsystem;
-import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.LEDSubsystem2;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.TargetingSubsystem;
 import frc.robot.subsystems.TurretSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
-import frc.robot.subsystems.TurretSubsystem.TurretConstants;
 
 public class RobotContainer {
 
@@ -40,7 +29,6 @@ public class RobotContainer {
     private final VisionSubsystem visionSubsystem = new VisionSubsystem();
     private final SwerveSubsystem swerveSubsystem = new SwerveSubsystem(visionSubsystem);
     private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
-
     private final IndexingSubsystem indexingSubsystem = new IndexingSubsystem();
     private final TargetingSubsystem targetingSubsystem = new TargetingSubsystem(visionSubsystem, swerveSubsystem);
     private final TurretSubsystem turretSubsystem = new TurretSubsystem(indexingSubsystem, targetingSubsystem);
@@ -54,15 +42,19 @@ public class RobotContainer {
     private final SendableChooser<Command> autoChooser;
 
     public RobotContainer(TimedRobot robot) {
-        swerveSubsystem.setDefaultCommand(new TargetingSwerveJoystickCmd(
-                targetingSubsystem,
-                swerveSubsystem,
-                () -> controller.getLeftY(),
-                () -> controller.getLeftX(),
-                () -> -controller.getRightX(),
-                () -> !controller.leftTrigger(0.2).getAsBoolean(),
-                () -> !controller.leftStick().getAsBoolean(),
-                () -> controller.rightBumper().getAsBoolean(), robot));
+
+        if(controller.isConnected())
+        {
+            swerveSubsystem.setDefaultCommand(new TargetingSwerveJoystickCmd(
+                    targetingSubsystem,
+                    swerveSubsystem,
+                    () -> controller.getLeftY(),
+                    () -> controller.getLeftX(),
+                    () -> -controller.getRightX(),
+                    () -> !controller.leftTrigger(0.2).getAsBoolean(),
+                    () -> !controller.leftStick().getAsBoolean(),
+                    () -> controller.rightBumper().getAsBoolean(), robot));
+        }
 
         // Register Named Commands
         NamedCommands.registerCommand("HomeHoodCmd", turretSubsystem.ResetHoodCmd());
@@ -179,4 +171,8 @@ public class RobotContainer {
     public Command getAutonomousCommand() {
         return autoChooser.getSelected();
     }
+
+    public SwerveSubsystem  getSwerveSubsystem(){
+        return swerveSubsystem;
+    } 
 }

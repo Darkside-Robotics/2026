@@ -72,6 +72,8 @@ public class SwerveSubsystem extends SubsystemBase {
 
         private boolean pathplannerReady;
 
+        private Rotation2d initialRotationOffset = Rotation2d.kZero;
+
         public static AHRS gyro = new AHRS(NavXComType.kMXP_SPI);
 
         // Distance between right and left wheels
@@ -276,14 +278,22 @@ public class SwerveSubsystem extends SubsystemBase {
                                                 backLeft.getPosition(),
                                                 backRight.getPosition()
                                 });
-                visionSubsystem.updateRobotPoseTurretSide(poseEstimator, gyro);
-                visionSubsystem.updateRobotPoseBinSide(poseEstimator, gyro);
+                //visionSubsystem.updateRobotPoseTurretSide(poseEstimator, gyro);
+                //visionSubsystem.updateRobotPoseBinSide(poseEstimator, gyro);
         }
 
         // ****************************************************************** */
         public Rotation2d getRotation2d() {
                 
-                return gyro.getRotation2d();
+                return gyro.getRotation2d().rotateBy(initialRotationOffset);
+        }
+
+        public Rotation2d getInitialRotationOffset(){
+                return initialRotationOffset;
+        }
+
+        public void setInitialRotationOffset(Rotation2d initialRotationOffset){
+                 this.initialRotationOffset=initialRotationOffset;
         }
 
         public Pose2d getPose() {
@@ -338,6 +348,7 @@ public class SwerveSubsystem extends SubsystemBase {
                                         f.getRobotPose().toString());
                         SmartDashboard.putNumber("Last", last.getTime());
                         SmartDashboard.putNumber("Gyro Rot", gyro.getAngle());
+                        SmartDashboard.putNumber( "Gyro Offset", initialRotationOffset.getDegrees());
                         SmartDashboard.putNumber("Robot Rotation", getRotation2d().getDegrees());
 
                 }

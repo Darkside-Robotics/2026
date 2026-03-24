@@ -114,8 +114,8 @@ public class TargetingSwerveJoystickCmd extends Command {
         }
 
         // 1. Get real-time joystick inputs
-        double xSpeed = (isRed ? 1.0 : 1.0) * xSpdFunction.get();
-        double ySpeed = (isRed ? 1.0 : 1.0) * ySpdFunction.get();
+        double xSpeed = (isRed ? 1.0 : -1.0) * xSpdFunction.get();
+        double ySpeed = (isRed ? 1.0 : -1.0) * ySpdFunction.get();
         double turningSpeed = turningSpdFunction.get();
 
         // 2. Apply deadband
