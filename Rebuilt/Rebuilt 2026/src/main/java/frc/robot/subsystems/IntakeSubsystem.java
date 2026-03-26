@@ -220,6 +220,10 @@ public class IntakeSubsystem extends SubsystemBase {
         return runOnce(
                 () -> {
                     armOut = !armOut;
+                    if(armOut == false){
+                        extendedSetpointFound=false;
+                        outSetPointTimer = null;
+                    }
                     spin = spin && armOut;
                 });
     }

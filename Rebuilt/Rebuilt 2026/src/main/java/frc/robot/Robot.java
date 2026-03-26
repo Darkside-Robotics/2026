@@ -112,15 +112,24 @@ public class Robot extends TimedRobot {
                     currentAutoName = robotContainer.getAutonomousCommand().getName();
                     currentAuto = new PathPlannerAuto(robotContainer.getAutonomousCommand().getName());
 
+                    SmartDashboard.putString("Current Path Name", PathPlannerAuto.currentPathName);
+                    SmartDashboard.putString("Current Auto Name", robotContainer.getAutonomousCommand().getName());
+
                     if (currentAuto != null && currentAuto.getStartingPose() != null) {
-                        SmartDashboard.putString("Current Path Name", PathPlannerAuto.currentPathName);
-                        SmartDashboard.putString("Current Auto Name", robotContainer.getAutonomousCommand().getName());
                         SmartDashboard.putString("Current Auto Pose", currentAuto.getStartingPose().toString());
 
                         if (ally.get().equals(Alliance.Red) || ally.get().equals(Alliance.Blue)) {
                             Rotation2d offset = ally.get().equals(Alliance.Red) ? Rotation2d.k180deg : Rotation2d.kZero;
-                            robotContainer.getSwerveSubsystem().setInitialRotationOffset(currentAuto.getStartingPose().getRotation().rotateBy(offset));                      ;
+                            robotContainer.getSwerveSubsystem().setInitialRotationOffset(
+                                    currentAuto.getStartingPose().getRotation().rotateBy(offset));
+                            ;
                             robotContainer.getSwerveSubsystem().resetPose(currentAuto.getStartingPose());
+
+                            LimelightHelpers.SetRobotOrientation("limelight-dark",
+                                    robotContainer.getSwerveSubsystem().getRotation2d().getDegrees(), 0, 0, 0, 0, 0);
+                            LimelightHelpers.SetRobotOrientation("limelight-bin",
+                                    robotContainer.getSwerveSubsystem().getRotation2d().getDegrees(), 0, 0, 0, 0, 0);
+
                         }
                     } else {
                         SmartDashboard.putString("Current Auto Pose", "Unknown");

@@ -113,8 +113,8 @@ public class RobotContainer {
         // ******************************************************************
         controller.leftTrigger().whileTrue(intakeSubsystem.IntakeOnCmd());
         controller.leftTrigger().whileFalse(intakeSubsystem.IntakeOffCmd());
+        
         controller.leftBumper().onTrue(intakeSubsystem.IntakeToggleCmd());
-        controller.leftTrigger().whileTrue(intakeSubsystem.IntakeOnCmd());
 
         if (tune == TestingTuningEnum.INTAKE) {
             controller.povUp().onTrue(intakeSubsystem.SpinIntakeWheelUpCmd());

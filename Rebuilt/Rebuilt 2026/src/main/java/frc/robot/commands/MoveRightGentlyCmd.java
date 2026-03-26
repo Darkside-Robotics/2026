@@ -49,7 +49,8 @@ public class MoveRightGentlyCmd extends Command {
     public void execute() {
         if ((new Date()).getTime() > endMoving) {
             finished = true;
-        }
+        }        
+        swerveSubsystem.drive(-.25, 0, 0, false, robot.getPeriod());
     }
 
     @Override

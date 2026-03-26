@@ -50,7 +50,8 @@ public class MoveForwardGentlyCmd extends Command {
     public void execute() {
         if ((new Date()).getTime() > endMoving) {
             finished = true;
-        }
+        }        
+        swerveSubsystem.drive(0, .25, 0, false, robot.getPeriod());
     }
 
     @Override

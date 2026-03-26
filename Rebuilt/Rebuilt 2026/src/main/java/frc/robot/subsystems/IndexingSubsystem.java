@@ -82,15 +82,42 @@ public class IndexingSubsystem extends SubsystemBase {
     this.indexerVelocity = indexerVelocity;
   }
 
+  private int failedRequestedVelocity = 0;
+  private boolean reversed = false;
+
   @Override
   public void periodic() {
 
     SmartDashboard.putNumber("Indexer Velocity", indexerVelocity * 1000);
 
     if (indexerVelocity > 0) {
-      // indexerMotor.set(70);
+      // MOVEMENT REQUESTED
+      if (Math.abs(indexerMotor.getEncoder().getVelocity()) < 40) {
+        //IF STUCK START COUNTING
+        failedRequestedVelocity++;
+        if (failedRequestedVelocity > 5) 
+        {
+          //IF STUCK OVER 5 CLICKS REVERSE THE MOVEMENT
+          reversed = true; //BACKWARD DIRECTION
+        }
+      } 
+      else 
+      {
+        //WE ARE MOVING COUNT DOWN TO 0 BEFORE RESTORING FORWARD DIRECTION
+        if (failedRequestedVelocity > 0) {          
+          failedRequestedVelocity--;
+        }
+        else
+        {
+          reversed = false; //FORWARD DIRECTION
+        }
+      }
+    } else {
+      // NO MOVEMENT REQUESTED RESET THE COUNTER
+      failedRequestedVelocity = 0;
+      reversed = false;  //FORWARD DIRECTION
     }
-    indexerController.setSetpoint(indexerVelocity * 1000, ControlType.kVelocity);
+    indexerController.setSetpoint((reversed ? -1.0 : 1.0) * indexerVelocity * 1000, ControlType.kVelocity);
 
   }
 
