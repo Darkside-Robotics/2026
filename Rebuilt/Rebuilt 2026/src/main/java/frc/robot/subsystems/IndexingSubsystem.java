@@ -95,10 +95,11 @@ public class IndexingSubsystem extends SubsystemBase {
       if (Math.abs(indexerMotor.getEncoder().getVelocity()) < 40) {
         //IF STUCK START COUNTING
         failedRequestedVelocity++;
-        if (failedRequestedVelocity > 5) 
+        if (failedRequestedVelocity > 8) 
         {
           //IF STUCK OVER 5 CLICKS REVERSE THE MOVEMENT
           reversed = true; //BACKWARD DIRECTION
+          failedRequestedVelocity = 15; //NUMBER OF TICKS TO TRY TO REVERSE
         }
       } 
       else 

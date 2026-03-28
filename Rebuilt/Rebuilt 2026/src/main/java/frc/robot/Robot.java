@@ -119,6 +119,7 @@ public class Robot extends TimedRobot {
                         SmartDashboard.putString("Current Auto Pose", currentAuto.getStartingPose().toString());
 
                         if (ally.get().equals(Alliance.Red) || ally.get().equals(Alliance.Blue)) {
+                            robotContainer.getTargetingSubsystem().setAllyAlliance(ally.get());
                             Rotation2d offset = ally.get().equals(Alliance.Red) ? Rotation2d.k180deg : Rotation2d.kZero;
                             robotContainer.getSwerveSubsystem().setInitialRotationOffset(
                                     currentAuto.getStartingPose().getRotation().rotateBy(offset));

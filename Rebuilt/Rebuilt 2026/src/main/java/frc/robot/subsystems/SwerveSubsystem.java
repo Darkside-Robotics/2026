@@ -278,8 +278,8 @@ public class SwerveSubsystem extends SubsystemBase {
                                                 backLeft.getPosition(),
                                                 backRight.getPosition()
                                 });
-                //visionSubsystem.updateRobotPoseTurretSide(poseEstimator, gyro);
-                //visionSubsystem.updateRobotPoseBinSide(poseEstimator, gyro);
+                visionSubsystem.updateRobotPoseTurretSide(poseEstimator, gyro);
+                visionSubsystem.updateRobotPoseBinSide(poseEstimator, gyro);
         }
 
         // ****************************************************************** */

@@ -43,8 +43,8 @@ public class RobotContainer {
 
     public RobotContainer(TimedRobot robot) {
 
-        if(controller.isConnected())
-        {
+        //if(controller.isConnected())
+        //{
             swerveSubsystem.setDefaultCommand(new TargetingSwerveJoystickCmd(
                     targetingSubsystem,
                     swerveSubsystem,
@@ -54,7 +54,7 @@ public class RobotContainer {
                     () -> !controller.leftTrigger(0.2).getAsBoolean(),
                     () -> !controller.leftStick().getAsBoolean(),
                     () -> controller.rightBumper().getAsBoolean(), robot));
-        }
+        //}
 
         // Register Named Commands
         NamedCommands.registerCommand("HomeHoodCmd", turretSubsystem.ResetHoodCmd());
@@ -113,7 +113,7 @@ public class RobotContainer {
         // ******************************************************************
         controller.leftTrigger().whileTrue(intakeSubsystem.IntakeOnCmd());
         controller.leftTrigger().whileFalse(intakeSubsystem.IntakeOffCmd());
-        
+
         controller.leftBumper().onTrue(intakeSubsystem.IntakeToggleCmd());
 
         if (tune == TestingTuningEnum.INTAKE) {
@@ -174,5 +174,10 @@ public class RobotContainer {
 
     public SwerveSubsystem  getSwerveSubsystem(){
         return swerveSubsystem;
+    } 
+
+    
+    public TargetingSubsystem  getTargetingSubsystem(){
+        return targetingSubsystem;
     } 
 }

@@ -56,7 +56,7 @@ public class IntakeSubsystem extends SubsystemBase {
     private SparkMaxConfig intakeWheelMotorConfig;
     private SparkClosedLoopController intakeWheelController;
     private double intakeWheelSpeed = 0.0;
-    private double spinningIntakeWheelSpeed = 1180.0;
+    private double spinningIntakeWheelSpeed = 2250.0;
     private boolean spin = false;
 
     public static final class IntakeWheelConstants {
@@ -111,7 +111,7 @@ public class IntakeSubsystem extends SubsystemBase {
         intakeWheelMotorConfig.closedLoop
                 .pid(IntakeWheelConstants.PID.P, IntakeWheelConstants.PID.I, IntakeWheelConstants.PID.D)
                 .maxOutput(0.8).feedForward.kV(1.0 / 917.0);
-        intakeWheelMotorConfig.encoder.velocityConversionFactor(1.0 / 2.0 / 2.0 / 3.0);
+        intakeWheelMotorConfig.encoder.velocityConversionFactor(1.0 / 3.0);
 
         intakeWheelMotorConfig.smartCurrentLimit(IntakeWheelConstants.Motor.CurrentStalledLimit,
                 IntakeWheelConstants.Motor.CurrentFreeLimit);

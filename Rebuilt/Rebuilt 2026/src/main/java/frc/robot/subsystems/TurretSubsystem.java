@@ -119,7 +119,10 @@ public class TurretSubsystem extends SubsystemBase {
     }
   }
 
-  private static double reduction = 0.0;
+  
+  private double flywheelAdjustableConstant = 2.095;
+
+  private static double reduction = 0.008;
   private static final double[][] firingTable = new double[][] {
       { 1.7344, 63, 8.5 - reduction },
       { 1.7755, 63, 8.6 - reduction },
@@ -147,12 +150,12 @@ public class TurretSubsystem extends SubsystemBase {
       { 2.4658, 61, 8 - reduction },
       { 2.4952, 61, 7.9 - reduction },
       { 2.5384, 63, 7.8 - reduction },
-      { 2.5686, 62, 7.8 - reduction },
-      { 2.5805, 61, 7.9 - reduction },
-      { 2.6348, 62, 7.9 - reduction },
-      { 2.6421, 62, 7.8 - reduction },
-      { 2.68, 63, 7.8 - reduction },
-      { 2.7115, 62, 7.8 - reduction },
+      { 2.5686, 62, 7.8 },
+      { 2.5805, 61, 7.9 },
+      { 2.6348, 62, 7.9 },
+      { 2.6421, 62, 7.8 },
+      { 2.68, 63, 7.8 },
+      { 2.7115, 62, 7.8 },
       { 2.745, 63, 7.8 },
       { 2.7815, 62, 7.9 },
       { 2.8087, 61, 7.9 },
@@ -271,7 +274,6 @@ public class TurretSubsystem extends SubsystemBase {
 
   private boolean fire = false;
   private boolean manual = false;
-  private double flywheelAdjustableConstant = 2.087;
 
   private boolean homing = false;
 
@@ -390,12 +392,12 @@ public class TurretSubsystem extends SubsystemBase {
       double wheelSpeed = targetingValues[2];
       double finalAdjustmentConstant = flywheelAdjustableConstant;
 
-      if (targetingSubsystem.getTargetDistance() < 2.4)
+      if (targetingSubsystem.getTargetDistance() < 2.2)
         finalAdjustmentConstant = finalAdjustmentConstant - (Math.abs(52 - hoodAngle) * .005);
 
       double targetRPM = (wheelSpeed * 60.0 / 0.31918 * finalAdjustmentConstant);
 
-      hoodController.setSetpoint(Math.abs(64.0 - hoodAngle), ControlType.kPosition);
+      hoodController.setSetpoint(Math.abs((60.5 - hoodAngle) > 0 ? (60.5 - hoodAngle) : 0), ControlType.kPosition);
 
       if (fire) {
 
@@ -426,7 +428,7 @@ public class TurretSubsystem extends SubsystemBase {
       SmartDashboard.putNumber("Flywheel Target (rpm)", targetRPM);
       SmartDashboard.putNumber("Flywheel Adjustment Constant", flywheelAdjustableConstant);
       SmartDashboard.putNumber("Hood Angle", hoodAngle);
-      SmartDashboard.putNumber("Hood Set Point", Math.abs(64.0 - hoodAngle));
+      SmartDashboard.putNumber("Hood Set Point", Math.abs((60.5 - hoodAngle) > 0 ? (60.5 - hoodAngle) : 0));
       SmartDashboard.putNumber("Hood Encoder Position", hoodMotor.getEncoder().getPosition());
     } else {
 
