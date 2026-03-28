@@ -11,14 +11,18 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.library.vision.LimelightHelpers;
 
 import java.util.Optional;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.PathPlannerAuto;
 
+import au.grapplerobotics.CanBridge;
 //import au.grapplerobotics.CanBridge;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.UsbCamera;
+import edu.wpi.first.math.geometry.Rotation2d;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -34,17 +38,11 @@ public class Robot extends TimedRobot {
     private Command m_autonomousCommand;
     // private Command m_colorCheckerCommand;
 
-    private RobotContainer m_robotContainer;
-
-
+    private RobotContainer robotContainer;
 
     public Robot() {
-        // CanBridge.runTCP();
-
-
+        CanBridge.runTCP();
     }
-
-
 
     /**
      * This function is run when the robot is first started up and should be used
@@ -57,7 +55,11 @@ public class Robot extends TimedRobot {
         // Instantiate our RobotContainer. This will perform all our button bindings,
         // and put our
         // autonomous chooser on the dashboard.
-        m_robotContainer = new RobotContainer(this);
+        robotContainer = new RobotContainer(this);
+        // In disabledPeriodic or before match starts
+        LimelightHelpers.SetIMUMode("limelight-dark", 4); // Seed internal IMU
+        // In disabledPeriodic or before match starts
+        LimelightHelpers.SetIMUMode("limelight-bin", 4); // Seed internal IMU
     }
 
     /**
@@ -88,10 +90,62 @@ public class Robot extends TimedRobot {
     /** This function is called once each time the robot enters Disabled mode. */
     @Override
     public void disabledInit() {
+        // In disabledPeriodic or before match starts
+        LimelightHelpers.SetIMUMode("limelight-dark", 1); // Seed internal IMU
+        // In disabledPeriodic or before match starts
+        LimelightHelpers.SetIMUMode("limelight-bin", 1); // Seed internal IMU
     }
+
+    private String currentAutoName = null;
+    private Alliance currentAlliance = null;
+    private PathPlannerAuto currentAuto = null;
 
     @Override
     public void disabledPeriodic() {
+
+        Optional<Alliance> ally = DriverStation.getAlliance();
+        if (ally.isPresent()) {
+            if (robotContainer.getAutonomousCommand().getName() != null) {
+                if (currentAutoName != robotContainer.getAutonomousCommand().getName()
+                        || !ally.get().equals(currentAlliance)) {
+                    currentAlliance = ally.get();
+                    currentAutoName = robotContainer.getAutonomousCommand().getName();
+                    currentAuto = new PathPlannerAuto(robotContainer.getAutonomousCommand().getName());
+
+                    SmartDashboard.putString("Current Path Name", PathPlannerAuto.currentPathName);
+                    SmartDashboard.putString("Current Auto Name", robotContainer.getAutonomousCommand().getName());
+
+                    if (currentAuto != null && currentAuto.getStartingPose() != null) {
+                        SmartDashboard.putString("Current Auto Pose", currentAuto.getStartingPose().toString());
+
+                        if (ally.get().equals(Alliance.Red) || ally.get().equals(Alliance.Blue)) {
+                            robotContainer.getTargetingSubsystem().setAllyAlliance(ally.get());
+                            Rotation2d offset = ally.get().equals(Alliance.Red) ? Rotation2d.k180deg : Rotation2d.kZero;
+                            robotContainer.getSwerveSubsystem().setInitialRotationOffset(
+                                    currentAuto.getStartingPose().getRotation().rotateBy(offset));
+                            ;
+                            robotContainer.getSwerveSubsystem().resetPose(currentAuto.getStartingPose());
+
+                            LimelightHelpers.SetRobotOrientation("limelight-dark",
+                                    robotContainer.getSwerveSubsystem().getRotation2d().getDegrees(), 0, 0, 0, 0, 0);
+                            LimelightHelpers.SetRobotOrientation("limelight-bin",
+                                    robotContainer.getSwerveSubsystem().getRotation2d().getDegrees(), 0, 0, 0, 0, 0);
+
+                        }
+                    } else {
+                        SmartDashboard.putString("Current Auto Pose", "Unknown");
+                    }
+                }
+            } else {
+                SmartDashboard.putString("Current Auto Pose", "Unknown");
+            }
+        }
+
+        // In disabledPeriodic or before match starts
+        LimelightHelpers.SetIMUMode("limelight-dark", 1); // Seed internal IMU
+        // In disabledPeriodic or before match starts
+        LimelightHelpers.SetIMUMode("limelight-bin", 1); // Seed internal IMU
+
     }
 
     /**
@@ -100,7 +154,7 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void autonomousInit() {
-        Command autonomousCommand = m_robotContainer.getAutonomousCommand();
+        Command autonomousCommand = robotContainer.getAutonomousCommand();
         // schedule the autonomous command (example)
         if (autonomousCommand != null) {
             CommandScheduler.getInstance().schedule(autonomousCommand);
@@ -110,6 +164,12 @@ public class Robot extends TimedRobot {
     /** This function is called periodically during autonomous. */
     @Override
     public void autonomousPeriodic() {
+
+        // In disabledPeriodic or before match starts
+        LimelightHelpers.SetIMUMode("limelight-dark", 4); // Seed internal IMU
+        // In disabledPeriodic or before match starts
+        LimelightHelpers.SetIMUMode("limelight-bin", 4); // Seed internal IMU
+
     }
 
     @Override

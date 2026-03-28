@@ -1,0 +1,73 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Dont Move"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "HomeHoodCmd"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "RightClimbUpCommand"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "FireForTimeCmd"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "MoveRightGentlyCmd"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 2.0
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "MoveLeftGentlyCmd"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "RightClimbDownCommand"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 2.0
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "MoveForwardGentlyCmd"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}

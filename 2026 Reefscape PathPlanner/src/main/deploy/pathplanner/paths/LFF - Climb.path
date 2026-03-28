@@ -1,0 +1,54 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 2.6218636363636363,
+        "y": 5.209977272727273
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.9278837530950783,
+        "y": 4.989707643727592
+      },
+      "isLocked": false,
+      "linkedName": "LFF - Climb"
+    },
+    {
+      "anchor": {
+        "x": 1.374738636363636,
+        "y": 4.715250000000001
+      },
+      "prevControl": {
+        "x": 1.1253140302330664,
+        "y": 4.732201868823531
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 0.5,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 180.0
+  },
+  "reversed": false,
+  "folder": "Left - Fuel First",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 154.59228189105156
+  },
+  "useDefaultConstraints": true
+}

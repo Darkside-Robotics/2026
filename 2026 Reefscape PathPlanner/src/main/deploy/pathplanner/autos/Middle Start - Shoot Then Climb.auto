@@ -1,0 +1,73 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "HomeHoodCmd"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "MS - Move To Shoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "TurnToShootCmd"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "FireForTimeCmd"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "StopFiringCmd"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "MS - To Climb"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "LeftClimbUpCommand"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "MoveLeftGentlyCmd"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "MoveForwardGentlyCmd"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "LeftClimbDownCommand"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": "Shoot Then Climb",
+  "choreoAuto": false
+}

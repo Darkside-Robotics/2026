@@ -1,7 +1,7 @@
 package frc.robot.subsystems;
 
 import java.util.Date;
-import java.util.function.BiConsumer;
+//import java.util.function.BiConsumer;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
@@ -72,13 +72,18 @@ public class SwerveSubsystem extends SubsystemBase {
 
         private boolean pathplannerReady;
 
+        private Rotation2d initialRotationOffset = Rotation2d.kZero;
 
         public static AHRS gyro = new AHRS(NavXComType.kMXP_SPI);
 
-        private final Translation2d frontLeftLocation = new Translation2d(0.355, 0.382);
-        private final Translation2d frontRightLocation = new Translation2d(0.355, -0.382);
-        private final Translation2d backLeftLocation = new Translation2d(-0.355, 0.382);
-        private final Translation2d backRightLocation = new Translation2d(-0.355, -0.382);
+   // Distance between right and left wheels
+        public static final double kTrackWidth = Units.inchesToMeters(21.55);
+        // Distance between front and back wheels
+        public static final double kWheelBase = Units.inchesToMeters(23.58);
+       private final Translation2d frontLeftLocation = new Translation2d((TrackLength / 2.0), (TrackWidth / 2.0));
+        private final Translation2d frontRightLocation = new Translation2d((TrackLength / 2.0), -(TrackWidth / 2.0));
+        private final Translation2d backLeftLocation = new Translation2d((-TrackLength / 2.0), (TrackWidth / 2.0));
+        private final Translation2d backRightLocation = new Translation2d((-TrackLength / 2.0), -(TrackWidth / 2.0));
 
         private final SwerveDriveKinematics kinematics = new SwerveDriveKinematics(
                         frontLeftLocation, frontRightLocation, backLeftLocation, backRightLocation);
@@ -89,15 +94,28 @@ public class SwerveSubsystem extends SubsystemBase {
          * below are robot specific, and should be tuned.
          */
         private final SwerveDrivePoseEstimator poseEstimator;
-
         private final VisionSubsystem visionSubsystem;
+
+        //private final boolean isRed;
 
         public SwerveSubsystem(VisionSubsystem visionSubsystem) {
                 this.visionSubsystem = visionSubsystem;
 
+                // var alliance = DriverStation.getAlliance();
+                // if (alliance.isPresent()) {
+                //         isRed = alliance.get() == DriverStation.Alliance.Red;
+                // } else {
+                //         isRed = true;
+                // }
+
                 zeroHeading();
 
-                Pose2d RedSideRightCornerPose2d = new Pose2d(16.063, 7.65, Rotation2d.k180deg);
+                // Pose2d SideRightCornerPose2d;
+                // if (isRed) {
+                //         SideRightCornerPose2d = new Pose2d(16.063, 7.65, Rotation2d.kZero);
+                // } else {
+                //         SideRightCornerPose2d = new Pose2d(0.063, 0.35, Rotation2d.k180deg);
+                // }
 
                 poseEstimator = new SwerveDrivePoseEstimator(
                                 kinematics,
@@ -108,8 +126,7 @@ public class SwerveSubsystem extends SubsystemBase {
                                                 backLeft.getPosition(),
                                                 backRight.getPosition()
                                 },
-                                RedSideRightCornerPose2d,
-                                // Pose2d.kZero,
+                                Pose2d.kZero,
                                 VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(3)),
                                 VecBuilder.fill(0.7, 0.7, 9999999));
 
@@ -146,31 +163,44 @@ public class SwerveSubsystem extends SubsystemBase {
                                                 // This will flip the path being followed to the red side of the field.
                                                 // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
 
-                                                var alliance = DriverStation.getAlliance();
-                                                if (alliance.isPresent()) {
-                                                        return alliance.get() == DriverStation.Alliance.Red;
+                                                var alliance1 = DriverStation.getAlliance();
+                                                if (alliance1.isPresent()) {
+                                                        return alliance1.get() == DriverStation.Alliance.Red;
                                                 }
                                                 return false;
                                         },
                                         this // Reference to this subsystem to set requirements
                         );
-                
-                        this.pathplannerReady=true;
+
+                        this.pathplannerReady = true;
 
                 } catch (Exception e) {
                         // Handle exception as needed
                         e.printStackTrace();
-                        this.pathplannerReady=false;
+                        this.pathplannerReady = false;
                 }
 
         }
 
-        public boolean isPathplannerReady (){
+        public boolean isPathplannerReady() {
                 return this.pathplannerReady;
         }
 
         public void zeroHeading() {
+                /*
+                if (this.poseEstimator != null) {
+
+                        Pose2d SideRightCornerPose2d;
+                        if (isRed) {
+                                SideRightCornerPose2d = new Pose2d(16.063, 7.65, Rotation2d.kZero);
+                        } else {
+                                SideRightCornerPose2d = new Pose2d(0.063, 0.4, Rotation2d.k180deg);
+                        }
+                        this.poseEstimator.resetPose(SideRightCornerPose2d);
+                }
+                */
                 gyro.reset();
+                
         }
 
         /**
@@ -247,12 +277,22 @@ public class SwerveSubsystem extends SubsystemBase {
                                                 backLeft.getPosition(),
                                                 backRight.getPosition()
                                 });
-                visionSubsystem.updateRobotPose(poseEstimator, gyro);
+                visionSubsystem.updateRobotPoseTurretSide(poseEstimator, gyro);
+                visionSubsystem.updateRobotPoseBinSide(poseEstimator, gyro);
         }
 
         // ****************************************************************** */
         public Rotation2d getRotation2d() {
-                return gyro.getRotation2d();
+                
+                return gyro.getRotation2d().rotateBy(initialRotationOffset);
+        }
+
+        public Rotation2d getInitialRotationOffset(){
+                return initialRotationOffset;
+        }
+
+        public void setInitialRotationOffset(Rotation2d initialRotationOffset){
+                 this.initialRotationOffset=initialRotationOffset;
         }
 
         public Pose2d getPose() {
@@ -269,7 +309,8 @@ public class SwerveSubsystem extends SubsystemBase {
                                 backRight.getState());
         }
 
-        public void resetPose(Pose2d pose) {
+        public void resetPose(Pose2d pose) {  
+                
                 poseEstimator.resetPosition(getRotation2d(), new SwerveModulePosition[] {
                                 frontLeft.getPosition(),
                                 frontRight.getPosition(),
@@ -306,6 +347,7 @@ public class SwerveSubsystem extends SubsystemBase {
                                         f.getRobotPose().toString());
                         SmartDashboard.putNumber("Last", last.getTime());
                         SmartDashboard.putNumber("Gyro Rot", gyro.getAngle());
+                        SmartDashboard.putNumber( "Gyro Offset", initialRotationOffset.getDegrees());
                         SmartDashboard.putNumber("Robot Rotation", getRotation2d().getDegrees());
 
                 }

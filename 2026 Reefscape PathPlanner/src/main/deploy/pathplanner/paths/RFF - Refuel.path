@@ -1,0 +1,54 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 7.744352272727273,
+        "y": 1.2109318181818185
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 7.717334455980422,
+        "y": 2.0445695820695264
+      },
+      "isLocked": false,
+      "linkedName": "RFF - Refuel"
+    },
+    {
+      "anchor": {
+        "x": 7.620670454545456,
+        "y": 6.096363636363637
+      },
+      "prevControl": {
+        "x": 7.61205867779834,
+        "y": 6.600618764518766
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "RFF - Return"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 0.5,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 90.0
+  },
+  "reversed": false,
+  "folder": "Right - Fuel First",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 90.0
+  },
+  "useDefaultConstraints": true
+}

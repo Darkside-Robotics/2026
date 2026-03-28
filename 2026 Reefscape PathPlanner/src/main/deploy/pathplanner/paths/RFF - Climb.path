@@ -1,0 +1,54 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 2.941375,
+        "y": 2.952784090909091
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 3.278784562423095,
+        "y": 2.8693407170709455
+      },
+      "isLocked": false,
+      "linkedName": "RFF - Climb"
+    },
+    {
+      "anchor": {
+        "x": 1.3644318181818178,
+        "y": 4.622488636363637
+      },
+      "prevControl": {
+        "x": 1.993147727272727,
+        "y": 4.467886363636364
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 0.5,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 177.81835859644858
+  },
+  "reversed": false,
+  "folder": "Right - Fuel First",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": -145.95406264339846
+  },
+  "useDefaultConstraints": true
+}
