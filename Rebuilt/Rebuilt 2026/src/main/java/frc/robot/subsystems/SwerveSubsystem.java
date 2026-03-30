@@ -278,6 +278,16 @@ public class SwerveSubsystem extends SubsystemBase {
                                                 backLeft.getPosition(),
                                                 backRight.getPosition()
                                 });
+
+
+                double maxVisionUpdateSpeed = 2.0;
+                if (Math.abs(frontLeft.getState().speedMetersPerSecond) > maxVisionUpdateSpeed ||
+                                Math.abs(frontRight.getState().speedMetersPerSecond) > maxVisionUpdateSpeed ||
+                                Math.abs(backLeft.getState().speedMetersPerSecond) > maxVisionUpdateSpeed ||
+                                Math.abs(backRight.getState().speedMetersPerSecond) > maxVisionUpdateSpeed) {
+                        // DONT DO VISION WHILE MOVING QUICKLY
+                }
+
                 visionSubsystem.updateRobotPoseTurretSide(poseEstimator, gyro);
                 visionSubsystem.updateRobotPoseBinSide(poseEstimator, gyro);
         }

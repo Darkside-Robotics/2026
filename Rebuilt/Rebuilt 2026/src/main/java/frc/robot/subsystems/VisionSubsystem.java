@@ -70,10 +70,12 @@ public class VisionSubsystem extends SubsystemBase {
         LimelightHelpers.setPipelineIndex("limelight-bin", 0);
     }
 
+    private int rejectedDarkVisionUpdateCount =0;
     public void updateRobotPoseTurretSide(SwerveDrivePoseEstimator poseEstimator, AHRS gyro) {
 
+             Pose2d currentPose = poseEstimator.getEstimatedPosition();
         LimelightHelpers.SetRobotOrientation("limelight-dark",
-                poseEstimator.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0, 0);
+                currentPose.getRotation().getDegrees(), 0, 0, 0, 0, 0);
         LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-dark");
 
         boolean doRejectUpdate = false;
@@ -87,10 +89,20 @@ public class VisionSubsystem extends SubsystemBase {
             if (mt2.tagCount == 0) {
                 doRejectUpdate = true;
             }
+
+                        double yDistance = Math.abs(currentPose.getY() - mt2.pose.getY());
+            double xDistance = Math.abs(currentPose.getX() - mt2.pose.getX());    
+            double changeInPosition = Math.sqrt(Math.pow(xDistance, 2) + Math.pow(yDistance, 2));
+            if(changeInPosition > 1.6)
+            {
+                doRejectUpdate = true;
+                rejectedDarkVisionUpdateCount++;
+                SmartDashboard.putNumber("Rejected Dark Vision Update", rejectedDarkVisionUpdateCount);
+            }
            
             if (!doRejectUpdate) {
 
-                SmartDashboard.putNumber("Updating with Vision ", (new Date()).getTime());
+                SmartDashboard.putString("Updating with Dark Vision ", mt2.pose.toString());
                 poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.7, .7, 9999999));
                 poseEstimator.addVisionMeasurement(
                         new Pose2d(mt2.pose.getX() + limeLightDarkAdjustmentTranslationX,
@@ -100,11 +112,15 @@ public class VisionSubsystem extends SubsystemBase {
         }
     };
 
+    
+    private int rejectedBinVisionUpdateCount =0;
     public void updateRobotPoseBinSide(SwerveDrivePoseEstimator poseEstimator, AHRS gyro) {
 
+        
+             Pose2d currentPose = poseEstimator.getEstimatedPosition();
         LimelightHelpers.SetRobotOrientation("limelight-bin",
-                poseEstimator.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0, 0);
-        LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-dark");
+                currentPose.getRotation().getDegrees(), 0, 0, 0, 0, 0);
+        LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-bin");
 
         boolean doRejectUpdate = false;
 
@@ -117,9 +133,20 @@ public class VisionSubsystem extends SubsystemBase {
             if (mt2.tagCount == 0) {
                 doRejectUpdate = true;
             }
+            
+            double yDistance = Math.abs(currentPose.getY() - mt2.pose.getY());
+            double xDistance = Math.abs(currentPose.getX() - mt2.pose.getX());    
+            double changeInPosition = Math.sqrt(Math.pow(xDistance, 2) + Math.pow(yDistance, 2));
+            if(changeInPosition > 1.6)
+            {
+                doRejectUpdate = true;
+                rejectedBinVisionUpdateCount++;
+                SmartDashboard.putNumber("Rejected Bin Vision Update", rejectedBinVisionUpdateCount);
+            }
+
             if (!doRejectUpdate) {
 
-                SmartDashboard.putNumber("Updating with Vision 2", (new Date()).getTime());
+                SmartDashboard.putString("Updating with Bin Vision", mt2.pose.toString());
                 poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.7, .7, 9999999));
                 poseEstimator.addVisionMeasurement(
                         mt2.pose,

@@ -96,10 +96,10 @@ public class TargetingSubsystem extends SubsystemBase {
     }
 
     targetDistance = Math.sqrt(Math.pow(xDistance, 2) + Math.pow(yDistance, 2));
+    //ADD 180 because we shoot from the back of the robot
     targetRotation2d = Rotation2d.fromDegrees(correctedAngle).rotateBy(Rotation2d.fromDegrees(180));
 
-    SmartDashboard.putNumber("Robot Current Angle (Targeting)",
-        robotPose2d.getRotation().rotateBy(Rotation2d.fromDegrees(180)).getDegrees());
+    SmartDashboard.putNumber("Robot Current Angle (Targeting)",targetRotation2d.getDegrees());
     SmartDashboard.putNumber("Robot Target Angle", correctedAngle);
     SmartDashboard.putNumber("Robot Target Distance", targetDistance);
     SmartDashboard.putNumber("Robot Target Distance (f)", Units.metersToFeet(targetDistance));

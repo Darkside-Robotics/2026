@@ -59,6 +59,7 @@ public class TurnToShootCmd extends Command {
     public void initialize() {
         finished = false;
         this.endMoving = (new Date()).getTime() + milliseconds;
+        this.turningPidController.reset(swerveSubsystem.getPose().getRotation().getRadians());
     }
 
     @Override
@@ -74,10 +75,10 @@ public class TurnToShootCmd extends Command {
         SmartDashboard.putBoolean("Shoot At Setpoint", this.turningPidController.atSetpoint());
         swerveSubsystem.drive(0, 0, turningSpeed, true, robot.getPeriod());
 
-        if (this.turningPidController.atGoal() || Math.abs(turningSpeed) < 0.08) {;
-        turretSubsystem.startFiring();
+        if (this.turningPidController.atGoal() || Math.abs(turningSpeed) < 0.08) {
+            turretSubsystem.startFiring();
         }
-        if ((new Date()).getTime() > endMoving){
+        if ((new Date()).getTime() > endMoving) {
             finished = true;
         }
     }

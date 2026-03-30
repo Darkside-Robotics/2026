@@ -1,11 +1,16 @@
 package frc.robot;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.FireForTimeCmd;
 import frc.robot.commands.GyroResetCmd;
@@ -28,18 +33,28 @@ public class RobotContainer {
     // private final LEDSubsystem ledSubsystem = new LEDSubsystem();
     private final VisionSubsystem visionSubsystem = new VisionSubsystem();
     private final SwerveSubsystem swerveSubsystem = new SwerveSubsystem(visionSubsystem);
-    private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
-    private final IndexingSubsystem indexingSubsystem = new IndexingSubsystem();
+    //private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
+    //private final IndexingSubsystem indexingSubsystem = new IndexingSubsystem();
     private final TargetingSubsystem targetingSubsystem = new TargetingSubsystem(visionSubsystem, swerveSubsystem);
-    private final TurretSubsystem turretSubsystem = new TurretSubsystem(indexingSubsystem, targetingSubsystem);
-    private final ClimbingSubsystem climbingSubsystem = new ClimbingSubsystem();
+    //private final TurretSubsystem turretSubsystem = new TurretSubsystem(indexingSubsystem, targetingSubsystem);
+    //private final ClimbingSubsystem climbingSubsystem = new ClimbingSubsystem();
 
-    private final LEDSubsystem2 ledSubsystem = new LEDSubsystem2();
+    //private final LEDSubsystem2 ledSubsystem = new LEDSubsystem2();
 
     private final CommandXboxController controller = new CommandXboxController(0);
-    // private final XboxController secondaryController = new XboxController(1);
 
     private final SendableChooser<Command> autoChooser;
+
+    public static final String getTimeString(){
+                LocalDateTime currentDateTime = LocalDateTime.now();
+        // Define the desired format pattern
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss.SSS"); 
+        
+        // Format the date and time into a string
+        String formattedDateTime = currentDateTime.format(formatter); 
+        
+        return formattedDateTime;
+    }
 
     public RobotContainer(TimedRobot robot) {
 
@@ -57,14 +72,23 @@ public class RobotContainer {
         //}
 
         // Register Named Commands
-        NamedCommands.registerCommand("HomeHoodCmd", turretSubsystem.ResetHoodCmd());
-        NamedCommands.registerCommand("TurnToShootCmd", new TurnToShootCmd(targetingSubsystem, swerveSubsystem, turretSubsystem, 6000, robot));
-        NamedCommands.registerCommand("FireForTimeCmd", new FireForTimeCmd(turretSubsystem, 1000, robot));
-        NamedCommands.registerCommand("StopFiringCmd", turretSubsystem.StopFiringCmd());
-        NamedCommands.registerCommand("RightClimbUpCommand", climbingSubsystem.ClimbUpCommand());
-        NamedCommands.registerCommand("RightClimbDownCommand", climbingSubsystem.ClimbDownCommand());
-        NamedCommands.registerCommand("LeftClimbUpCommand", climbingSubsystem.ClimbUpCommand());
-        NamedCommands.registerCommand("LeftClimbDownCommand", climbingSubsystem.ClimbDownCommand());
+        // NamedCommands.registerCommand("HomeHoodCmd", turretSubsystem.ResetHoodCmd());
+         NamedCommands.registerCommand("TurnToShootCmd", new TurnToShootCmd(targetingSubsystem, swerveSubsystem, null, 6000, robot));
+        // NamedCommands.registerCommand("FireForTimeCmd", new FireForTimeCmd(turretSubsystem, 1000, robot));
+        // NamedCommands.registerCommand("StopFiringCmd", turretSubsystem.StopFiringCmd());
+        // NamedCommands.registerCommand("RightClimbUpCommand", climbingSubsystem.ClimbUpCommand());
+        // NamedCommands.registerCommand("RightClimbDownCommand", climbingSubsystem.ClimbDownCommand());
+        // NamedCommands.registerCommand("LeftClimbUpCommand", climbingSubsystem.ClimbUpCommand());
+        // NamedCommands.registerCommand("LeftClimbDownCommand", climbingSubsystem.ClimbDownCommand());
+
+        NamedCommands.registerCommand("HomeHoodCmd", new InstantCommand(()->{ SmartDashboard.putString("HomeHoodCmd", getTimeString());}));
+        NamedCommands.registerCommand("FireForTimeCmd", new InstantCommand(()->{ SmartDashboard.putString("FireForTimeCmd", getTimeString());}));
+        NamedCommands.registerCommand("StopFiringCmd", new InstantCommand(()->{ SmartDashboard.putString("StopFiringCmd", getTimeString());}));
+        NamedCommands.registerCommand("RightClimbUpCommand", new InstantCommand(()->{ SmartDashboard.putString("RightClimbUpCommand", getTimeString());}));
+        NamedCommands.registerCommand("RightClimbDownCommand", new InstantCommand(()->{ SmartDashboard.putString("RightClimbDownCommand", getTimeString());}));
+        NamedCommands.registerCommand("LeftClimbUpCommand", new InstantCommand(()->{ SmartDashboard.putString("LeftClimbUpCommand", getTimeString());}));
+        NamedCommands.registerCommand("LeftClimbDownCommand", new InstantCommand(()->{ SmartDashboard.putString("LeftClimbDownCommand", getTimeString());}));
+
         NamedCommands.registerCommand("MoveForwardGentlyCmd", new MoveForwardGentlyCmd(swerveSubsystem, 3000, robot));
         NamedCommands.registerCommand("MoveRightGentlyCmd", new MoveRightGentlyCmd(swerveSubsystem, 3000, robot));
         NamedCommands.registerCommand("MoveLeftGentlyCmd", new MoveLeftGentlyCmd(swerveSubsystem, 3000, robot));
@@ -95,63 +119,63 @@ public class RobotContainer {
 
     private void configureButtonBindings() {
 
-        // ******************************************************************
-        // CLIMBING
-        // ******************************************************************
-        controller.y().whileTrue(climbingSubsystem.ClimbUpCommand()).whileFalse(climbingSubsystem.StopCommand());
-        controller.a().whileTrue(climbingSubsystem.ClimbDownCommand()).whileFalse(climbingSubsystem.StopCommand());
+        // // ******************************************************************
+        // // CLIMBING
+        // // ******************************************************************
+        // controller.y().whileTrue(climbingSubsystem.ClimbUpCommand()).whileFalse(climbingSubsystem.StopCommand());
+        // controller.a().whileTrue(climbingSubsystem.ClimbDownCommand()).whileFalse(climbingSubsystem.StopCommand());
 
-        if (tune == TestingTuningEnum.CLIMBING) {
-            controller.a().onTrue(climbingSubsystem.LeftClimbDownCommand());
-            controller.y().onTrue(climbingSubsystem.LeftClimbUpCommand());
-            controller.povDown().onTrue(climbingSubsystem.RightClimbDownCommand());
-            controller.povUp().onTrue(climbingSubsystem.RightClimbUpCommand());
-        }
+        // if (tune == TestingTuningEnum.CLIMBING) {
+        //     controller.a().onTrue(climbingSubsystem.LeftClimbDownCommand());
+        //     controller.y().onTrue(climbingSubsystem.LeftClimbUpCommand());
+        //     controller.povDown().onTrue(climbingSubsystem.RightClimbDownCommand());
+        //     controller.povUp().onTrue(climbingSubsystem.RightClimbUpCommand());
+        // }
 
-        // ******************************************************************
-        // INTAKE
-        // ******************************************************************
-        controller.leftTrigger().whileTrue(intakeSubsystem.IntakeOnCmd());
-        controller.leftTrigger().whileFalse(intakeSubsystem.IntakeOffCmd());
+        // // ******************************************************************
+        // // INTAKE
+        // // ******************************************************************
+        // controller.leftTrigger().whileTrue(intakeSubsystem.IntakeOnCmd());
+        // controller.leftTrigger().whileFalse(intakeSubsystem.IntakeOffCmd());
 
-        controller.leftBumper().onTrue(intakeSubsystem.IntakeToggleCmd());
+        // controller.leftBumper().onTrue(intakeSubsystem.IntakeToggleCmd());
 
-        if (tune == TestingTuningEnum.INTAKE) {
-            controller.povUp().onTrue(intakeSubsystem.SpinIntakeWheelUpCmd());
-            controller.povDown().onTrue(intakeSubsystem.SpinIntakeWheelDownCmd());
-            controller.povLeft().onTrue(intakeSubsystem.ArmOutIncrementCmd());
-            controller.povRight().onTrue(intakeSubsystem.ArmInIncrementCmd());
-        }
+        // if (tune == TestingTuningEnum.INTAKE) {
+        //     controller.povUp().onTrue(intakeSubsystem.SpinIntakeWheelUpCmd());
+        //     controller.povDown().onTrue(intakeSubsystem.SpinIntakeWheelDownCmd());
+        //     controller.povLeft().onTrue(intakeSubsystem.ArmOutIncrementCmd());
+        //     controller.povRight().onTrue(intakeSubsystem.ArmInIncrementCmd());
+        // }
 
-        // ******************************************************************
-        // INDEXING
-        // ******************************************************************
-        if (tune == TestingTuningEnum.INDEXING) {
-            // controller.povUp().onTrue(indexingSubsystem.IndexerUpCmd());
-            // controller.povDown().onTrue(indexingSubsystem.IndexerDownCmd());
-        }
+        // // ******************************************************************
+        // // INDEXING
+        // // ******************************************************************
+        // if (tune == TestingTuningEnum.INDEXING) {
+        //     // controller.povUp().onTrue(indexingSubsystem.IndexerUpCmd());
+        //     // controller.povDown().onTrue(indexingSubsystem.IndexerDownCmd());
+        // }
 
-        controller.povUp().whileTrue(turretSubsystem.spinIndexerForwardCommand())
-                .whileFalse(turretSubsystem.stopSpinIndexCommand());
+        // controller.povUp().whileTrue(turretSubsystem.spinIndexerForwardCommand())
+        //         .whileFalse(turretSubsystem.stopSpinIndexCommand());
 
-        controller.povDown().whileTrue(turretSubsystem.spinIndexerBackwardCommand())
-                .whileFalse(turretSubsystem.stopSpinIndexCommand());
+        // controller.povDown().whileTrue(turretSubsystem.spinIndexerBackwardCommand())
+        //         .whileFalse(turretSubsystem.stopSpinIndexCommand());
 
-        // ******************************************************************
-        // SHOOTING
-        // ******************************************************************
-        controller.rightBumper().whileTrue(turretSubsystem.FireAutoCmd());
-        controller.rightBumper().whileFalse(turretSubsystem.StopFiringCmd());
+        // // ******************************************************************
+        // // SHOOTING
+        // // ******************************************************************
+        // controller.rightBumper().whileTrue(turretSubsystem.FireAutoCmd());
+        // controller.rightBumper().whileFalse(turretSubsystem.StopFiringCmd());
 
-        controller.rightTrigger().whileTrue(turretSubsystem.FireManualCmd());
-        controller.rightTrigger().whileFalse(turretSubsystem.StopFiringCmd());
+        // controller.rightTrigger().whileTrue(turretSubsystem.FireManualCmd());
+        // controller.rightTrigger().whileFalse(turretSubsystem.StopFiringCmd());
 
-        controller.start().onTrue(turretSubsystem.ResetHoodCmd());
+        // controller.start().onTrue(turretSubsystem.ResetHoodCmd());
 
-        if (tune == TestingTuningEnum.FLYWHEEL) {
-            controller.povUp().onTrue(turretSubsystem.FlywheelAdjustmentConstantUpCmd());
-            controller.povDown().onTrue(turretSubsystem.FlywheelAdjustmentConstantDownCmd());
-        }
+        // if (tune == TestingTuningEnum.FLYWHEEL) {
+        //     controller.povUp().onTrue(turretSubsystem.FlywheelAdjustmentConstantUpCmd());
+        //     controller.povDown().onTrue(turretSubsystem.FlywheelAdjustmentConstantDownCmd());
+        // }
 
         // ******************************************************************
         // VISION

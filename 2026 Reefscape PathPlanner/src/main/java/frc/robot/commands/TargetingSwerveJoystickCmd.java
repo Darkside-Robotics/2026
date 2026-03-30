@@ -65,7 +65,8 @@ public class TargetingSwerveJoystickCmd extends Command {
     }
 
     @Override
-    public void initialize() {
+    public void initialize() {        
+        this.turningPidController.reset(swerveSubsystem.getPose().getRotation().getRadians());
     }
 
     private double calculateAutoRotation() {

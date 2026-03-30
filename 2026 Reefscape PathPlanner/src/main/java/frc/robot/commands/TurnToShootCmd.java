@@ -50,7 +50,10 @@ public class TurnToShootCmd extends Command {
         this.turningPidController = new ProfiledPIDController(
                 4.2, 0, 0.07, AutoConstants.kThetaControllerConstraints);
         this.turningPidController.enableContinuousInput(-Math.PI, Math.PI);
-        addRequirements(turretSubsystem);
+
+        if(turretSubsystem != null)
+            addRequirements(turretSubsystem);
+
         addRequirements(swerveSubsystem);
         addRequirements(targetingSubsystem);
     }
@@ -59,6 +62,8 @@ public class TurnToShootCmd extends Command {
     public void initialize() {
         finished = false;
         this.endMoving = (new Date()).getTime() + milliseconds;
+        this.turningPidController.reset(swerveSubsystem.getPose().getRotation().getRadians());
+        
     }
 
     @Override
@@ -69,15 +74,19 @@ public class TurnToShootCmd extends Command {
         double turningSpeed = this.turningPidController.calculate(robotPose2d.getRotation().getRadians(),
                 targetRotation2d.getRadians());
 
+                
+        SmartDashboard.putNumber("robotCurrentTargetRotation", targetRotation2d.getDegrees());
         SmartDashboard.putNumber("robotCurrentAngle", robotPose2d.getRotation().getDegrees());
         SmartDashboard.putNumber("robotTurningSpeed", turningSpeed);
         SmartDashboard.putBoolean("Shoot At Setpoint", this.turningPidController.atSetpoint());
         swerveSubsystem.drive(0, 0, turningSpeed, true, robot.getPeriod());
 
         if (this.turningPidController.atGoal() || Math.abs(turningSpeed) < 0.08) {;
-        turretSubsystem.startFiring();
+            if(turretSubsystem != null)
+                turretSubsystem.startFiring();
         }
-        if ((new Date()).getTime() > endMoving){
+        if ((new Date()).getTime() > endMoving)
+        {
             finished = true;
         }
     }
@@ -85,7 +94,8 @@ public class TurnToShootCmd extends Command {
     @Override
     public void end(boolean interrupted) {
         swerveSubsystem.stopModules();
-        turretSubsystem.stopFiring();
+        if(turretSubsystem != null)
+            turretSubsystem.stopFiring();
     }
 
     @Override

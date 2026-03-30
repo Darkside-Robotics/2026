@@ -8,7 +8,7 @@ import frc.robot.subsystems.SwerveSubsystem;
 
 public class SwerveGyroRun implements Runnable {
 
-    static AHRS gyro = SwerveSubsystem.gyro;
+    static ADXRS450_Gyro gyro = SwerveSubsystem.gyro;
     @Override
     public void run() {
         gyro.reset();

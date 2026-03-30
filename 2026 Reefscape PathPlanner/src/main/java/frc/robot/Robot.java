@@ -57,9 +57,9 @@ public class Robot extends TimedRobot {
         // autonomous chooser on the dashboard.
         robotContainer = new RobotContainer(this);
         // In disabledPeriodic or before match starts
-        LimelightHelpers.SetIMUMode("limelight-dark", 4); // Seed internal IMU
+        LimelightHelpers.SetIMUMode("limelight-dark", 1); // Seed internal IMU
         // In disabledPeriodic or before match starts
-        LimelightHelpers.SetIMUMode("limelight-bin", 4); // Seed internal IMU
+        LimelightHelpers.SetIMUMode("limelight-bin", 1); // Seed internal IMU
     }
 
     /**
@@ -120,10 +120,11 @@ public class Robot extends TimedRobot {
 
                         if (ally.get().equals(Alliance.Red) || ally.get().equals(Alliance.Blue)) {
                             robotContainer.getTargetingSubsystem().setAllyAlliance(ally.get());
+                            
                             Rotation2d offset = ally.get().equals(Alliance.Red) ? Rotation2d.k180deg : Rotation2d.kZero;
                             robotContainer.getSwerveSubsystem().setInitialRotationOffset(
                                     currentAuto.getStartingPose().getRotation().rotateBy(offset));
-                            ;
+                            
                             robotContainer.getSwerveSubsystem().resetPose(currentAuto.getStartingPose());
 
                             LimelightHelpers.SetRobotOrientation("limelight-dark",
@@ -140,6 +141,7 @@ public class Robot extends TimedRobot {
                 SmartDashboard.putString("Current Auto Pose", "Unknown");
             }
         }
+
 
         // In disabledPeriodic or before match starts
         LimelightHelpers.SetIMUMode("limelight-dark", 1); // Seed internal IMU
@@ -166,9 +168,9 @@ public class Robot extends TimedRobot {
     public void autonomousPeriodic() {
 
         // In disabledPeriodic or before match starts
-        LimelightHelpers.SetIMUMode("limelight-dark", 4); // Seed internal IMU
+        LimelightHelpers.SetIMUMode("limelight-dark", 1); // Seed internal IMU
         // In disabledPeriodic or before match starts
-        LimelightHelpers.SetIMUMode("limelight-bin", 4); // Seed internal IMU
+        LimelightHelpers.SetIMUMode("limelight-bin", 1); // Seed internal IMU
 
     }
 
