@@ -35,7 +35,7 @@ public class VisionSubsystem extends SubsystemBase {
                 Units.inchesToMeters(12), // Side offset (meters)
                 Units.inchesToMeters(17), // Height offset (meters)
                 0.0, // Roll (degrees)
-                15.0, // Pitch (degrees)
+                18.0, // Pitch (degrees)
                 180.0 // Yaw (degrees)
         );
 
@@ -90,7 +90,7 @@ public class VisionSubsystem extends SubsystemBase {
          
             if (!doRejectUpdate) {
 
-                SmartDashboard.putNumber("Updating with Vision ", mt2.pose.getX());
+                SmartDashboard.putString("Updating with Vision ", mt2.pose.toString());
                 poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.7, .7, 9999999));
                 poseEstimator.addVisionMeasurement(
                         new Pose2d(mt2.pose.getX() + limeLightDarkAdjustmentTranslationX,

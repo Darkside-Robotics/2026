@@ -1,19 +1,14 @@
 {
-  "robotWidth": 0.546,
-  "robotLength": 0.599,
+  "robotWidth": 0.838,
+  "robotLength": 0.94,
   "holonomicMode": true,
   "pathFolders": [],
-  "autoFolders": [],
-  "defaultMaxVel": 1.5,
-  "defaultMaxAccel": 1.5,
-  "defaultMaxAngVel": 270.0,
-  "defaultMaxAngAccel": 360.0,
   "autoFolders": [
     "Fuel First",
     "Shoot, Scoop, Then Climb",
     "Shoot Then Climb"
   ],
-  "defaultMaxVel": 0.5,
+  "defaultMaxVel": 3.0,
   "defaultMaxAccel": 3.0,
   "defaultMaxAngVel": 540.0,
   "defaultMaxAngAccel": 720.0,
