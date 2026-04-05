@@ -34,13 +34,13 @@ public class IntakeSubsystem extends SubsystemBase {
         public static final class PID {
             public static final double P = 0.015;
             public static final double I = 0;
-            public static final double D = .012;
+            public static final double D = 0.012;
         }
 
         public static final class Motor {
             public static final int MotorPort = 18;
-            public static final int CurrentFreeLimit = 20;
-            public static final int CurrentStalledLimit = 20;
+            public static final int CurrentFreeLimit = 30;
+            public static final int CurrentStalledLimit = 40;
             public static final int Power = 10;
         }
     }
@@ -56,12 +56,13 @@ public class IntakeSubsystem extends SubsystemBase {
     private SparkMaxConfig intakeWheelMotorConfig;
     private SparkClosedLoopController intakeWheelController;
     private double intakeWheelSpeed = 0.0;
-    private double spinningIntakeWheelSpeed = 2250.0;
+    private double spinningIntakeWheelSpeed = 3250.0;
     private boolean spin = false;
+    private boolean shooting = false;
 
     public static final class IntakeWheelConstants {
         public static final class PID {
-            public static final double P = 0.0005;
+            public static final double P = 0.0008;
             public static final double I = 0;
             public static final double D = 0.012;
         }
@@ -91,7 +92,7 @@ public class IntakeSubsystem extends SubsystemBase {
         armMotorConfig.closedLoop.pid(ArmConstants.PID.P,
                 ArmConstants.PID.I, ArmConstants.PID.D);
 
-        armMotorConfig.closedLoop.outputRange(-0.3, 0.8);
+        armMotorConfig.closedLoop.outputRange(-0.2, 0.8);
         armMotorConfig.encoder.positionConversionFactor(360/100);//* (40/18).positionConversionFactor();
 
         armMotorConfig.smartCurrentLimit(ArmConstants.Motor.CurrentStalledLimit,
@@ -111,7 +112,7 @@ public class IntakeSubsystem extends SubsystemBase {
         intakeWheelMotorConfig.closedLoop
                 .pid(IntakeWheelConstants.PID.P, IntakeWheelConstants.PID.I, IntakeWheelConstants.PID.D)
                 .maxOutput(0.8).feedForward.kV(1.0 / 917.0);
-        intakeWheelMotorConfig.encoder.velocityConversionFactor(1.0 / 3.0);
+        intakeWheelMotorConfig.encoder.velocityConversionFactor(1.0 / 4.0);
 
         intakeWheelMotorConfig.smartCurrentLimit(IntakeWheelConstants.Motor.CurrentStalledLimit,
                 IntakeWheelConstants.Motor.CurrentFreeLimit);
@@ -138,12 +139,20 @@ public class IntakeSubsystem extends SubsystemBase {
         return 0;
     }
 
+    public boolean getShooting(){
+        return shooting;
+    }
+    public void setShooting(boolean shooting)
+    {
+        this.shooting = shooting;
+    }
+
     private boolean extendedSetpointFound = false;
     private Date outSetPointTimer = null;
 
     public void pushOutToHardStop() {
         armMotor.set((ArmConstants.ArmInverted ? -1 : 1) * 0.2);
-        if (Math.abs(armMotor.getAppliedOutput()) - 0.3 < .025) {
+        if (Math.abs(armMotor.getAppliedOutput()) - 0.2 < .025) {
             if (outSetPointTimer == null) {
                 outSetPointTimer = new Date();
                 SmartDashboard.putNumber("Intake Arm Out Limit Timer (start)", outSetPointTimer.getTime());
@@ -158,8 +167,8 @@ public class IntakeSubsystem extends SubsystemBase {
                     extendedSetpointFound = true;
                     armMotor.stopMotor();
                     armMotor.getEncoder()
-                            .setPosition((ArmConstants.ArmInverted ? -1.0 : 1.0) * 50.0);
-                    armPosition=45;
+                            .setPosition((ArmConstants.ArmInverted ? -1.0 : 1.0) * 55.0);
+                    armPosition=50;
                                     
                 }
             }
@@ -168,8 +177,18 @@ public class IntakeSubsystem extends SubsystemBase {
         SmartDashboard.putBoolean("Intake Arm Out Limit Set Point Found", extendedSetpointFound);
     }
 
+    Date lastShootingTime = new Date();
+
     @Override
     public void periodic() {
+
+        if(shooting && ((new Date()).getTime()-2000) > lastShootingTime.getTime())
+        {
+            armOut = !armOut;
+            lastShootingTime = new Date();
+        }
+        
+
         if (armOut == true && spin == true) {
             if (extendedSetpointFound == false) {
                 pushOutToHardStop();
@@ -190,8 +209,10 @@ public class IntakeSubsystem extends SubsystemBase {
             } else {
                 armController.setSetpoint(InPosition, ControlType.kPosition, ClosedLoopSlot.kSlot0, -Math.cos(Units.radiansToDegrees(90 - Math.abs(armMotor.getEncoder().getPosition()))) * 0.8);
             }
-            intakeWheelController.setSetpoint(0, ControlType.kVelocity);
+            
+            intakeWheelController.setSetpoint(200, ControlType.kVelocity);
         }
+    
         SmartDashboard.putNumber("Arm Expected Position", armController.getSetpoint());
         SmartDashboard.putNumber("Intake Arm Encoder Position", armMotor.getEncoder().getPosition());
         SmartDashboard.putNumber("Intake Wheel Speed", intakeWheelSpeed);

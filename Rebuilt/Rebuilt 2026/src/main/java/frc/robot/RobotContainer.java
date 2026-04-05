@@ -31,7 +31,7 @@ public class RobotContainer {
     private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
     private final IndexingSubsystem indexingSubsystem = new IndexingSubsystem();
     private final TargetingSubsystem targetingSubsystem = new TargetingSubsystem(visionSubsystem, swerveSubsystem);
-    private final TurretSubsystem turretSubsystem = new TurretSubsystem(indexingSubsystem, targetingSubsystem);
+    private final TurretSubsystem turretSubsystem = new TurretSubsystem(indexingSubsystem, targetingSubsystem, intakeSubsystem);
     private final ClimbingSubsystem climbingSubsystem = new ClimbingSubsystem();
 
     private final LEDSubsystem2 ledSubsystem = new LEDSubsystem2();
@@ -61,8 +61,6 @@ public class RobotContainer {
         NamedCommands.registerCommand("TurnToShootCmd", new TurnToShootCmd(targetingSubsystem, swerveSubsystem, turretSubsystem, 6000, robot));
         NamedCommands.registerCommand("FireForTimeCmd", new FireForTimeCmd(turretSubsystem, 1000, robot));
         NamedCommands.registerCommand("StopFiringCmd", turretSubsystem.StopFiringCmd());
-        NamedCommands.registerCommand("RightClimbUpCommand", climbingSubsystem.ClimbUpCommand());
-        NamedCommands.registerCommand("RightClimbDownCommand", climbingSubsystem.ClimbDownCommand());
         NamedCommands.registerCommand("LeftClimbUpCommand", climbingSubsystem.ClimbUpCommand());
         NamedCommands.registerCommand("LeftClimbDownCommand", climbingSubsystem.ClimbDownCommand());
         NamedCommands.registerCommand("MoveForwardGentlyCmd", new MoveForwardGentlyCmd(swerveSubsystem, 3000, robot));
@@ -91,7 +89,7 @@ public class RobotContainer {
         VISION
     }
 
-    private static TestingTuningEnum tune = TestingTuningEnum.INDEXING;
+    private static TestingTuningEnum tune = TestingTuningEnum.FLYWHEEL;
 
     private void configureButtonBindings() {
 
@@ -104,8 +102,6 @@ public class RobotContainer {
         if (tune == TestingTuningEnum.CLIMBING) {
             controller.a().onTrue(climbingSubsystem.LeftClimbDownCommand());
             controller.y().onTrue(climbingSubsystem.LeftClimbUpCommand());
-            controller.povDown().onTrue(climbingSubsystem.RightClimbDownCommand());
-            controller.povUp().onTrue(climbingSubsystem.RightClimbUpCommand());
         }
 
         // ******************************************************************
@@ -149,8 +145,8 @@ public class RobotContainer {
         controller.start().onTrue(turretSubsystem.ResetHoodCmd());
 
         if (tune == TestingTuningEnum.FLYWHEEL) {
-            controller.povUp().onTrue(turretSubsystem.FlywheelAdjustmentConstantUpCmd());
-            controller.povDown().onTrue(turretSubsystem.FlywheelAdjustmentConstantDownCmd());
+            controller.povLeft().onTrue(turretSubsystem.FlywheelAdjustmentConstantUpCmd());
+            controller.povRight().onTrue(turretSubsystem.FlywheelAdjustmentConstantDownCmd());
         }
 
         // ******************************************************************

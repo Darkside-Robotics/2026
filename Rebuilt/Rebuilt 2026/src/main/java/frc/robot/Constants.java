@@ -34,9 +34,9 @@ public final class Constants {
                     }
                     public static final class AbsoluteEncoder {
                         //Angle, not value.
-                        public static final double Offset = 0.91; // NEED
+                        public static final double Offset = 1.9815; // NEED
                         public static final boolean Reversed = false;
-                        public static final int Port = 3;
+                        public static final int Port = 2;
                     }
                 }
 
@@ -53,7 +53,7 @@ public final class Constants {
                         //Angle, not value.
                         public static final double Offset = 2.50; // NEED
                         public static final boolean Reversed = false;
-                        public static final int Port = 1;
+                        public static final int Port = 0;
                     }
                 }
             }
@@ -73,7 +73,7 @@ public final class Constants {
                         //Angle, not value.
                         public static final double Offset = 3.52; // NEED
                         public static final boolean Reversed = false;
-                        public static final int Port = 0;
+                        public static final int Port = 3;
                     }
                 }
 
@@ -91,7 +91,7 @@ public final class Constants {
                         //Angle, not value.
                         public static final double Offset = 1.12; // NEED
                         public static final boolean Reversed = false;
-                        public static final int Port = 2;
+                        public static final int Port = 1;
                     }
                 }
             }

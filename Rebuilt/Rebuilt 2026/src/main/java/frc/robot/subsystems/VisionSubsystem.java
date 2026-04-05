@@ -33,11 +33,11 @@ public class VisionSubsystem extends SubsystemBase {
         // degrees)
 
         LimelightHelpers.setCameraPose_RobotSpace("limelight-dark",
-                Units.inchesToMeters(6.5), // Forward offset (meters) 0.1651
-                Units.inchesToMeters(11.25), // Side offset (meters) 0.28575
-                Units.inchesToMeters(16.5), // Height offset (meters) 0.4191
-                180, // Roll (degrees)
-                16.9, // Pitch (degrees)
+                Units.inchesToMeters(9.5), // Forward offset (meters) 0.1651
+                Units.inchesToMeters(7.25), // Side offset (meters) 0.28575
+                Units.inchesToMeters(21.0), // Height offset (meters) 0.4191
+                0, // Roll (degrees)
+                15.0, // Pitch (degrees)
                 180.0 // Yaw (degrees)
         );
 

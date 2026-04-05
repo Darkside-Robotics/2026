@@ -94,6 +94,10 @@ public class Robot extends TimedRobot {
         LimelightHelpers.SetIMUMode("limelight-dark", 1); // Seed internal IMU
         // In disabledPeriodic or before match starts
         LimelightHelpers.SetIMUMode("limelight-bin", 1); // Seed internal IMU
+              // In disabledPeriodic or before match starts
+        LimelightHelpers.SetThrottle("limelight-dark", 200);
+        // In disabledPeriodic or before match starts
+        LimelightHelpers.SetThrottle("limelight-bin", 200); 
     }
 
     private String currentAutoName = null;
@@ -105,7 +109,7 @@ public class Robot extends TimedRobot {
 
         Optional<Alliance> ally = DriverStation.getAlliance();
         if (ally.isPresent()) {
-            if (robotContainer.getAutonomousCommand().getName() != null) {
+            if (robotContainer.getAutonomousCommand() != null && robotContainer.getAutonomousCommand().getName() != null) {
                 if (currentAutoName != robotContainer.getAutonomousCommand().getName()
                         || !ally.get().equals(currentAlliance)) {
                     currentAlliance = ally.get();
@@ -140,12 +144,6 @@ public class Robot extends TimedRobot {
                 SmartDashboard.putString("Current Auto Pose", "Unknown");
             }
         }
-
-        // In disabledPeriodic or before match starts
-        LimelightHelpers.SetIMUMode("limelight-dark", 1); // Seed internal IMU
-        // In disabledPeriodic or before match starts
-        LimelightHelpers.SetIMUMode("limelight-bin", 1); // Seed internal IMU
-
     }
 
     /**
@@ -154,6 +152,15 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void autonomousInit() {
+                // In disabledPeriodic or before match starts
+        LimelightHelpers.SetIMUMode("limelight-dark", 4); // Seed internal IMU
+        // In disabledPeriodic or before match starts
+        LimelightHelpers.SetIMUMode("limelight-bin", 4); // Seed internal IMU
+        
+        LimelightHelpers.SetThrottle("limelight-dark", 0);
+        // In disabledPeriodic or before match starts
+        LimelightHelpers.SetThrottle("limelight-bin", 0); 
+
         Command autonomousCommand = robotContainer.getAutonomousCommand();
         // schedule the autonomous command (example)
         if (autonomousCommand != null) {
@@ -165,15 +172,19 @@ public class Robot extends TimedRobot {
     @Override
     public void autonomousPeriodic() {
 
-        // In disabledPeriodic or before match starts
-        LimelightHelpers.SetIMUMode("limelight-dark", 4); // Seed internal IMU
-        // In disabledPeriodic or before match starts
-        LimelightHelpers.SetIMUMode("limelight-bin", 4); // Seed internal IMU
-
     }
 
     @Override
     public void teleopInit() {
+                        // In disabledPeriodic or before match starts
+        LimelightHelpers.SetIMUMode("limelight-dark", 4); // Seed internal IMU
+        // In disabledPeriodic or before match starts
+        LimelightHelpers.SetIMUMode("limelight-bin", 4); // Seed internal IMU
+        
+        LimelightHelpers.SetThrottle("limelight-dark", 0);
+        // In disabledPeriodic or before match starts
+        LimelightHelpers.SetThrottle("limelight-bin", 0); 
+
         // This makes sure that the autonomous stops running when
         // teleop starts running. If you want the autonomous to
         // continue until interrupted by another command, remove

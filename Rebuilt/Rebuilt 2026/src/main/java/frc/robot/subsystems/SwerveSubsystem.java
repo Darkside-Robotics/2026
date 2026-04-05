@@ -109,7 +109,7 @@ public class SwerveSubsystem extends SubsystemBase {
                 //         isRed = true;
                 // }
 
-                zeroHeading();
+                gyro.reset();
 
                 // Pose2d SideRightCornerPose2d;
                 // if (isRed) {
@@ -200,7 +200,11 @@ public class SwerveSubsystem extends SubsystemBase {
                         this.poseEstimator.resetPose(SideRightCornerPose2d);
                 }
                 */
-                gyro.reset();
+                              gyro.reset();
+                
+                Pose2d pose = poseEstimator.getEstimatedPosition();
+                Pose2d correctedPose = new Pose2d(pose.getX(), pose.getY(), getRotation2d());
+                resetPose(correctedPose);
                 
         }
 
@@ -281,15 +285,19 @@ public class SwerveSubsystem extends SubsystemBase {
 
 
                 double maxVisionUpdateSpeed = 2.0;
-                if (Math.abs(frontLeft.getState().speedMetersPerSecond) > maxVisionUpdateSpeed ||
+                    if (Math.abs(frontLeft.getState().speedMetersPerSecond) > maxVisionUpdateSpeed ||
                                 Math.abs(frontRight.getState().speedMetersPerSecond) > maxVisionUpdateSpeed ||
                                 Math.abs(backLeft.getState().speedMetersPerSecond) > maxVisionUpdateSpeed ||
                                 Math.abs(backRight.getState().speedMetersPerSecond) > maxVisionUpdateSpeed) {
                         // DONT DO VISION WHILE MOVING QUICKLY
+                        SmartDashboard.putNumber("Skipped Vision Because Moving Update", (new Date()).getSeconds());
                 }
+                else
+                {
 
                 visionSubsystem.updateRobotPoseTurretSide(poseEstimator, gyro);
                 visionSubsystem.updateRobotPoseBinSide(poseEstimator, gyro);
+                }
         }
 
         // ****************************************************************** */

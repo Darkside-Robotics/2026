@@ -38,7 +38,7 @@ public class IndexingSubsystem extends SubsystemBase {
 
   public static final class IndexerConstants {
 
-    public static final double ClosedLoopRampRate = 1;
+    public static final double ClosedLoopRampRate = 0.5;
 
     public static final class PID {
       public static final double P = 0.0005;
@@ -49,8 +49,8 @@ public class IndexingSubsystem extends SubsystemBase {
 
     public static final class Motor {
       public static final int MotorPort = 16;
-      public static final int CurrentFreeLimit = 20;
-      public static final int CurrentStalledLimit = 20;
+      public static final int CurrentFreeLimit =  30;
+      public static final int CurrentStalledLimit = 40;
       public static final int Power = 10;
     }
   }
@@ -93,30 +93,25 @@ public class IndexingSubsystem extends SubsystemBase {
     if (indexerVelocity > 0) {
       // MOVEMENT REQUESTED
       if (Math.abs(indexerMotor.getEncoder().getVelocity()) < 40) {
-        //IF STUCK START COUNTING
+        // IF STUCK START COUNTING
         failedRequestedVelocity++;
-        if (failedRequestedVelocity > 8) 
-        {
-          //IF STUCK OVER 5 CLICKS REVERSE THE MOVEMENT
-          reversed = true; //BACKWARD DIRECTION
-          failedRequestedVelocity = 15; //NUMBER OF TICKS TO TRY TO REVERSE
+        if (failedRequestedVelocity > 15) {
+          // IF STUCK OVER 5 CLICKS REVERSE THE MOVEMENT
+          reversed = true; // BACKWARD DIRECTION
+          failedRequestedVelocity = 20; // NUMBER OF TICKS TO TRY TO REVERSE
         }
-      } 
-      else 
-      {
-        //WE ARE MOVING COUNT DOWN TO 0 BEFORE RESTORING FORWARD DIRECTION
-        if (failedRequestedVelocity > 0) {          
+      } else {
+        // WE ARE MOVING COUNT DOWN TO 0 BEFORE RESTORING FORWARD DIRECTION
+        if (failedRequestedVelocity > 0) {
           failedRequestedVelocity--;
-        }
-        else
-        {
-          reversed = false; //FORWARD DIRECTION
+        } else {
+          reversed = false; // FORWARD DIRECTION
         }
       }
     } else {
       // NO MOVEMENT REQUESTED RESET THE COUNTER
       failedRequestedVelocity = 0;
-      reversed = false;  //FORWARD DIRECTION
+      reversed = false; // FORWARD DIRECTION
     }
     indexerController.setSetpoint((reversed ? -1.0 : 1.0) * indexerVelocity * 1000, ControlType.kVelocity);
 
