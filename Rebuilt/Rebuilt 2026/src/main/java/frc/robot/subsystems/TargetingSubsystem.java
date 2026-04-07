@@ -70,11 +70,11 @@ public class TargetingSubsystem extends SubsystemBase {
     double middleLineY = 4;
 
     if (allyAlliance == Alliance.Red) {
-      hubX = 12.0;
+      hubX = 11.6;
       hubY = 4.0;
       shootingLineX = 12.5;
     } else {
-      hubX = 4.0;
+      hubX = 4.4;
       hubY = 4.0;
       shootingLineX = 4.0;
     }

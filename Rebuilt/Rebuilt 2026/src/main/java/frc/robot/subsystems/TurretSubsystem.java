@@ -23,7 +23,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.TurretSubsystem.TurretConstants.FlyWheelConstants;
-import frc.robot.subsystems.TurretSubsystem.TurretConstants.Hood;
+//import frc.robot.subsystems.TurretSubsystem.TurretConstants.Hood;
 
 public class TurretSubsystem extends SubsystemBase {
   // private final SparkMax turntableMotor;
@@ -36,13 +36,13 @@ public class TurretSubsystem extends SubsystemBase {
   private SparkFlexConfig followflywheelMotorConfig;
   private SparkClosedLoopController flywheelController;
 
-  private SparkMax hoodMotor;
-  private SparkMaxConfig hoodMotorConfig;
-  private SparkClosedLoopController hoodController;
+  // private SparkMax hoodMotor;
+  // private SparkMaxConfig hoodMotorConfig;
+  // private SparkClosedLoopController hoodController;
 
   private double hoodAngle = 0.0;
 
-  private double flywheelDefaultSpeed = 250.0;
+  private double flywheelDefaultSpeed = 350.0;
   private double flywheelSpeedFactor = 50.0;
 
   private double flywheelSpeed = 50.0;
@@ -55,77 +55,73 @@ public class TurretSubsystem extends SubsystemBase {
 
   public static final class TurretConstants {
 
-    public static final class Turntable {
-      public static final class PID {
-        public static final int P = 1;
-        public static final int I = 0;
-        public static final int D = 0;
-      }
+    // public static final class Turntable {
+    //   public static final class PID {
+    //     public static final int P = 1;
+    //     public static final int I = 0;
+    //     public static final int D = 0;
+    //   }
 
-      public static final class Motor {
-        public static final int MotorPort = 0;
-        public static final int CurrentFreeLimit = 60;
-        public static final int CurrentStalledLimit = 40;
-        public static final int Power = 10;
-      }
-    }
+    //   public static final class Motor {
+    //     public static final int MotorPort = 0;
+    //     public static final int CurrentFreeLimit = 60;
+    //     public static final int CurrentStalledLimit = 40;
+    //     public static final int Power = 10;
+    //   }
+    // }
 
-    public static final class Hood {
-      public static final class PID {
-        public static final double P = 0.07;
-        public static final double I = 0;
-        public static final double D = 0.012;
-      }
+    // public static final class Hood {
+    //   public static final class PID {
+    //     public static final double P = 0.07;
+    //     public static final double I = 0;
+    //     public static final double D = 0.012;
+    //   }
 
-      public static final class Motor {
-        public static final int MotorPort = 19;
-        public static final int CurrentFreeLimit = 20;
-        public static final int CurrentStalledLimit = 20;
-        public static final int Power = 10;
-      }
-    }
+    //   public static final class Motor {
+    //     public static final int MotorPort = 19;
+    //     public static final int CurrentFreeLimit = 20;
+    //     public static final int CurrentStalledLimit = 20;
+    //     public static final int Power = 10;
+    //   }
+    // }
 
     public static final class FlyWheelConstants {
 
-      public static final double ClosedLoopRampRate = 1.0;
+      //public static final double ClosedLoopRampRate = 0.25;
 
       public static final class PID {
-        public static final double P = 0.0004;
+        public static final double P = 0.0006;
         public static final double I = 0;
-        public static final double D = 0.008;
+        public static final double D = 0.004;
         public static final double FF = (1.0 / 565.0);// / 12; // (1.0 / 565.0) / 10;
       }
 
       public static final class LeadMotor {
-        public static final int MotorPort = 13; // USED TO BE 14 BUT MOTOR WENT BAD
-        public static final int CurrentFreeLimit = 60;
+        public static final int MotorPort = 13; 
+        public static final int CurrentFreeLimit = 80;
         public static final int CurrentStalledLimit = 80;
-        public static final int Power = 10;
+
       }
 
       public static final class FollowMotor {
-        public static final int MotorPort = 14; // disabled
-        public static final int CurrentFreeLimit = 60;
-        public static final int CurrentStalledLimit = 80;
-        public static final int Power = 10;
+        public static final int MotorPort = 14; 
+        public static final int CurrentFreeLimit = 80;
+        public static final int CurrentStalledLimit = 80;       
       }
 
     }
   }
 
-  private double flywheelAdjustableConstant = 2.368;
-
-  private static double reduction = 0.008;
-  
+  private double flywheelAdjustableConstant = 2.33;
+ 
   private double throttleClose(double distance, double targetVelocity)
   {
-    if(distance < 3.2)
-    return targetVelocity - Math.abs(((-1.0*(3.2-distance))/3.2 * 5.0));
-    else
-    return targetVelocity;
-
+    //if(distance < 3.2)
+    //  return targetVelocity - Math.abs(((-1.0*(4.0-distance))/4.0 * 2.0));
+    //else
+      return targetVelocity;
   }
-
+/* 
   private static final double[][] firingTable = new double[][] {
       { 2.3324, 47, 10.26 },
       { 2.3643, 47, 10.33 },
@@ -273,6 +269,150 @@ public class TurretSubsystem extends SubsystemBase {
       { 6.6909, 47, 9.53 },
       { 6.7331, 47, 9.56 },
   };
+  */
+
+  private static final double[][] firingTable = new double[][] {
+{ 2.485, 45, 8.254 },
+{ 2.517, 45, 8.389 },
+{ 2.574, 45, 8.133 },
+{ 2.579, 45, 8.218 },
+{ 2.609, 45, 8.344 },
+{ 2.663, 45, 8.14 },
+{ 2.669, 45, 8.223 },
+{ 2.725, 45, 8.069 },
+{ 2.731, 45, 8.151 },
+{ 2.764, 45, 8.275 },
+{ 2.816, 45, 8.146 },
+{ 2.822, 45, 8.227 },
+{ 2.875, 45, 8.127 },
+{ 2.881, 45, 8.207 },
+{ 2.911, 45, 8.321 },
+{ 2.971, 45, 8.251 },
+{ 2.977, 45, 8.33 },
+{ 3.026, 45, 8.289 },
+{ 3.033, 45, 8.298 },
+{ 3.066, 45, 8.343 },
+{ 3.122, 45, 8.235 },
+{ 3.129, 45, 8.244 },
+{ 3.181, 45, 8.236 },
+{ 3.188, 45, 8.245 },
+{ 3.216, 45, 8.281 },
+{ 3.272, 45, 8.199 },
+{ 3.279, 45, 8.208 },
+{ 3.333, 45, 8.135 },
+{ 3.34, 45, 8.145 },
+{ 3.37, 45, 8.271 },
+{ 3.425, 45, 8.206 },
+{ 3.432, 45, 8.216 },
+{ 3.487, 45, 8.16 },
+{ 3.495, 45, 8.17 },
+{ 3.526, 45, 8.206 },
+{ 3.575, 45, 8.151 },
+{ 3.583, 45, 8.16 },
+{ 3.635, 45, 8.114 },
+{ 3.643, 45, 8.124 },
+{ 3.676, 45, 2.218 },
+{ 3.731, 45, 2.208 },
+{ 3.739, 45, 2.21 },
+{ 3.789, 45, 2.2 },
+{ 3.798, 45, 2.203 },
+{ 3.832, 45, 2.213 },
+{ 3.878, 45, 2.203 },
+{ 3.887, 45, 2.205 },
+{ 3.947, 45, 8.36 },
+{ 3.956, 45, 8.37 },
+{ 3.983, 45, 8.398 },
+{ 4.031, 45, 8.37 },
+{ 4.04, 45, 8.379 },
+{ 4.093, 45, 8.36 },
+{ 4.102, 45, 8.59 },
+{ 4.13, 45, 8.619 },
+{ 4.191, 45, 8.609 },
+{ 4.2, 45, 8.619 },
+{ 4.248, 45, 8.6 },
+{ 4.258, 45, 8.83 },
+{ 4.287, 45, 8.86 },
+{ 4.342, 45, 8.85 },
+{ 4.352, 45, 8.86 },
+{ 4.395, 45, 8.84 },
+{ 4.405, 45, 8.85 },
+{ 4.435, 45, 8.88 },
+{ 4.486, 45, 8.87 },
+{ 4.496, 45, 8.88 },
+{ 4.555, 45, 8.88 },
+{ 4.565, 45, 8.89 },
+{ 4.596, 45, 8.92 },
+{ 4.643, 45, 8.91 },
+{ 4.654, 45, 8.92 },
+{ 4.699, 45, 8.91 },
+{ 4.709, 45, 8.92 },
+{ 4.741, 45, 8.95 },
+{ 4.796, 45, 8.95 },
+{ 4.806, 45, 8.96 },
+{ 4.859, 45, 8.96 },
+{ 4.87, 45, 8.97 },
+{ 4.903, 45, 9 },
+{ 4.943, 45, 8.99 },
+{ 4.954, 45, 9 },
+{ 5.004, 45, 9 },
+{ 5.015, 45, 9.01 },
+{ 5.049, 45, 9.04 },
+{ 5.098, 45, 9.04 },
+{ 5.109, 45, 9.05 },
+{ 5.157, 45, 9.05 },
+{ 5.168, 45, 9.06 },
+{ 5.202, 45, 9.09 },
+{ 5.249, 45, 9.09 },
+{ 5.261, 45, 9.1 },
+{ 5.306, 45, 9.1 },
+{ 5.329, 45, 9.12 },
+{ 5.353, 45, 9.14 },
+{ 5.397, 45, 9.14 },
+{ 5.421, 45, 9.16 },
+{ 5.464, 45, 9.16 },
+{ 5.476, 45, 9.17 },
+{ 5.512, 45, 9.2 },
+{ 5.555, 45, 9.2 },
+{ 5.567, 45, 9.21 },
+{ 5.609, 45, 9.21 },
+{ 5.633, 45, 9.23 },
+{ 5.657, 45, 9.25 },
+{ 5.698, 45, 9.25 },
+{ 5.723, 45, 9.27 },
+{ 5.763, 45, 9.27 },
+{ 5.788, 45, 9.29 },
+{ 5.813, 45, 9.31 },
+{ 5.852, 45, 9.31 },
+{ 5.877, 45, 9.33 },
+{ 5.916, 45, 9.33 },
+{ 5.941, 45, 9.35 },
+{ 5.966, 45, 9.37 },
+{ 6.004, 45, 9.37 },
+{ 6.03, 45, 9.39 },
+{ 6.067, 45, 9.39 },
+{ 6.093, 45, 9.41 },
+{ 6.119, 45, 9.43 },
+{ 6.155, 45, 9.43 },
+{ 6.181, 45, 9.45 },
+{ 6.217, 45, 9.45 },
+{ 6.243, 45, 9.47 },
+{ 6.27, 45, 9.49 },
+{ 6.305, 45, 9.49 },
+{ 6.331, 45, 9.51 },
+{ 6.366, 45, 9.51 },
+{ 6.392, 45, 9.53 },
+{ 6.419, 45, 9.55 },
+{ 6.453, 45, 9.55 },
+{ 6.48, 45, 9.57 },
+{ 6.513, 45, 9.57 },
+{ 6.541, 45, 9.59 },
+{ 6.582, 45, 9.62 },
+{ 6.614, 45, 9.62 },
+{ 6.642, 45, 9.64 },
+{ 6.674, 45, 9.64 },
+{ 6.702, 45, 9.66 },
+{ 6.73, 45, 9.68 },
+  };
 
   private boolean fire = false;
   private boolean manual = false;
@@ -293,10 +433,10 @@ public class TurretSubsystem extends SubsystemBase {
         com.revrobotics.spark.SparkLowLevel.MotorType.kBrushless);
     leadflywheelMotorConfig = new SparkFlexConfig();
     leadflywheelMotorConfig.closedLoop.pid(FlyWheelConstants.PID.P, FlyWheelConstants.PID.I, FlyWheelConstants.PID.D)
-        .outputRange(-0.8, 0.8);
+        .outputRange(-1, 1);
     leadflywheelMotorConfig.closedLoop.feedForward.kV(FlyWheelConstants.PID.FF);
-    leadflywheelMotorConfig.idleMode(IdleMode.kCoast)
-        .closedLoopRampRate(TurretConstants.FlyWheelConstants.ClosedLoopRampRate);
+    leadflywheelMotorConfig.idleMode(IdleMode.kCoast);
+        //.closedLoopRampRate(TurretConstants.FlyWheelConstants.ClosedLoopRampRate);
     leadflywheelMotorConfig.encoder.velocityConversionFactor(1.0);
     leadflywheelMotorConfig.smartCurrentLimit(TurretConstants.FlyWheelConstants.LeadMotor.CurrentStalledLimit,
         TurretConstants.FlyWheelConstants.LeadMotor.CurrentFreeLimit);
@@ -315,21 +455,21 @@ public class TurretSubsystem extends SubsystemBase {
     flywheelController = leadflywheelMotor.getClosedLoopController();
 
     /*****************************************************************************************/
-    hoodMotor = new SparkMax(TurretConstants.Hood.Motor.MotorPort,
-        com.revrobotics.spark.SparkLowLevel.MotorType.kBrushless);
-    hoodMotorConfig = new SparkMaxConfig();
-    hoodMotorConfig.idleMode(IdleMode.kBrake)
-        .closedLoopRampRate(1);
-    hoodMotorConfig.closedLoop.pid(Hood.PID.P, Hood.PID.I, Hood.PID.D).maxOutput(0.4);
-    hoodMotorConfig.encoder.positionConversionFactor(0.81038961);
+    // hoodMotor = new SparkMax(TurretConstants.Hood.Motor.MotorPort,
+    //     com.revrobotics.spark.SparkLowLevel.MotorType.kBrushless);
+    // hoodMotorConfig = new SparkMaxConfig();
+    // hoodMotorConfig.idleMode(IdleMode.kBrake)
+    //     .closedLoopRampRate(1);
+    // hoodMotorConfig.closedLoop.pid(Hood.PID.P, Hood.PID.I, Hood.PID.D).maxOutput(0.4);
+    // hoodMotorConfig.encoder.positionConversionFactor(0.81038961);
 
-    hoodMotorConfig.smartCurrentLimit(TurretConstants.Hood.Motor.CurrentStalledLimit,
-        TurretConstants.Hood.Motor.CurrentFreeLimit);
-    hoodMotor.configure(hoodMotorConfig, ResetMode.kResetSafeParameters,
-        PersistMode.kPersistParameters);
+    // hoodMotorConfig.smartCurrentLimit(TurretConstants.Hood.Motor.CurrentStalledLimit,
+    //     TurretConstants.Hood.Motor.CurrentFreeLimit);
+    // hoodMotor.configure(hoodMotorConfig, ResetMode.kResetSafeParameters,
+    //     PersistMode.kPersistParameters);
 
-    hoodController = hoodMotor.getClosedLoopController();
-    hoodMotor.getEncoder().setPosition(0);
+    // hoodController = hoodMotor.getClosedLoopController();
+    // hoodMotor.getEncoder().setPosition(0);
   }
 
   /**************************************************************** */
@@ -370,7 +510,7 @@ public class TurretSubsystem extends SubsystemBase {
   public void periodic() {
 
     this.intakeSubsystem.setShooting(fire);
-    
+
     if (spinIndexerBackward) {
       indexingSubsystem.setIndexerVelocity(-3);
 
@@ -437,7 +577,7 @@ public class TurretSubsystem extends SubsystemBase {
       SmartDashboard.putNumber("Flywheel Adjustment Constant", flywheelAdjustableConstant);
       SmartDashboard.putNumber("Hood Angle", hoodAngle);
       SmartDashboard.putNumber("Hood Set Point", Math.abs((60.5 - hoodAngle) > 0 ? (60.5 - hoodAngle) : 0));
-      SmartDashboard.putNumber("Hood Encoder Position", hoodMotor.getEncoder().getPosition());
+      //SmartDashboard.putNumber("Hood Encoder Position", hoodMotor.getEncoder().getPosition());
     } else {
 
       //DISABLED HOOD CONTROL
@@ -473,14 +613,14 @@ public class TurretSubsystem extends SubsystemBase {
   public Command FlywheelAdjustmentConstantUpCmd() {
     return runOnce(
         () -> {
-          setFlywheelConstant(flywheelAdjustableConstant + .01);
+          setFlywheelConstant(flywheelAdjustableConstant + .005);
         });
   }
 
   public Command FlywheelAdjustmentConstantDownCmd() {
     return runOnce(
         () -> {
-          setFlywheelConstant(flywheelAdjustableConstant + .01);
+          setFlywheelConstant(flywheelAdjustableConstant -.005);
         });
   }
 
@@ -534,7 +674,8 @@ public class TurretSubsystem extends SubsystemBase {
   public Command spinIndexerForwardCommand() {
     return runOnce(
         () -> {
-          this.spinIndexerForward = true;
+          this.spinIndexerForward = true;          
+          this.spinIndexerBackward = false;
         });
   }
 
@@ -542,6 +683,7 @@ public class TurretSubsystem extends SubsystemBase {
     return runOnce(
         () -> {
           this.spinIndexerBackward = true;
+          this.spinIndexerForward = false;
         });
   }
 

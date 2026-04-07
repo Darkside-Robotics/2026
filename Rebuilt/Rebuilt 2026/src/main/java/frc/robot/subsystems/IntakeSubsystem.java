@@ -182,7 +182,7 @@ public class IntakeSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
 
-        if(shooting && ((new Date()).getTime()-2000) > lastShootingTime.getTime())
+        if(shooting && ((new Date()).getTime()-1400) > lastShootingTime.getTime())
         {
             armOut = !armOut;
             lastShootingTime = new Date();
@@ -209,8 +209,14 @@ public class IntakeSubsystem extends SubsystemBase {
             } else {
                 armController.setSetpoint(InPosition, ControlType.kPosition, ClosedLoopSlot.kSlot0, -Math.cos(Units.radiansToDegrees(90 - Math.abs(armMotor.getEncoder().getPosition()))) * 0.8);
             }
-            
-            intakeWheelController.setSetpoint(200, ControlType.kVelocity);
+            if(shooting)
+            {
+                intakeWheelController.setSetpoint(500, ControlType.kVelocity);
+            }
+            else
+            {
+                intakeWheelController.setSetpoint(0, ControlType.kVelocity);                
+            }
         }
     
         SmartDashboard.putNumber("Arm Expected Position", armController.getSetpoint());

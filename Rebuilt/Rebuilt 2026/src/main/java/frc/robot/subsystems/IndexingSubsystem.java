@@ -38,7 +38,7 @@ public class IndexingSubsystem extends SubsystemBase {
 
   public static final class IndexerConstants {
 
-    public static final double ClosedLoopRampRate = 0.5;
+    public static final double ClosedLoopRampRate = 0.25;
 
     public static final class PID {
       public static final double P = 0.0005;
@@ -49,7 +49,7 @@ public class IndexingSubsystem extends SubsystemBase {
 
     public static final class Motor {
       public static final int MotorPort = 16;
-      public static final int CurrentFreeLimit =  30;
+      public static final int CurrentFreeLimit =  40;
       public static final int CurrentStalledLimit = 40;
       public static final int Power = 10;
     }
@@ -62,8 +62,8 @@ public class IndexingSubsystem extends SubsystemBase {
     indexerMotor = new SparkMax(IndexerConstants.Motor.MotorPort,
         com.revrobotics.spark.SparkLowLevel.MotorType.kBrushless);
     indexerMotorConfig = new SparkMaxConfig();
-    indexerMotorConfig.idleMode(IdleMode.kBrake)
-        .closedLoopRampRate(IndexerConstants.ClosedLoopRampRate);
+    indexerMotorConfig.idleMode(IdleMode.kBrake);
+        //.closedLoopRampRate(IndexerConstants.ClosedLoopRampRate);
     indexerMotorConfig.closedLoop.pid(IndexerConstants.PID.P, IndexerConstants.PID.I, IndexerConstants.PID.D)
         .outputRange(-0.8, 0.8);
     indexerMotorConfig.closedLoop.feedForward.kV(IndexerConstants.PID.FF);
@@ -90,12 +90,13 @@ public class IndexingSubsystem extends SubsystemBase {
 
     SmartDashboard.putNumber("Indexer Velocity", indexerVelocity * 1000);
 
-    if (indexerVelocity > 0) {
+    if (Math.abs(indexerVelocity) > 0) {
+      
       // MOVEMENT REQUESTED
       if (Math.abs(indexerMotor.getEncoder().getVelocity()) < 40) {
         // IF STUCK START COUNTING
         failedRequestedVelocity++;
-        if (failedRequestedVelocity > 15) {
+        if (failedRequestedVelocity > 30) {
           // IF STUCK OVER 5 CLICKS REVERSE THE MOVEMENT
           reversed = true; // BACKWARD DIRECTION
           failedRequestedVelocity = 20; // NUMBER OF TICKS TO TRY TO REVERSE
@@ -108,12 +109,13 @@ public class IndexingSubsystem extends SubsystemBase {
           reversed = false; // FORWARD DIRECTION
         }
       }
+      indexerController.setSetpoint((reversed ? -1.0 : 1.0) * indexerVelocity * 1000, ControlType.kVelocity);
     } else {
       // NO MOVEMENT REQUESTED RESET THE COUNTER
       failedRequestedVelocity = 0;
       reversed = false; // FORWARD DIRECTION
+      indexerMotor.set(0);      
     }
-    indexerController.setSetpoint((reversed ? -1.0 : 1.0) * indexerVelocity * 1000, ControlType.kVelocity);
 
   }
 

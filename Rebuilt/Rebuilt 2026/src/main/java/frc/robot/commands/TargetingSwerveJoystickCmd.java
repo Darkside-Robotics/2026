@@ -138,6 +138,7 @@ public class TargetingSwerveJoystickCmd extends Command {
         if (autoTarget.get()) {
             turningSpeed = autoRotation;
         } else {
+            
             turningSpeed = turningLimiter.calculate(turningSpeed)
                     * DriveConstants.kTeleDriveMaxAngularSpeedRadiansPerSecond;
         }
